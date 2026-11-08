@@ -56,3 +56,14 @@ jobs:
         env:
           MUSIC_VECTORS: target/music-golden-vectors.json
         run: cargo test --workspace --features music-interop-tests --all-targets
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Check native Windows compilation and unit tests
+        run: cargo test --workspace --all-targets
