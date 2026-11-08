@@ -162,7 +162,11 @@ impl VerifiedCas {
 
     fn path_for(&self, digest: &[u8; 32]) -> PathBuf {
         let hex = Self::hex(digest);
-        self.root.join("objects").join("sha256").join(&hex[..2]).join(hex)
+        self.root
+            .join("objects")
+            .join("sha256")
+            .join(&hex[..2])
+            .join(hex)
     }
 
     fn ensure_dirs(&self, digest: &[u8; 32], create: bool) -> Result<(), StoreError> {
@@ -335,7 +339,11 @@ impl VerifiedCas {
                 }
                 Err(StoreError::Missing | StoreError::Corrupt) => {}
                 Err(error) => {
-                    return Err(SyncFailure { failed_index: index, progress, source: error });
+                    return Err(SyncFailure {
+                        failed_index: index,
+                        progress,
+                        source: error,
+                    });
                 }
             }
             let mut recovered = false;
@@ -344,7 +352,11 @@ impl VerifiedCas {
                     Ok(bytes) => bytes,
                     Err(StoreError::Missing | StoreError::Corrupt) => continue,
                     Err(error) => {
-                        return Err(SyncFailure { failed_index: index, progress, source: error });
+                        return Err(SyncFailure {
+                            failed_index: index,
+                            progress,
+                            source: error,
+                        });
                     }
                 };
                 match self.write_chunk(manifest, index, &bytes, true) {
@@ -352,7 +364,11 @@ impl VerifiedCas {
                     Ok(WriteOutcome::Repaired) => progress.repaired += 1,
                     Ok(WriteOutcome::AlreadyVerified) => progress.already_verified += 1,
                     Err(error) => {
-                        return Err(SyncFailure { failed_index: index, progress, source: error });
+                        return Err(SyncFailure {
+                            failed_index: index,
+                            progress,
+                            source: error,
+                        });
                     }
                 }
                 recovered = true;

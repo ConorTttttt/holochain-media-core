@@ -217,7 +217,6 @@ fn unsupported_objects_types_and_oversized_input_fail_closed() {
     );
 }
 
-
 #[test]
 fn verified_cas_replicates_real_python_music_ciphertext() {
     use crate::storage::{VerifiedCas, WriteOutcome};
@@ -227,21 +226,38 @@ fn verified_cas_replicates_real_python_music_ciphertext() {
     let temp = tempfile::tempdir().unwrap();
     let origin = VerifiedCas::new(temp.path().join("origin")).unwrap();
     let replica = VerifiedCas::new(temp.path().join("replica")).unwrap();
-    assert_eq!(replica.audit(&manifest).unwrap().missing, manifest.chunks.len());
+    assert_eq!(
+        replica.audit(&manifest).unwrap().missing,
+        manifest.chunks.len()
+    );
 
     for (index, fixture) in v["chunks"].as_array().unwrap().iter().enumerate() {
-        let ciphertext = STANDARD.decode(fixture["ciphertext_b64"].as_str().unwrap()).unwrap();
-        assert_eq!(origin.put_chunk(&manifest, index, &ciphertext).unwrap(), WriteOutcome::Created);
-        assert_eq!(origin.put_chunk(&manifest, index, &ciphertext).unwrap(), WriteOutcome::AlreadyVerified);
+        let ciphertext = STANDARD
+            .decode(fixture["ciphertext_b64"].as_str().unwrap())
+            .unwrap();
+        assert_eq!(
+            origin.put_chunk(&manifest, index, &ciphertext).unwrap(),
+            WriteOutcome::Created
+        );
+        assert_eq!(
+            origin.put_chunk(&manifest, index, &ciphertext).unwrap(),
+            WriteOutcome::AlreadyVerified
+        );
         assert_eq!(origin.read_chunk(&manifest, index).unwrap(), ciphertext);
         let mut invalid = ciphertext.clone();
         invalid[0] ^= 1;
-        assert!(matches!(origin.put_chunk(&manifest, index, &invalid), Err(crate::storage::StoreError::InvalidChunk)));
+        assert!(matches!(
+            origin.put_chunk(&manifest, index, &invalid),
+            Err(crate::storage::StoreError::InvalidChunk)
+        ));
     }
     let result = replica.sync_from(&manifest, &[&origin]).unwrap();
     assert_eq!(result.downloaded, manifest.chunks.len());
     assert_eq!(result.repaired, 0);
-    assert_eq!(replica.audit(&manifest).unwrap().verified, manifest.chunks.len());
+    assert_eq!(
+        replica.audit(&manifest).unwrap().verified,
+        manifest.chunks.len()
+    );
     let repeat = replica.sync_from(&manifest, &[&origin]).unwrap();
     assert_eq!(repeat.already_verified, manifest.chunks.len());
     assert_eq!(repeat.downloaded, 0);
@@ -259,9 +275,14 @@ fn verified_cas_resumes_partial_transfer_after_host_unavailability() {
     let second = VerifiedCas::new(tmp.path().join("second")).unwrap();
     let target = VerifiedCas::new(tmp.path().join("target")).unwrap();
     for (i, fixture) in v["chunks"].as_array().unwrap().iter().enumerate() {
-        let bytes = STANDARD.decode(fixture["ciphertext_b64"].as_str().unwrap()).unwrap();
-        if i == 0 { first.put_chunk(&manifest, i, &bytes).unwrap(); }
-        else { second.put_chunk(&manifest, i, &bytes).unwrap(); }
+        let bytes = STANDARD
+            .decode(fixture["ciphertext_b64"].as_str().unwrap())
+            .unwrap();
+        if i == 0 {
+            first.put_chunk(&manifest, i, &bytes).unwrap();
+        } else {
+            second.put_chunk(&manifest, i, &bytes).unwrap();
+        }
     }
     let failure = target.sync_from(&manifest, &[&first]).unwrap_err();
     assert_eq!(failure.failed_index, 1);
@@ -272,7 +293,10 @@ fn verified_cas_resumes_partial_transfer_after_host_unavailability() {
     let report = restart.sync_from(&manifest, &[&first, &second]).unwrap();
     assert_eq!(report.already_verified, 1);
     assert_eq!(report.downloaded, manifest.chunks.len() - 1);
-    assert_eq!(restart.audit(&manifest).unwrap().verified, manifest.chunks.len());
+    assert_eq!(
+        restart.audit(&manifest).unwrap().verified,
+        manifest.chunks.len()
+    );
 }
 
 #[test]
@@ -285,17 +309,35 @@ fn verified_cas_detects_corruption_and_repairs_only_from_verified_source() {
     let first = VerifiedCas::new(tmp.path().join("first")).unwrap();
     let second = VerifiedCas::new(tmp.path().join("second")).unwrap();
     for (i, fixture) in v["chunks"].as_array().unwrap().iter().enumerate() {
-        let bytes = STANDARD.decode(fixture["ciphertext_b64"].as_str().unwrap()).unwrap();
+        let bytes = STANDARD
+            .decode(fixture["ciphertext_b64"].as_str().unwrap())
+            .unwrap();
         first.put_chunk(&manifest, i, &bytes).unwrap();
     }
     second.sync_from(&manifest, &[&first]).unwrap();
-    let digest = manifest.chunks[0].ciphertext_sha256.iter().map(|b| format!("{b:02x}")).collect::<String>();
-    let filename = tmp.path().join("second").join("objects").join("sha256").join(&digest[..2]).join(&digest);
+    let digest = manifest.chunks[0]
+        .ciphertext_sha256
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect::<String>();
+    let filename = tmp
+        .path()
+        .join("second")
+        .join("objects")
+        .join("sha256")
+        .join(&digest[..2])
+        .join(&digest);
     std::fs::write(&filename, b"garbage").unwrap();
-    assert!(matches!(second.read_chunk(&manifest, 0), Err(StoreError::Corrupt)));
+    assert!(matches!(
+        second.read_chunk(&manifest, 0),
+        Err(StoreError::Corrupt)
+    ));
     assert_eq!(second.audit(&manifest).unwrap().corrupt, 1);
     let authentic = first.read_chunk(&manifest, 0).unwrap();
-    assert!(matches!(second.put_chunk(&manifest, 0, &authentic), Err(StoreError::Corrupt)));
+    assert!(matches!(
+        second.put_chunk(&manifest, 0, &authentic),
+        Err(StoreError::Corrupt)
+    ));
     let report = second.sync_from(&manifest, &[&first]).unwrap();
     assert_eq!(report.repaired, 1);
     assert_eq!(report.already_verified, manifest.chunks.len() - 1);
@@ -328,16 +370,41 @@ fn verified_cas_refuses_symlinked_objects_and_root() {
     let store = VerifiedCas::new(&real).unwrap();
     let linked_root = tmp.path().join("link");
     symlink(&real, &linked_root).unwrap();
-    assert!(matches!(VerifiedCas::new(&linked_root), Err(StoreError::UnsafePath)));
-    let first = STANDARD.decode(v["chunks"][0]["ciphertext_b64"].as_str().unwrap()).unwrap();
+    assert!(matches!(
+        VerifiedCas::new(&linked_root),
+        Err(StoreError::UnsafePath)
+    ));
+    let first = STANDARD
+        .decode(v["chunks"][0]["ciphertext_b64"].as_str().unwrap())
+        .unwrap();
     store.put_chunk(&manifest, 0, &first).unwrap();
-    let digest = manifest.chunks[0].ciphertext_sha256.iter().map(|b| format!("{b:02x}")).collect::<String>();
-    let obj = real.join("objects").join("sha256").join(&digest[..2]).join(&digest);
+    let digest = manifest.chunks[0]
+        .ciphertext_sha256
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect::<String>();
+    let obj = real
+        .join("objects")
+        .join("sha256")
+        .join(&digest[..2])
+        .join(&digest);
     std::fs::remove_file(&obj).unwrap();
     symlink(tmp.path().join("outside.txt"), &obj).unwrap();
-    assert!(matches!(store.read_chunk(&manifest, 0), Err(StoreError::UnsafePath)));
-    assert!(matches!(store.put_chunk(&manifest, 0, &first), Err(StoreError::UnsafePath)));
-    assert!(matches!(store.sync_from(&manifest, &[]), Err(crate::storage::SyncFailure { source: StoreError::UnsafePath, .. })));
+    assert!(matches!(
+        store.read_chunk(&manifest, 0),
+        Err(StoreError::UnsafePath)
+    ));
+    assert!(matches!(
+        store.put_chunk(&manifest, 0, &first),
+        Err(StoreError::UnsafePath)
+    ));
+    assert!(matches!(
+        store.sync_from(&manifest, &[]),
+        Err(crate::storage::SyncFailure {
+            source: StoreError::UnsafePath,
+            ..
+        })
+    ));
 }
 
 #[test]
@@ -348,14 +415,21 @@ fn verified_cas_concurrent_puts_preserve_verified_data() {
     let manifest = verify_music_manifest(&json_bytes(&v["package"]), &artist).unwrap();
     let tmp = tempfile::tempdir().unwrap();
     let store = VerifiedCas::new(tmp.path()).unwrap();
-    let bytes = STANDARD.decode(v["chunks"][0]["ciphertext_b64"].as_str().unwrap()).unwrap();
-    let results: Vec<_> = (0..8).map(|_| {
-        let store = store.clone();
-        let manifest = manifest.clone();
-        let bytes = bytes.clone();
-        std::thread::spawn(move || store.put_chunk(&manifest, 0, &bytes))
-    }).map(|task| task.join().unwrap().unwrap()).collect();
+    let bytes = STANDARD
+        .decode(v["chunks"][0]["ciphertext_b64"].as_str().unwrap())
+        .unwrap();
+    let results: Vec<_> = (0..8)
+        .map(|_| {
+            let store = store.clone();
+            let manifest = manifest.clone();
+            let bytes = bytes.clone();
+            std::thread::spawn(move || store.put_chunk(&manifest, 0, &bytes))
+        })
+        .map(|task| task.join().unwrap().unwrap())
+        .collect();
     assert!(results.iter().any(|r| *r == WriteOutcome::Created));
-    assert!(results.iter().all(|r| *r == WriteOutcome::Created || *r == WriteOutcome::AlreadyVerified));
+    assert!(results
+        .iter()
+        .all(|r| *r == WriteOutcome::Created || *r == WriteOutcome::AlreadyVerified));
     assert_eq!(store.read_chunk(&manifest, 0).unwrap(), bytes);
 }

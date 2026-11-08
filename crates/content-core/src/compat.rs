@@ -99,28 +99,48 @@ pub struct VerifiedReceipt {
 
 impl VerifiedManifest {
     /// Cryptographically authenticated opaque package identity.
-    pub fn package_id(&self) -> PackageId { self.package_id }
+    pub fn package_id(&self) -> PackageId {
+        self.package_id
+    }
     /// SHA-256 of the exact canonical signed wrapper.
-    pub fn digest(&self) -> ManifestDigest { self.digest }
+    pub fn digest(&self) -> ManifestDigest {
+        self.digest
+    }
     /// Key authenticated as the publisher of this package.
-    pub fn signer(&self) -> &[u8; 32] { &self.signer }
+    pub fn signer(&self) -> &[u8; 32] {
+        &self.signer
+    }
     /// Total original unencrypted file size.
-    pub fn total_plain_bytes(&self) -> u64 { self.total_plain_bytes }
+    pub fn total_plain_bytes(&self) -> u64 {
+        self.total_plain_bytes
+    }
     /// Chunk size used in the original package.
-    pub fn chunk_size(&self) -> u64 { self.chunk_size }
+    pub fn chunk_size(&self) -> u64 {
+        self.chunk_size
+    }
     /// The authenticated ordered object descriptions.
-    pub fn chunks(&self) -> &[ChunkMetadata] { &self.chunks }
+    pub fn chunks(&self) -> &[ChunkMetadata] {
+        &self.chunks
+    }
 }
 
 impl VerifiedReceipt {
     /// Verified storage-host Ed25519 key.
-    pub fn signer(&self) -> &[u8; 32] { &self.signer }
+    pub fn signer(&self) -> &[u8; 32] {
+        &self.signer
+    }
     /// Exact canonical signed envelope digest accepted by the host.
-    pub fn manifest_digest(&self) -> ManifestDigest { self.manifest_digest }
+    pub fn manifest_digest(&self) -> ManifestDigest {
+        self.manifest_digest
+    }
     /// Number of objects claimed accepted at signature time.
-    pub fn chunk_count(&self) -> u64 { self.chunk_count }
+    pub fn chunk_count(&self) -> u64 {
+        self.chunk_count
+    }
     /// Self-declared signed instant; not evidence of future custody.
-    pub fn received_at(&self) -> &str { &self.received_at }
+    pub fn received_at(&self) -> &str {
+        &self.received_at
+    }
 }
 
 fn decode_array<const N: usize>(text: &str, error: VerifyError) -> Result<[u8; N], VerifyError> {
