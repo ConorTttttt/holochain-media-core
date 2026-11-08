@@ -2,6 +2,7 @@
 //! Caller MUST independently authenticate the expected signer from Holochain.
 //! This module does not decrypt media or authorise licences/payment.
 
+use crate::{ManifestDigest, PackageId, MUSIC_PACKAGE_V1, MUSIC_RECEIPT_V1};
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use chrono::DateTime;
 use ed25519_dalek::{Signature, VerifyingKey};
@@ -9,7 +10,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use std::collections::HashSet;
-use crate::{ManifestDigest, PackageId, MUSIC_PACKAGE_V1, MUSIC_RECEIPT_V1};
 
 pub const MAX_CHUNK_BYTES: u64 = 4 * 1024 * 1024;
 pub const MAX_CHUNKS: usize = 16_384;
