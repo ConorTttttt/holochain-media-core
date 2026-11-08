@@ -10,6 +10,14 @@ use serde_json::{json, Value};
 fn vectors() -> Value {
     let path = std::env::var("MUSIC_VECTORS")
         .expect("set MUSIC_VECTORS to the independent Python Music S1 fixture path");
+    let path = std::path::PathBuf::from(path);
+    let path = if path.is_absolute() {
+        path
+    } else {
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../..")
+            .join(path)
+    };
     serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap()
 }
 
