@@ -208,7 +208,10 @@ mod tests {
     fn round_trip_manifest_digest() {
         let digest = ManifestDigest::from_bytes([0xff; 32]);
         assert_eq!(digest.to_string(), "ff".repeat(32));
-        assert_eq!(digest.to_string().parse::<ManifestDigest>().unwrap(), digest);
+        assert_eq!(
+            digest.to_string().parse::<ManifestDigest>().unwrap(),
+            digest
+        );
     }
 
     #[test]
@@ -222,14 +225,26 @@ mod tests {
     #[test]
     fn identifier_length_is_strict() {
         assert_eq!("12".parse::<PackageId>(), Err(IdentifierError::WrongLength));
-        assert_eq!("00".repeat(33).parse::<ManifestDigest>(), Err(IdentifierError::WrongLength));
+        assert_eq!(
+            "00".repeat(33).parse::<ManifestDigest>(),
+            Err(IdentifierError::WrongLength)
+        );
     }
 
     #[test]
     fn identifier_hex_is_canonical() {
-        assert_eq!("AA".repeat(32).parse::<PackageId>(), Err(IdentifierError::NonCanonicalHex));
-        assert_eq!("xz".repeat(32).parse::<ManifestDigest>(), Err(IdentifierError::NonCanonicalHex));
-        assert_eq!("é".repeat(32).parse::<PackageId>(), Err(IdentifierError::NonCanonicalHex));
+        assert_eq!(
+            "AA".repeat(32).parse::<PackageId>(),
+            Err(IdentifierError::NonCanonicalHex)
+        );
+        assert_eq!(
+            "xz".repeat(32).parse::<ManifestDigest>(),
+            Err(IdentifierError::NonCanonicalHex)
+        );
+        assert_eq!(
+            "é".repeat(32).parse::<PackageId>(),
+            Err(IdentifierError::NonCanonicalHex)
+        );
     }
 
     #[test]
