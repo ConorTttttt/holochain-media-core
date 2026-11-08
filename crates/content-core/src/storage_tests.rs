@@ -20,14 +20,17 @@ fn synthetic() -> (VerifiedManifest, Vec<Vec<u8>>) {
             cipher_bytes: 32,
         })
         .collect();
-    (VerifiedManifest {
-        package_id: PackageId::from_bytes([31; 32]),
-        digest: ManifestDigest::from_bytes([42; 32]),
-        signer: [9; 32],
-        total_plain_bytes: 48,
-        chunk_size: 16,
-        chunks,
-    }, objects)
+    (
+        VerifiedManifest {
+            package_id: PackageId::from_bytes([31; 32]),
+            digest: ManifestDigest::from_bytes([42; 32]),
+            signer: [9; 32],
+            total_plain_bytes: 48,
+            chunk_size: 16,
+            chunks,
+        },
+        objects,
+    )
 }
 
 #[test]
@@ -61,17 +64,34 @@ fn platform_store_rejects_corrupt_and_repairs() {
     let origin = VerifiedCas::new(tmp.path().join("origin")).unwrap();
     let target = VerifiedCas::new(tmp.path().join("target")).unwrap();
     for (i, bytes) in objects.iter().enumerate() {
-        assert_eq!(origin.put_chunk(&manifest, i, bytes).unwrap(), WriteOutcome::Created);
+        assert_eq!(
+            origin.put_chunk(&manifest, i, bytes).unwrap(),
+            WriteOutcome::Created
+        );
     }
     target.sync_from(&manifest, &[&origin]).unwrap();
 
-    let digest = manifest.chunks[0].ciphertext_sha256.iter()
-        .map(|b| format!("{b:02x}")).collect::<String>();
-    let path = tmp.path().join("target").join("objects").join("sha256")
-        .join(&digest[..2]).join(&digest);
+    let digest = manifest.chunks[0]
+        .ciphertext_sha256
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect::<String>();
+    let path = tmp
+        .path()
+        .join("target")
+        .join("objects")
+        .join("sha256")
+        .join(&digest[..2])
+        .join(&digest);
     std::fs::write(&path, b"invalid").unwrap();
-    assert!(matches!(target.read_chunk(&manifest, 0), Err(StoreError::Corrupt)));
-    assert!(matches!(target.put_chunk(&manifest, 0, &objects[0]), Err(StoreError::Corrupt)));
+    assert!(matches!(
+        target.read_chunk(&manifest, 0),
+        Err(StoreError::Corrupt)
+    ));
+    assert!(matches!(
+        target.put_chunk(&manifest, 0, &objects[0]),
+        Err(StoreError::Corrupt)
+    ));
     let repaired = target.sync_from(&manifest, &[&origin]).unwrap();
     assert_eq!(repaired.repaired, 1);
     assert_eq!(repaired.already_verified, 2);
@@ -85,9 +105,18 @@ fn platform_store_fails_closed_for_wrong_bytes() {
     let store = VerifiedCas::new(tmp.path()).unwrap();
     let mut tampered = objects[0].clone();
     tampered[10] ^= 1;
-    assert!(matches!(store.put_chunk(&manifest, 0, &tampered), Err(StoreError::InvalidChunk)));
-    assert!(matches!(store.put_chunk(&manifest, 0, &objects[0][..31]), Err(StoreError::InvalidChunk)));
-    assert!(matches!(store.put_chunk(&manifest, 99, &objects[0]), Err(StoreError::InvalidChunk)));
+    assert!(matches!(
+        store.put_chunk(&manifest, 0, &tampered),
+        Err(StoreError::InvalidChunk)
+    ));
+    assert!(matches!(
+        store.put_chunk(&manifest, 0, &objects[0][..31]),
+        Err(StoreError::InvalidChunk)
+    ));
+    assert!(matches!(
+        store.put_chunk(&manifest, 99, &objects[0]),
+        Err(StoreError::InvalidChunk)
+    ));
     assert_eq!(store.audit(&manifest).unwrap().missing, 3);
 }
 
@@ -96,14 +125,22 @@ fn platform_store_concurrent_verified_publishes() {
     let (manifest, objects) = synthetic();
     let tmp = tempfile::tempdir().unwrap();
     let store = VerifiedCas::new(tmp.path()).unwrap();
-    let tasks: Vec<_> = (0..6).map(|_| {
-        let store = store.clone();
-        let manifest = manifest.clone();
-        let bytes = objects[0].clone();
-        std::thread::spawn(move || store.put_chunk(&manifest, 0, &bytes).unwrap())
-    }).collect();
+    let tasks: Vec<_> = (0..6)
+        .map(|_| {
+            let store = store.clone();
+            let manifest = manifest.clone();
+            let bytes = objects[0].clone();
+            std::thread::spawn(move || store.put_chunk(&manifest, 0, &bytes).unwrap())
+        })
+        .collect();
     let results: Vec<_> = tasks.into_iter().map(|t| t.join().unwrap()).collect();
-    assert_eq!(results.iter().filter(|r| **r == WriteOutcome::Created).count(), 1);
+    assert_eq!(
+        results
+            .iter()
+            .filter(|r| **r == WriteOutcome::Created)
+            .count(),
+        1
+    );
     assert_eq!(store.read_chunk(&manifest, 0).unwrap(), objects[0]);
 }
 
@@ -130,6 +167,12 @@ fn platform_store_rejects_symlinked_object_directories() {
     let subdir = root.join("objects").join("sha256");
     std::fs::remove_dir_all(&subdir).unwrap();
     symlink(tmp.path(), &subdir).unwrap();
-    assert!(matches!(store.read_chunk(&manifest, 0), Err(StoreError::UnsafePath)));
-    assert!(matches!(store.put_chunk(&manifest, 0, &objects[0]), Err(StoreError::UnsafePath)));
+    assert!(matches!(
+        store.read_chunk(&manifest, 0),
+        Err(StoreError::UnsafePath)
+    ));
+    assert!(matches!(
+        store.put_chunk(&manifest, 0, &objects[0]),
+        Err(StoreError::UnsafePath)
+    ));
 }
