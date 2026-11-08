@@ -1,11 +1,11 @@
 //! Tests against fixtures generated at runtime from Music's pinned Python S1
 //! code. The Rust verifier never creates signatures to test itself.
 
-use base64::{engine::general_purpose::STANDARD, Engine as _};
-use serde_json::{json, Value};
 use crate::compat::{
     verify_music_ciphertext, verify_music_manifest, verify_music_receipt, VerifyError,
 };
+use base64::{engine::general_purpose::STANDARD, Engine as _};
+use serde_json::{json, Value};
 
 fn vectors() -> Value {
     let path = std::env::var("MUSIC_VECTORS")
@@ -27,11 +27,15 @@ fn package_canonical_json_matches_original_python_byte_for_byte() {
     let v = vectors();
     assert_eq!(
         json_bytes(&v["package"]["body"]),
-        STANDARD.decode(v["canonical_body_b64"].as_str().unwrap()).unwrap()
+        STANDARD
+            .decode(v["canonical_body_b64"].as_str().unwrap())
+            .unwrap()
     );
     assert_eq!(
         json_bytes(&v["package"]),
-        STANDARD.decode(v["canonical_envelope_b64"].as_str().unwrap()).unwrap()
+        STANDARD
+            .decode(v["canonical_envelope_b64"].as_str().unwrap())
+            .unwrap()
     );
 }
 
@@ -40,12 +44,20 @@ fn signed_nonempty_music_s1_package_and_chunks() {
     let v = vectors();
     let artist = key(v["artist_public_key"].as_str().unwrap());
     let verified = verify_music_manifest(&json_bytes(&v["package"]), &artist).unwrap();
-    assert_eq!(verified.digest.to_string(), v["manifest_sha256"].as_str().unwrap());
-    assert_eq!(verified.total_plain_bytes, v["plaintext_bytes"].as_u64().unwrap());
+    assert_eq!(
+        verified.digest.to_string(),
+        v["manifest_sha256"].as_str().unwrap()
+    );
+    assert_eq!(
+        verified.total_plain_bytes,
+        v["plaintext_bytes"].as_u64().unwrap()
+    );
     assert_eq!(verified.chunks.len(), v["chunks"].as_array().unwrap().len());
     for c in v["chunks"].as_array().unwrap() {
         let index = c["index"].as_u64().unwrap() as usize;
-        let ciphertext = STANDARD.decode(c["ciphertext_b64"].as_str().unwrap()).unwrap();
+        let ciphertext = STANDARD
+            .decode(c["ciphertext_b64"].as_str().unwrap())
+            .unwrap();
         verify_music_ciphertext(&verified, index, &ciphertext).unwrap();
         let mut tampered = ciphertext.clone();
         tampered[0] ^= 1;
@@ -87,7 +99,10 @@ fn signed_empty_music_package_is_compatible() {
     let verified = verify_music_manifest(&json_bytes(&v["empty_package"]), &artist).unwrap();
     assert!(verified.chunks.is_empty());
     assert_eq!(verified.total_plain_bytes, 0);
-    assert_eq!(verified.digest.to_string(), v["empty_manifest_sha256"].as_str().unwrap());
+    assert_eq!(
+        verified.digest.to_string(),
+        v["empty_manifest_sha256"].as_str().unwrap()
+    );
 }
 
 #[test]
@@ -149,21 +164,15 @@ fn duplicate_json_fields_at_top_and_nested_level_are_rejected() {
     let v = vectors();
     let artist = key(v["artist_public_key"].as_str().unwrap());
     let original = String::from_utf8(json_bytes(&v["package"])).unwrap();
-    let duplicate_signer = original.replacen(
-        "\"signer\":",
-        "\"signer\":\"not-trusted\",\"signer\":",
-        1,
-    );
+    let duplicate_signer =
+        original.replacen("\"signer\":", "\"signer\":\"not-trusted\",\"signer\":", 1);
     assert_ne!(original, duplicate_signer);
     assert_eq!(
         verify_music_manifest(duplicate_signer.as_bytes(), &artist),
         Err(VerifyError::InvalidJson)
     );
-    let duplicate_chunk_size = original.replacen(
-        "\"chunk_size\":",
-        "\"chunk_size\":16,\"chunk_size\":",
-        1,
-    );
+    let duplicate_chunk_size =
+        original.replacen("\"chunk_size\":", "\"chunk_size\":16,\"chunk_size\":", 1);
     assert_ne!(original, duplicate_chunk_size);
     assert_eq!(
         verify_music_manifest(duplicate_chunk_size.as_bytes(), &artist),
