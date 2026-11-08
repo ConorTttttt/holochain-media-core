@@ -269,3 +269,9 @@ pub mod compat;
 
 #[cfg(all(test, feature = "music-interop-tests"))]
 mod compat_tests;
+
+/// Verified, bounded ciphertext content-addressed storage (CORE-003).
+pub mod storage;
+
+#[cfg(test)]
+mod storage_tests;

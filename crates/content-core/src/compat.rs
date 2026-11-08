@@ -80,21 +80,67 @@ pub struct ChunkMetadata {
 /// Source-authenticated S1 package, not a content key or access grant.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedManifest {
-    pub package_id: PackageId,
-    pub digest: ManifestDigest,
-    pub signer: [u8; 32],
-    pub total_plain_bytes: u64,
-    pub chunk_size: u64,
-    pub chunks: Vec<ChunkMetadata>,
+    pub(crate) package_id: PackageId,
+    pub(crate) digest: ManifestDigest,
+    pub(crate) signer: [u8; 32],
+    pub(crate) total_plain_bytes: u64,
+    pub(crate) chunk_size: u64,
+    pub(crate) chunks: Vec<ChunkMetadata>,
 }
 
 /// Authenticated host acceptance claim; not proof of continuing custody.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedReceipt {
-    pub signer: [u8; 32],
-    pub manifest_digest: ManifestDigest,
-    pub chunk_count: u64,
-    pub received_at: String,
+    pub(crate) signer: [u8; 32],
+    pub(crate) manifest_digest: ManifestDigest,
+    pub(crate) chunk_count: u64,
+    pub(crate) received_at: String,
+}
+
+impl VerifiedManifest {
+    /// Cryptographically authenticated opaque package identity.
+    pub fn package_id(&self) -> PackageId {
+        self.package_id
+    }
+    /// SHA-256 of the exact canonical signed wrapper.
+    pub fn digest(&self) -> ManifestDigest {
+        self.digest
+    }
+    /// Key authenticated as the publisher of this package.
+    pub fn signer(&self) -> &[u8; 32] {
+        &self.signer
+    }
+    /// Total original unencrypted file size.
+    pub fn total_plain_bytes(&self) -> u64 {
+        self.total_plain_bytes
+    }
+    /// Chunk size used in the original package.
+    pub fn chunk_size(&self) -> u64 {
+        self.chunk_size
+    }
+    /// The authenticated ordered object descriptions.
+    pub fn chunks(&self) -> &[ChunkMetadata] {
+        &self.chunks
+    }
+}
+
+impl VerifiedReceipt {
+    /// Verified storage-host Ed25519 key.
+    pub fn signer(&self) -> &[u8; 32] {
+        &self.signer
+    }
+    /// Exact canonical signed envelope digest accepted by the host.
+    pub fn manifest_digest(&self) -> ManifestDigest {
+        self.manifest_digest
+    }
+    /// Number of objects claimed accepted at signature time.
+    pub fn chunk_count(&self) -> u64 {
+        self.chunk_count
+    }
+    /// Self-declared signed instant; not evidence of future custody.
+    pub fn received_at(&self) -> &str {
+        &self.received_at
+    }
 }
 
 fn decode_array<const N: usize>(text: &str, error: VerifyError) -> Result<[u8; N], VerifyError> {
