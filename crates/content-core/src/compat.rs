@@ -2,13 +2,13 @@
 //! Caller MUST independently authenticate the expected signer from Holochain.
 //! This module does not decrypt media or authorise licences/payment.
 
-use std::collections::HashSet;
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use chrono::DateTime;
 use ed25519_dalek::{Signature, VerifyingKey};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
+use std::collections::HashSet;
 use crate::{ManifestDigest, PackageId, MUSIC_PACKAGE_V1, MUSIC_RECEIPT_V1};
 
 pub const MAX_CHUNK_BYTES: u64 = 4 * 1024 * 1024;
@@ -108,7 +108,10 @@ fn hash(input: &[u8]) -> [u8; 32] {
 
 fn hex32(input: &str, error: VerifyError) -> Result<[u8; 32], VerifyError> {
     if input.len() != 64
-        || !input.as_bytes().iter().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+        || !input
+            .as_bytes()
+            .iter()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
     {
         return Err(error);
     }
@@ -217,7 +220,10 @@ pub fn verify_music_ciphertext(
     index: usize,
     ciphertext: &[u8],
 ) -> Result<(), VerifyError> {
-    let chunk = manifest.chunks.get(index).ok_or(VerifyError::InvalidCiphertext)?;
+    let chunk = manifest
+        .chunks
+        .get(index)
+        .ok_or(VerifyError::InvalidCiphertext)?;
     if chunk.index != index as u64
         || ciphertext.len() as u64 != chunk.cipher_bytes
         || hash(ciphertext) != chunk.ciphertext_sha256
