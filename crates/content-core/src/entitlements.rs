@@ -38,8 +38,9 @@
 //! not proof of payment, nor that the content is currently available from
 //! any host. See `docs/CORE-005-entitlement-verification.md`.
 
-use crate::binding::{BindingAssurance, OwnedManifest};
+use crate::binding::{BindingAssurance, KeyPurpose, OwnedManifest};
 use crate::compat::canonical_json;
+use crate::lifecycle::{KeyLifecycle, KeyUse, KeyValidity};
 use crate::{ManifestDigest, PackageId, Right, Rights};
 use base64::alphabet;
 use base64::engine::{DecodePaddingMode, GeneralPurpose, GeneralPurposeConfig};
@@ -251,6 +252,13 @@ pub enum Unauthenticated {
     /// than the caller required (e.g. a legacy v1 binding where S2 v2 proof
     /// of possession is required).
     InsufficientOwnerAssurance,
+    /// v2.1: the issuer (manifest) key was revoked as compromised, so an
+    /// unanchored grant/licence signed by it cannot be told apart from one
+    /// forged with the stolen key.
+    IssuerKeyRevoked,
+    /// v2.1: the issuer key is not part of the owner's verified lifecycle
+    /// for `owner-manifest` (or the lifecycle is for another agent).
+    IssuerNotInLifecycle,
 }
 
 /// The document is (or claims to be) a scheme or term this version does not
@@ -901,6 +909,49 @@ pub fn check_content_access_requiring(
         return Err(AccessError::Unauthenticated(
             Unauthenticated::InsufficientOwnerAssurance,
         ));
+    }
+    check_content_access(content, subject, entitlement, requested, now)
+}
+
+/// [`check_content_access`] for content whose owner key is governed by an S2
+/// v2.1 key lifecycle (`owner` must be the owner's verified `owner-manifest`
+/// lifecycle from the reader's trusted conductor).
+///
+/// Music S10 binds the grant issuer to the manifest signer, so the issuer is
+/// that key. A grant/licence carries no chain anchor, so the issuer key is
+/// evaluated as unanchored historical use: an active, rotated or
+/// `new-operations`-revoked key is accepted (existing licences survive
+/// rotation), a `compromised` key is refused. Whether a *new* grant may be
+/// issued is decided by the issuer (Music issues only with the active key);
+/// a verifier cannot tell issuance time from an untrusted `issued_at`.
+pub fn check_content_access_with_lifecycle(
+    content: &OwnedManifest,
+    subject: &AuthenticatedSubject,
+    entitlement: &[u8],
+    requested: Right,
+    now: SystemTime,
+    owner: &KeyLifecycle,
+) -> Result<AccessDecision, AccessError> {
+    if owner.agent() != content.owner_agent() || owner.purpose() != KeyPurpose::OwnerManifest {
+        return Err(AccessError::Unauthenticated(
+            Unauthenticated::IssuerNotInLifecycle,
+        ));
+    }
+    match owner.classify(
+        content.manifest().signer(),
+        &KeyUse::Historical { anchor: None },
+    ) {
+        KeyValidity::Active | KeyValidity::HistoricalOnly => {}
+        KeyValidity::Revoked => {
+            return Err(AccessError::Unauthenticated(
+                Unauthenticated::IssuerKeyRevoked,
+            ))
+        }
+        KeyValidity::Rotated | KeyValidity::Ambiguous | KeyValidity::Invalid => {
+            return Err(AccessError::Unauthenticated(
+                Unauthenticated::IssuerNotInLifecycle,
+            ))
+        }
     }
     check_content_access(content, subject, entitlement, requested, now)
 }
