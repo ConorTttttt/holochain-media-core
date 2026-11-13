@@ -95,6 +95,7 @@ pub struct VerifiedReceipt {
     pub(crate) manifest_digest: ManifestDigest,
     pub(crate) chunk_count: u64,
     pub(crate) received_at: String,
+    pub(crate) envelope_sha256: [u8; 32],
 }
 
 impl VerifiedManifest {
@@ -140,6 +141,12 @@ impl VerifiedReceipt {
     /// Self-declared signed instant; not evidence of future custody.
     pub fn received_at(&self) -> &str {
         &self.received_at
+    }
+    /// SHA-256 of the exact canonical signed receipt envelope, i.e. Python
+    /// `sha256(canonical(receipt))`. Music S2 replica claims commit to this
+    /// value as `receipt_sha256` (see `binding::verify_replica_claim`).
+    pub fn envelope_sha256(&self) -> &[u8; 32] {
+        &self.envelope_sha256
     }
 }
 
@@ -301,10 +308,12 @@ pub fn verify_music_receipt(
     {
         return Err(VerifyError::InvalidReceipt);
     }
+    let signed_bytes = canonical(&receipt, VerifyError::InvalidReceipt)?;
     Ok(VerifiedReceipt {
         signer: *trusted_host,
         manifest_digest: manifest.digest,
         chunk_count: body.chunk_count,
         received_at: body.received_at.clone(),
+        envelope_sha256: hash(&signed_bytes),
     })
 }

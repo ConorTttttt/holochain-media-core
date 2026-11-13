@@ -305,6 +305,21 @@ impl VerifiedCas {
         self.write_chunk(manifest, index, ciphertext, false)
     }
 
+    /// Store verified ciphertext, atomically replacing an existing object only
+    /// when that object is missing or fails its signed length/SHA-256.
+    ///
+    /// Used by network retrieval to repair local corruption with bytes from an
+    /// authenticated host. The new bytes are verified before any write, so a
+    /// healthy object is never replaced and corruption is never propagated.
+    pub fn repair_chunk(
+        &self,
+        manifest: &VerifiedManifest,
+        index: usize,
+        ciphertext: &[u8],
+    ) -> Result<WriteOutcome, StoreError> {
+        self.write_chunk(manifest, index, ciphertext, true)
+    }
+
     /// Audit authenticated local availability. Unsafe paths and I/O errors
     /// are not silently treated as missing data.
     pub fn audit(&self, manifest: &VerifiedManifest) -> Result<AuditReport, StoreError> {

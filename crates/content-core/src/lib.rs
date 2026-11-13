@@ -275,3 +275,9 @@ pub mod storage;
 
 #[cfg(test)]
 mod storage_tests;
+
+/// Music S2 Holochain identity bindings (CORE-004 Task A).
+pub mod binding;
+
+#[cfg(test)]
+mod binding_tests;
