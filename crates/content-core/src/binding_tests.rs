@@ -422,6 +422,24 @@ mod signed {
         );
     }
 
+    /// KNOWN LIMITATION (documented in docs/CORE-004-*.md, finding 2): the
+    /// Music S2 key binding is not a proof of possession and the receipt does
+    /// not name the host agent. An agent who binds a copy of another host's
+    /// *public* key and authors her own claim over that host's receipt is
+    /// accepted as a replica holder. Ciphertext integrity is unaffected
+    /// (objects are still hash-verified); availability claims are spoofable.
+    /// This test pins current behaviour so a future fix is a visible change.
+    #[test]
+    fn known_limitation_copied_public_key_claims_are_accepted() {
+        let f = fixture();
+        let owned = owned(&f);
+        let copied = key_binding(MALLORY, MALLORY, "host-receipt", &f.host_hex);
+        let her_claim = claim(MALLORY, MALLORY, ALICE, &f, &f.receipt_sha256);
+        let replica = verify_replica_claim(&f.receipt, &owned, MALLORY, &copied, &her_claim)
+            .expect("current S2 v1 semantics accept a copied public key");
+        assert_eq!(replica.node_agent(), MALLORY);
+    }
+
     #[test]
     fn forged_host_receipt_and_claims_are_rejected() {
         let f = fixture();
@@ -476,7 +494,8 @@ mod signed {
             ),
             Err(BindingError::AuthorMismatch)
         );
-        // Mallory's own (honestly authored) key cannot verify Carol's receipt.
+        // Mallory's binding of a key she does not hold, with a claim she did
+        // not author, is still rejected by authorship.
         let mallory_key = key_binding(MALLORY, MALLORY, "host-receipt", &f.host_hex);
         assert_eq!(
             verify_replica_claim(

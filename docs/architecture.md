@@ -24,7 +24,7 @@ Status: proposed for CORE-001. This document is an interface decision, not a sec
 
 **Holochain public DHT:** authenticated agent-authored metadata, immutable content commitments, validated host discovery and future reviewed release records. Never store source media, ciphertext file contents, encrypted private grants or plaintext keys on the public DHT. Privacy-sensitive metadata still requires review.
 
-**Media Core:** owns portable domain types, signatures/commitments validation, rights evaluation, content lifecycle, chunk authenticity and storage/retrieval coordination. It does not own the Holochain conductor, artist UI, payment settlement, codec or player. The CORE-001 crate supplies typed markers only; verification engines are future work.
+**Media Core:** owns portable domain types, signatures/commitments validation, rights evaluation, content lifecycle, chunk authenticity and storage/retrieval coordination. It does not own the Holochain conductor, artist UI, payment settlement, codec or player. Implemented: S1 verification (CORE-002), VerifiedCas (CORE-003), S2 identity bindings and resolve/authenticate/fetch orchestration with Holochain and MoQ adapters (CORE-004). Not implemented: grant evaluation (CORE-005), publication authority (CORE-006). Crate map and trust table: docs/CORE-004-holochain-moq-integration.md.
 
 **MoQ:** transport adapter to move already-authorised opaque objects and separate live streams. Transport identity must be bound to Holochain identity, and the data delivered must still be checked against the signed manifest. The transport itself never decides who owns copyright or what a licence allows.
 
@@ -57,5 +57,5 @@ No shared rewrite of Music playback or Video rendering is required.
 
 CORE-001: workspace compiles/tests in CI, architecture and threat assumptions documented.
 CORE-002: exact Music v1 compatibility vectors and negative cases.
-CORE-003+: validated ciphertext storage, identity binding, MoQ and end-to-end separate-agent acceptance.
+CORE-003: validated ciphertext storage. CORE-004: identity binding, MoQ retrieval and five-conductor separate-agent acceptance (real services; evidence in docs/CORE-004-holochain-moq-integration.md).
 A build result is not proof of hardware or internet-readiness.

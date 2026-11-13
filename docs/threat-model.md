@@ -35,9 +35,23 @@ Status: CORE-001 draft. Threat analysis must be expanded and independently revie
 - Receipt audit and repair are availability tools, not proofs of ongoing independent custody.
 - Invalid schema versions, unknown rights bits, unexpected authors and unsupported values must be rejected rather than silently accepted.
 
-## CORE-001 capabilities and limits
+## CORE-001 capabilities and limits (historical)
 
 Only parser-level validation of two 32-byte hex identifier types and three rights bits is implemented. This is **not** cryptographic verification, grant evaluation, content security or media distribution.
+
+## CORE-004 controls and open findings
+
+Implemented and exercised against real conductors and MoQ hosts: authorship
+checks on every S2 record; unique-selection (no first-match) for keys,
+claims and endpoints; S1 signature with the Holochain-bound key and exact
+committed digest; receipt signed by the bound host key and committed by the
+host's claim; SHA-256 certificate pinning from a host-authored endpoint;
+loopback-only endpoint policy by default; per-object length/SHA-256 before
+any write; transport/metadata failures classified as unavailability, never
+denial. Open: S2 key bindings are not proof of possession and receipts do not
+name the host agent (spoofable availability/attribution; integrity
+unaffected); Holochain 0.7.0 IPv6-less dual-bind; moq-transport buffering
+before length checks. Details: docs/CORE-004-holochain-moq-integration.md.
 
 ## Security review gate
 
