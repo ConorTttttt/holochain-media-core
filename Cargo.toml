@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
-members = ["crates/content-core"]
+members = ["crates/content-core", "crates/content-retrieval"]
+exclude = ["integration"]
 
 [workspace.package]
 edition = "2021"
