@@ -2581,12 +2581,17 @@ dependencies = [
 name = "holochain-content-core-e2e"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "bytes",
  "holo_hash",
  "holochain",
  "holochain-content-core",
  "holochain-content-holochain",
  "holochain-content-moq",
  "holochain-content-retrieval",
+ "holochain-moq-realtime",
+ "moq-native-ietf",
+ "moq-transport",
  "serde",
  "serde_json",
  "tokio",
