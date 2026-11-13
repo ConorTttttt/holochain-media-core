@@ -83,8 +83,11 @@ validated action author from a trusted local conductor):
   -> Result<FetchReport, FetchError>` with `FetchError::Incomplete { report, missing }`
   or `FetchError::Store { index, error }`.
 * Every exclusion is a `HostRejection { node_agent, reason }` where `reason` is
-  `Binding(BindingError)` (security), `Transport(TransportFailure)` or
-  `Metadata(MetadataError)` (availability). `TransportFailure::IdentityMismatch`
+  `Binding(BindingError)` (security), `NotFound(what)` (record absent or not
+  yet propagated — the storage coordinator skips link targets it cannot
+  fetch), `Transport(TransportFailure)` or `Metadata(MetadataError)`
+  (availability). `ResolveError::NotFound` covers the owner's own records.
+  `TransportFailure::IdentityMismatch`
   is the certificate pin; `Unavailable`, `Refused`, `TimedOut`, `Interrupted`
   and `Protocol` are never authorisation outcomes.
 
@@ -176,6 +179,7 @@ WebSocket.
 | Forged host receipt (P2, Eve) | receipt signed by unbound key | `Binding(Receipt(WrongSigner))`; Carol serves P2 |
 | False ownership (Mallory commits Alice's P1 with her own key) | resolve owner=Mallory | `Binding(Manifest(WrongSigner))` |
 | Conductor service missing | resolver to closed port | `MetadataError` (unavailability) |
+| Resolver privilege | active signing grants on Bob's conductor | exactly the four read functions; second connect adds no app interface |
 | All hosts offline | hosts killed | 4 × `Transport(Unavailable|TimedOut)`, no binding reasons |
 
 Wrong manifest digest, wrong file commitment, empty packages and truncated
@@ -192,10 +196,12 @@ verified locally (no network objects are needed).
 * Integration crates: `holochain-content-moq` unit tests 2 pass.
 * `core004_acceptance`: **1 passed** in 240.8 s (5 conductors); re-run on the
   final lint-clean code: **1 passed** in 246.7 s, Python driven from a clean
-  `bd7aabc` checkout. Log lines:
+  `bd7aabc` checkout; after the Holochain review fixes (read-only resolver
+  grant, interface reuse, NotFound): **1 passed** in 253.3 s. Log lines:
 
 ```
 [core004] Holochain records published and consistent across 5 conductors
+[core004] Bob's resolver: read-only signing grant, app interface reused
 [core004] P1 authenticated hosts: Alice, Carol, Mallory; Eve rejected by certificate pin
 [core004] interrupted after 5/24 verified objects: Some(Interrupted { delivered: 5, detail: "object stream stalled" })
 [core004] resumed: 5 reused, Mallory's tampered object 5 rejected, Carol supplied 19
@@ -248,6 +254,20 @@ hosts bind 127.0.0.1 and the default endpoint policy is loopback-only.
    bounded (256 objects / 32 MiB, drop-oldest → reported as `Protocol`).
 7. `fetch_verified_content` performs blocking file I/O inside async code;
    acceptable for the local adapter, to be moved to a blocking pool for UI use.
+8. **Fixed — over-broad signing grant.** `authorize_signing_credentials` with
+   `functions: None` means `GrantedFunctions::All`; the resolver (following
+   Music's `music_conductor_bridge` pattern, which still does this) could have
+   called write and inbox functions as the reader. Now restricted to the four
+   getters; Music's bridge should get the same change in its own PR.
+9. **Fixed — per-connect resource growth.** Each connect attached a new app
+   interface; it now reuses one. Each connect still commits one assigned cap
+   grant to the reader's chain (the client key lives only in memory), so a
+   resolver should live for the process lifetime.
+10. **Upstream Holochain 0.7.0 bug — `ListCapabilityGrants` with
+    `include_revoked: false` always returns no grants** (`capability_grant_info`
+    hits `continue` for every grant instead of only revoked ones). Use
+    `include_revoked: true` and filter on `revoked_at`. The acceptance suite
+    asserts the current behaviour so an upstream fix is noticed.
 
 ## Access and entitlements (status)
 

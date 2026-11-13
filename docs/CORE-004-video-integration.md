@@ -12,6 +12,19 @@ A separate capability-only reproduction of the PR #33 revocation failure was
 session (searched issues, PRs, commits and code for revocation/capability).
 CORE-004 does not depend on, or claim, its resolution.
 
+**Relevant evidence gap found during the Holochain review.** Holochain
+0.7.0's `ListCapabilityGrants` returns an empty list whenever
+`include_revoked` is `false` (see CORE-004 finding 10). PR #33's harness
+(`scripts/catalogue-acceptance/run.mjs`, branch
+`test/rc1-holochain-authority-acceptance`) records
+`oldGrantStillListedActive` from an `include_revoked: false` listing, so the
+reported "old grant absent from its active listing" is vacuous. (Its
+revocation *acknowledgement* check uses `include_revoked: true` and is
+sound, and Video's `rotate-catalogue-grant.mjs` already works around the bug.)
+This does not explain why the revoked credential keeps authorising calls,
+and it is not a fix; it means that line of the PR #33 evidence should be
+re-collected with `include_revoked: true` before drawing conclusions.
+
 ## Two different "receipts"
 
 | | Video ingest receipt | Music replica receipt |
