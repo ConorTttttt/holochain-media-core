@@ -11,10 +11,13 @@
 use crate::transport::{DocumentKind, HostConnector, ObjectTransport, TransportFailure};
 use holochain_content_core::binding::{
     commitment_pin, is_endpoint_for, resolve_signing_key, select_unique, verify_moq_endpoint,
-    verify_owned_manifest_with_key, verify_replica_claim_with_key, AuthenticatedReplica,
-    BindingError, CommitmentPin, ConductorRecord, EndpointPolicy, KeyBindingPolicy, KeyPurpose,
-    OwnedManifest, PinnedEndpoint, VerifiedKeyBinding, FILE_COMMITMENT_V1, REPLICA_CLAIM_V1,
+    verify_owned_manifest_lifecycle, verify_owned_manifest_with_key, verify_replica_claim_with_key,
+    AuthenticatedReplica, BindingError, CommitmentPin, ConductorRecord, EndpointPolicy,
+    KeyBindingPolicy, KeyPurpose, OwnedManifest, PinnedEndpoint, VerifiedKeyBinding,
+    FILE_COMMITMENT_V1, REPLICA_CLAIM_V1,
 };
+use holochain_content_core::lifecycle::{resolve_key_lifecycle, KeyLifecycle};
+use holochain_content_core::receipt_v2::verify_replica_claim_v2;
 use holochain_content_core::PackageId;
 use serde_json::Value;
 use std::fmt;
@@ -71,6 +74,33 @@ pub trait MetadataSource {
             ))
         }
     }
+    /// `get_key_lifecycle_v21(agent)` on the v2.1 storage DNA: lifecycle
+    /// records WITH their chain positions. Sources that cannot read them
+    /// report unavailability, never "no key".
+    fn key_lifecycle_v21(
+        &mut self,
+        agent: &str,
+    ) -> impl Future<Output = Result<Vec<ConductorRecord>, MetadataError>> + Send {
+        let _ = agent;
+        async {
+            Err(MetadataError(
+                "this metadata source does not provide key-lifecycle/v2.1 records".into(),
+            ))
+        }
+    }
+    /// `record` again, with its action's chain position from the conductor
+    /// (`get_action_position_v21`). Used to anchor commitments and claims.
+    fn with_chain_position(
+        &mut self,
+        record: ConductorRecord,
+    ) -> impl Future<Output = Result<ConductorRecord, MetadataError>> + Send {
+        let _ = record;
+        async {
+            Err(MetadataError(
+                "this metadata source does not provide chain positions".into(),
+            ))
+        }
+    }
 }
 
 async fn signing_keys_for<M: MetadataSource>(
@@ -81,6 +111,24 @@ async fn signing_keys_for<M: MetadataSource>(
     match policy {
         KeyBindingPolicy::LegacyV1 => meta.signing_keys(agent).await,
         KeyBindingPolicy::ProofOfPossessionV2 { .. } => meta.signing_keys_v2(agent).await,
+        KeyBindingPolicy::KeyLifecycleV21 { .. } => meta.key_lifecycle_v21(agent).await,
+    }
+}
+
+/// Under the v2.1 policy: the verified lifecycle and its tip as the
+/// (informational) key; otherwise the single resolved binding.
+fn resolve_key(
+    records: &[ConductorRecord],
+    agent: &str,
+    purpose: KeyPurpose,
+    policy: &KeyBindingPolicy,
+) -> Result<(VerifiedKeyBinding, Option<KeyLifecycle>), BindingError> {
+    match policy {
+        KeyBindingPolicy::KeyLifecycleV21 { dna_hash } => {
+            let lifecycle = resolve_key_lifecycle(records, agent, purpose, dna_hash)?;
+            Ok((lifecycle.tip_binding(), Some(lifecycle)))
+        }
+        other => Ok((resolve_signing_key(records, agent, purpose, other)?, None)),
     }
 }
 
@@ -131,6 +179,10 @@ pub struct HostPins {
     pub claim: ConductorRecord,
     /// The host-authored certificate-pinned endpoint.
     pub endpoint: PinnedEndpoint,
+    /// v2.1 only: the host's verified `host-receipt` lifecycle. `host_key`
+    /// is then its tip (current status); receipts are checked against the
+    /// generation they name, and must be host-attributed v2 receipts.
+    pub host_lifecycle: Option<KeyLifecycle>,
 }
 
 /// Owner and host pins for one package, from Holochain only.
@@ -150,6 +202,11 @@ pub struct ResolvedContent {
     pub hosts: Vec<HostPins>,
     /// Hosts excluded during resolution.
     pub rejected: Vec<HostRejection>,
+    /// v2.1 only: the owner's verified `owner-manifest` lifecycle.
+    /// `owner_key` is then its tip (current status); the manifest is
+    /// authenticated against the generation that signed it, anchored at the
+    /// commitment's chain position.
+    pub owner_lifecycle: Option<KeyLifecycle>,
 }
 
 /// Resolution failed for the owner/package as a whole.
@@ -183,14 +240,20 @@ impl std::error::Error for ResolveError {}
 
 fn host_select(what: &'static str) -> impl Fn(BindingError) -> RejectReason {
     move |e| match e {
-        BindingError::MissingRecord => RejectReason::NotFound(what),
+        // A lifecycle gap (predecessor/target not returned yet) is
+        // propagation, like a missing record: not a denial.
+        BindingError::MissingRecord | BindingError::LifecycleIncomplete => {
+            RejectReason::NotFound(what)
+        }
         other => RejectReason::Binding(other),
     }
 }
 
 fn owner_select(what: &'static str) -> impl Fn(BindingError) -> ResolveError {
     move |e| match e {
-        BindingError::MissingRecord => ResolveError::NotFound(what),
+        BindingError::MissingRecord | BindingError::LifecycleIncomplete => {
+            ResolveError::NotFound(what)
+        }
         other => ResolveError::Binding(other),
     }
 }
@@ -224,9 +287,16 @@ async fn host_pins<M: MetadataSource>(
     let keys = signing_keys_for(meta, node, key_policy)
         .await
         .map_err(RejectReason::Metadata)?;
-    let host_key = resolve_signing_key(&keys, node, KeyPurpose::HostReceipt, key_policy)
+    let (host_key, host_lifecycle) = resolve_key(&keys, node, KeyPurpose::HostReceipt, key_policy)
         .map_err(host_select("host-receipt key binding"))?;
     let key_binding = record_for(&keys, &host_key);
+    let claim = if host_lifecycle.is_some() {
+        meta.with_chain_position(claim)
+            .await
+            .map_err(RejectReason::Metadata)?
+    } else {
+        claim
+    };
     let endpoints = meta
         .moq_endpoints(node)
         .await
@@ -241,6 +311,7 @@ async fn host_pins<M: MetadataSource>(
         host_key,
         claim,
         endpoint,
+        host_lifecycle,
     })
 }
 
@@ -288,7 +359,7 @@ pub async fn resolve_content_with<M: MetadataSource>(
     let owner_keys = signing_keys_for(meta, owner_agent, key_policy)
         .await
         .map_err(ResolveError::Metadata)?;
-    let owner_key = resolve_signing_key(
+    let (owner_key, owner_lifecycle) = resolve_key(
         &owner_keys,
         owner_agent,
         KeyPurpose::OwnerManifest,
@@ -296,6 +367,13 @@ pub async fn resolve_content_with<M: MetadataSource>(
     )
     .map_err(owner_select("owner-manifest key binding"))?;
     let owner_key_binding = record_for(&owner_keys, &owner_key);
+    let commitment = if owner_lifecycle.is_some() {
+        meta.with_chain_position(commitment)
+            .await
+            .map_err(ResolveError::Metadata)?
+    } else {
+        commitment
+    };
 
     let claims = meta
         .replica_claims(owner_agent, package)
@@ -331,6 +409,7 @@ pub async fn resolve_content_with<M: MetadataSource>(
         commitment,
         hosts,
         rejected,
+        owner_lifecycle,
     })
 }
 
@@ -384,6 +463,7 @@ pub async fn authenticate_content<C: HostConnector>(
         commitment,
         hosts,
         mut rejected,
+        owner_lifecycle,
     } = resolved;
     let mut candidates: Vec<(HostPins, C::Transport)> = hosts
         .into_iter()
@@ -403,8 +483,18 @@ pub async fn authenticate_content<C: HostConnector>(
             .await
         {
             Ok(bytes) => {
-                match verify_owned_manifest_with_key(&bytes, &owner_agent, &owner_key, &commitment)
-                {
+                let verified = match &owner_lifecycle {
+                    Some(lifecycle) => {
+                        verify_owned_manifest_lifecycle(&bytes, lifecycle, &commitment)
+                    }
+                    None => verify_owned_manifest_with_key(
+                        &bytes,
+                        &owner_agent,
+                        &owner_key,
+                        &commitment,
+                    ),
+                };
+                match verified {
                     Ok(manifest) => {
                         owned = Some(manifest);
                         break;
@@ -461,13 +551,18 @@ pub async fn authenticate_content<C: HostConnector>(
                 continue;
             }
         };
-        match verify_replica_claim_with_key(
-            &receipt,
-            &owned,
-            &pins.node_agent,
-            &pins.host_key,
-            &pins.claim,
-        ) {
+        let verified = match &pins.host_lifecycle {
+            // v2.1: only host-attributed v2 receipts are accepted.
+            Some(lifecycle) => verify_replica_claim_v2(&receipt, &owned, lifecycle, &pins.claim),
+            None => verify_replica_claim_with_key(
+                &receipt,
+                &owned,
+                &pins.node_agent,
+                &pins.host_key,
+                &pins.claim,
+            ),
+        };
+        match verified {
             Ok(replica) => authenticated.push(AuthenticatedHost {
                 replica,
                 endpoint: pins.endpoint,
