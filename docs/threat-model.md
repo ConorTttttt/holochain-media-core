@@ -53,6 +53,27 @@ name the host agent (spoofable availability/attribution; integrity
 unaffected); Holochain 0.7.0 IPv6-less dual-bind; moq-transport buffering
 before length checks. Details: docs/CORE-004-holochain-moq-integration.md.
 
+## CORE-005 controls and limits
+
+Implemented (docs/CORE-005-entitlement-verification.md): grant issuer taken
+only from the CORE-004 `OwnedManifest` key, never from the grant's `signer`;
+listener agent and X25519 key only from the application's trusted context;
+exact owner/file/manifest/listener/recipient binding; Music time policy with
+an injected clock; streaming grants never confer offline or export; unknown,
+legacy and future schemas or terms fail closed as `unsupported`; strict JSON
+(unknown, missing and duplicate fields rejected); 16 KiB raw and 4096-byte
+canonical caps before signature work; typed outcomes so that expiry, denial,
+forgery, malformed input and missing authority are never conflated, and no
+transport failure can surface as a denial. Attacker capability 3 (replay,
+forward, fabricate, use another recipient's grant) is covered by
+Alice/Bob/Mallory vectors and a byte-mutation sweep.
+
+Limits: `Authorized` is a policy result — the wrapped key's decryptability is
+proven only by the recipient's AES-GCM unwrap; owner identity inherits the
+CORE-004 no-proof-of-possession finding (mitigated: Alice's grants cannot be
+re-attributed to Mallory); no revocation or rotation; offline expiry trusts
+the device clock; a licence is not proof of payment.
+
 ## Security review gate
 
 Before public use, add independent review of format/parser consensus, signed network inputs, resource bounds, local key custody, metadata leakage, private message abuse, host identity pinning and migration/key-rotation flows. Keep attack tests in CI.

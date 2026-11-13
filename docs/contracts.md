@@ -1,6 +1,6 @@
 # Contract compatibility baseline (CORE-001)
 
-Originally the CORE-001 reference for CORE-002. Since then the manifest/receipt verifier (CORE-002), VerifiedCas (CORE-003) and S2 identity bindings (CORE-004) are implemented; **grant verification is not** (CORE-005). Canonical JSON is now byte-for-byte tested against Python and no longer depends on serde_json map ordering. Do not use these notes as an implementation of access control.
+Originally the CORE-001 reference for CORE-002. Since then the manifest/receipt verifier (CORE-002), VerifiedCas (CORE-003), S2 identity bindings (CORE-004) and grant/licence **verification** (CORE-005, see "Existing Music grants" below) are implemented. Canonical JSON is now byte-for-byte tested against Python and no longer depends on serde_json map ordering. Do not use these notes as an implementation of access control.
 
 ## Existing Music S1 format
 
@@ -32,6 +32,29 @@ Source of truth: holochain-music/holochain_storage/package.py on the audited mai
 - Streaming access, managed offline caching and independent plaintext export are distinct permissions.
 - A permanent exported copy cannot be cryptographically revoked.
 - No automatic legal rights verification or rental DRM guarantee is implied.
+
+## Existing Music grants (CORE-005)
+
+Source of truth: holochain-music/music_catalogue/content_grants.py at bd7aabc.
+Envelope `{body, signer, signature}`; Ed25519 over canonical(body) by the
+owner's S2 `owner-manifest` key; canonical(envelope) ≤ 4096 bytes.
+
+- `holochain-music/content-grant/v1` body: schema, owner_agent,
+  listener_agent, file_id, manifest_sha256, recipient_key_hex,
+  ephemeral_key_hex, salt_b64, nonce_b64, wrapped_key_b64, issued_at,
+  expires_at. `issued_at ≤ now + 120`, `now < expires_at`,
+  `1 ≤ expires_at − issued_at ≤ 86400`. Rights: stream only.
+- `holochain-music/personal-licence/v1` body: the same minus expires_at, plus
+  licence_id (32 lowercase hex) and terms (`perpetual-personal-use`).
+  `issued_at ≤ now + 120`; no expiry. Rights: stream, managed offline, export.
+- Key wrap: X25519(ephemeral, recipient) → HKDF-SHA256(salt, info=context) →
+  AES-256-GCM(nonce, aad=context) of the 32-byte content key; context =
+  domain prefix + NUL + canonical JSON of the signed scope (stream:
+  `content-grant/hkdf-aad/v1`; licence: `personal-licence/hkdf-aad/v1`).
+- `holochain-music/personal-perpetual-grant/v1` (S1 prototype,
+  holochain_storage/grant.py): not used by the app; rejected as unsupported.
+
+Rust verification and its exact semantics: docs/CORE-005-entitlement-verification.md.
 
 ## CORE-002 required vectors
 

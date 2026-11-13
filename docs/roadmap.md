@@ -8,7 +8,7 @@ The full plan is maintained alongside project discussions. These tasks are the r
 | CORE-002 | Python Music v1 package/receipt compatibility | Real Music-generated golden vectors (including invalid cases) verify byte-for-byte in a Rust reader; no Music change |
 | CORE-003 | Generic verified storage and interrupted download support | Arbitrary bytes survive corruption, restart and host-outage tests; no keys leak |
 | CORE-004 | Holochain/MoQ adapters | Two real agents discover an authenticated storage host and retrieve verified chunks with certificate pinning — **met locally 13 Nov 2026** (five-conductor acceptance; see docs/CORE-004-holochain-moq-integration.md); Windows CI and review pending |
-| CORE-005 | Free/private/perpetual entitlement evaluator | Signed grants require matching issuer, recipient, manifest and permissions; duplicate requests and denials have clear outcomes |
+| CORE-005 | Free/private/perpetual entitlement evaluator | Signed grants require matching issuer, recipient, manifest and permissions; duplicate requests and denials have clear outcomes — **verifier for Music private grants/licences implemented 13 Nov 2026** (81 Python vectors, Music opt-in comparison, real-conductor acceptance; see docs/CORE-005-entitlement-verification.md). Public/free policy deferred to CORE-006 publication authority; Windows CI and review pending |
 | CORE-006 | Reviewed publication lifecycle | Quarantine, independent finding, authorised release/withdrawal are distinct and tamper-resistant |
 | CORE-007 | Music and Video adapters | Music regression suite passes unchanged, then Video uses shared contracts without granting unreviewed playback |
 | CORE-008 | Advanced offerings and production readiness | Rental/subscription policy, verified settlement provider, key rotation, NAT/relay, operational hardening, audits and legal review |
@@ -19,7 +19,17 @@ The full plan is maintained alongside project discussions. These tasks are the r
 - **v0.2 multi-app preview:** verified Video approved-release flow and media adapters; public access remains gated on reviewed authority.
 - **Production candidate:** audited security, clear pricing/settlement semantics, robust internet delivery, key recovery, platform/hardware testing, licensing and migration/rollback.
 
-## Next PR: CORE-005 (proposed)
+## Next: S2 key-binding v2 (proof of possession), then CORE-006
+
+CORE-005 delivered `check_content_access` for Music `content-grant/v1` and
+`personal-licence/v1` (verification only) with Python-generated vectors. The
+proof-of-possession key binding proposed alongside it was **not** done: it
+needs a versioned Music DNA/format change and a migration plan, and remains
+the next security task (CORE-004 finding 2; CORE-005 doc §9). After it,
+CORE-006 publication lifecycle supplies the authenticated policy that public
+access requires.
+
+## Historical: CORE-005 proposal (as written after CORE-004)
 
 Rust `check_content_access` for Music `content-grant/v1` and `personal-licence/v1` (verification only), Python-generated golden vectors, and a versioned S2 key-binding v2 with proof of possession. See docs/CORE-004-holochain-moq-integration.md.
 
