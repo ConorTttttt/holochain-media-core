@@ -93,3 +93,25 @@ the Music app is not yet switched to the v2 DNA.
 ## Security review gate
 
 Before public use, add independent review of format/parser consensus, signed network inputs, resource bounds, local key custody, metadata leakage, private message abuse, host identity pinning and migration/key-rotation flows. Keep attack tests in CI.
+
+## S2 key lifecycle v2.1 controls and limits
+
+Implemented (docs/S2-KEY-LIFECYCLE-V21.md): on the opt-in v2.1 storage DNA,
+every lifecycle step is authored by the agent (the only authority), each new
+key proves possession over the complete transition, and rotations carry a
+continuity signature by the predecessor key. Integrity validation reads the
+author's own chain (`must_get_agent_activity`) and refuses skipped
+generations, second inceptions, competing successors, replays, key reuse,
+cross-purpose and cross-DNA transitions, and rotations after a revocation.
+A thief of a media key cannot rotate or revoke for its owner; a revocation
+`compromised` stops every unanchored use of that key. Readers resolve by
+predecessor references (never timestamps) to `KeyValidity`, and an artifact
+anchored after its key ended is refused as a new operation with a stale key.
+`replica-receipt/v2` names and binds the host agent and its key generation;
+a host cannot present another host's receipt (real-conductor case 14).
+
+Limits: agent-key compromise has no in-protocol recovery; revocation
+freshness depends on DHT propagation; grants/licences carry no chain anchor
+(a compromised issuer key invalidates them all); S10 binds the grant issuer
+to the manifest signer; receipts prove historical acceptance only.
+

@@ -19,6 +19,18 @@ The full plan is maintained alongside project discussions. These tasks are the r
 - **v0.2 multi-app preview:** verified Video approved-release flow and media adapters; public access remains gated on reviewed authority.
 - **Production candidate:** audited security, clear pricing/settlement semantics, robust internet delivery, key recovery, platform/hardware testing, licensing and migration/rollback.
 
+## S2 key lifecycle v2.1 — implemented on `feat/s2-v21-key-lifecycle` (13 Nov 2026)
+
+Rotation (continuity-signed), recovery and revocation validated in chain order
+by a separate opt-in v2.1 storage DNA (v1 and v2 hashes unchanged); Media Core
+`KeyValidity` with an explicit chain-anchored historical policy; host-attributed
+`replica-receipt/v2`; four-agent real-conductor suite covering 16 adversarial
+cases plus the full MoQ → CORE-005 → Music decrypt path
+(docs/S2-KEY-LIFECYCLE-V21.md). Outstanding, explicitly: a grant format whose
+issuer is independent of the manifest signer (needed before rotation is
+transparent to new grants for older content, and a CORE-006 prerequisite),
+agent-key rotation, switching the Music app to v2.1, migration execution.
+
 ## S2 key-binding v2 — implemented on `feat/s2-key-binding-v2` (13 Nov 2026)
 
 Proof-of-possession bindings in a separate opt-in v2 storage DNA (v1 DNA hash

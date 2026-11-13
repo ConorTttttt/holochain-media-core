@@ -183,7 +183,7 @@ hash for the policy.
   v2 acceptance run verifies the same Music-made packages, grants and
   licences end-to-end.
 
-## 11. Rotation and revocation — **outstanding (designed, not implemented)**
+## 11. Rotation and revocation — **implemented in v2.1 (docs/S2-KEY-LIFECYCLE-V21.md); the proposal below is kept as the original design record**
 
 Implemented: only generation `"1"`; one key per agent and purpose; conflicts
 are `Ambiguous`, so a second key makes the agent unresolvable rather than
@@ -206,7 +206,7 @@ Proposed `key-binding/v2.1` (separate review):
 5. "Current key" is defined by chain order from validated agent activity,
    never by wall-clock timestamps.
 
-## 12. Host receipt attribution — **outstanding**
+## 12. Host receipt attribution — **implemented in v2.1 as `replica-receipt/v2` (docs/S2-KEY-LIFECYCLE-V21.md)**
 
 S1 receipts (`replica-receipt/v1`) still do not name the host agent. With v2,
 a host key is now provably the host agent's, so Mallory can no longer bind
