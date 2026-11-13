@@ -5,11 +5,15 @@
 //! Design constraints:
 //! * Accepts only **public** material: signed JSON documents, public keys,
 //!   conductor-bridge records and ciphertext directories. There is no option
-//!   that takes a content key, grant, X25519 key or private signing key.
+//!   that takes a content key, an X25519 *private* key or a private signing
+//!   key. `check-access` (CORE-005) additionally reads an owner-signed,
+//!   recipient-wrapped grant/licence document; it verifies it but cannot and
+//!   does not unwrap the content key inside it.
 //! * Prints exactly one JSON object on stdout. Exit 0 = accepted, 2 = rejected
 //!   by a named verification boundary, 1 = usage or I/O failure (never a
 //!   rejection).
-//! * Never decrypts. Playback and licences stay in the application.
+//! * Never decrypts or unwraps keys. Playback, key unwrap and licence
+//!   issuance stay in the application.
 //! * No network and no Holochain calls.
 
 #![forbid(unsafe_code)]
@@ -20,15 +24,22 @@ use holochain_content_core::binding::{
 use holochain_content_core::compat::{
     canonical_json, verify_music_manifest, verify_music_receipt, VerifiedManifest, VerifyError,
 };
+use holochain_content_core::entitlements::{
+    check_content_access, AccessError, AuthenticatedSubject, EntitlementScheme,
+};
 use holochain_content_core::storage::{StoreError, VerifiedCas};
-use holochain_content_core::ManifestDigest;
+use holochain_content_core::{ManifestDigest, Right};
 use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 const MAX_DOCUMENT_BYTES: u64 = 8 * 1024 * 1024 + 1024;
 const MAX_BRIDGE_BYTES: u64 = 1024 * 1024;
+/// Generous I/O bound: the evaluator itself rejects anything over its
+/// 16 KiB input cap as `malformed/TooLarge` (exit 2), not as an I/O failure.
+const MAX_GRANT_FILE_BYTES: u64 = 1024 * 1024;
 
 const USAGE: &str = "usage:
   holochain-media-core verify-manifest --manifest FILE --trusted-artist-hex HEX
@@ -39,7 +50,12 @@ const USAGE: &str = "usage:
                                        --owner-agent AGENT --node-agent AGENT
   holochain-media-core import          --manifest FILE --trusted-artist-hex HEX
                                        --source-store DIR --cas DIR
-  holochain-media-core audit           --manifest FILE --trusted-artist-hex HEX --cas DIR";
+  holochain-media-core audit           --manifest FILE --trusted-artist-hex HEX --cas DIR
+  holochain-media-core check-access    --bridge-json FILE --manifest FILE --owner-agent AGENT
+                                       --grant FILE --listener-agent AGENT
+                                       --recipient-x25519-hex HEX
+                                       --right stream|managed-offline|export
+                                       [--now UNIX_SECONDS]";
 
 /// Exit status classes.
 enum Outcome {
@@ -338,6 +354,135 @@ fn audit_cmd(args: &[String]) -> Result<Outcome, Failure> {
     Ok(Outcome::Accepted(out))
 }
 
+fn parse_right(text: &str) -> Result<Right, Failure> {
+    match text {
+        "stream" => Ok(Right::Stream),
+        "managed-offline" => Ok(Right::ManagedOffline),
+        "export" => Ok(Right::Export),
+        _ => Err(Failure(
+            "--right must be stream, managed-offline or export".into(),
+        )),
+    }
+}
+
+fn right_name(right: Right) -> &'static str {
+    match right {
+        Right::Stream => "stream",
+        Right::ManagedOffline => "managed-offline",
+        Right::Export => "export",
+    }
+}
+
+fn parse_now(flags: &HashMap<String, String>) -> Result<SystemTime, Failure> {
+    match flags.get("--now") {
+        None => Ok(SystemTime::now()),
+        Some(text) => {
+            if text.is_empty() || !text.bytes().all(|b| b.is_ascii_digit()) || text.len() > 12 {
+                return Err(Failure("--now must be non-negative Unix seconds".into()));
+            }
+            Ok(UNIX_EPOCH + Duration::from_secs(text.parse()?))
+        }
+    }
+}
+
+fn access_rejection(error: AccessError) -> Outcome {
+    Outcome::Rejected(json!({
+        "ok": false,
+        "boundary": "entitlement",
+        "category": error.category(),
+        "reason": error.reason(),
+        "error": error.to_string(),
+    }))
+}
+
+/// CORE-005: verify a Music grant/licence for an authenticated owner and
+/// listener, and evaluate one requested right. The owner identity and key
+/// come only from the conductor-bridge records (as for `verify-bindings`);
+/// the listener agent and X25519 *public* key are the caller's own trusted
+/// context. `ok: true` is a policy decision: the application must still
+/// unwrap the content key (AES-GCM authenticated) before plaintext access.
+fn check_access_cmd(args: &[String]) -> Result<Outcome, Failure> {
+    let flags = parse_flags(
+        args,
+        &[
+            "--bridge-json",
+            "--manifest",
+            "--owner-agent",
+            "--grant",
+            "--listener-agent",
+            "--recipient-x25519-hex",
+            "--right",
+            "--now",
+        ],
+    )?;
+    let bridge: Value = serde_json::from_slice(&read_bounded(
+        Path::new(required(&flags, "--bridge-json")?),
+        MAX_BRIDGE_BYTES,
+    )?)?;
+    let manifest = read_bounded(
+        Path::new(required(&flags, "--manifest")?),
+        MAX_DOCUMENT_BYTES,
+    )?;
+    let grant = read_bounded(
+        Path::new(required(&flags, "--grant")?),
+        MAX_GRANT_FILE_BYTES,
+    )?;
+    let owner = required(&flags, "--owner-agent")?;
+    let right = parse_right(required(&flags, "--right")?)?;
+    let now = parse_now(&flags)?;
+    let recipient = key32(
+        required(&flags, "--recipient-x25519-hex")?,
+        "--recipient-x25519-hex",
+    )?;
+    let subject = AuthenticatedSubject::from_trusted_context(
+        required(&flags, "--listener-agent")?,
+        recipient,
+    )
+    .map_err(|e| Failure(e.to_string()))?;
+    let owned = match verify_owned_manifest(
+        &manifest,
+        owner,
+        &record(&bridge, "owner_key_binding")?,
+        &record(&bridge, "owner_commitment")?,
+    ) {
+        Ok(o) => o,
+        Err(e) => return Ok(binding_rejection(e)),
+    };
+    match check_content_access(&owned, &subject, &grant, right, now) {
+        Ok(decision) => {
+            let e = decision.entitlement();
+            let rights: Vec<&str> = [Right::Stream, Right::ManagedOffline, Right::Export]
+                .into_iter()
+                .filter(|r| e.rights().contains(*r))
+                .map(right_name)
+                .collect();
+            let scheme = match e.scheme() {
+                EntitlementScheme::MusicContentGrantV1 => "stream",
+                EntitlementScheme::MusicPersonalLicenceV1 => "perpetual-personal",
+                _ => "unknown",
+            };
+            Ok(Outcome::Accepted(json!({
+                "ok": true,
+                "decision": "authorized",
+                "certifies": "policy-only; key unwrap and AES-GCM authentication remain",
+                "right": right_name(decision.right()),
+                "kind": scheme,
+                "schema": e.scheme().schema(),
+                "rights": rights,
+                "owner_agent": e.owner_agent(),
+                "listener_agent": e.listener_agent(),
+                "file_id": e.package_id().to_string(),
+                "manifest_sha256": e.manifest_digest().to_string(),
+                "issued_at": e.issued_at(),
+                "expires_at": e.expires_at(),
+                "licence_id": e.licence_id(),
+                "hkdf_context_hex": hex(e.wrapped_content_key().context()),
+            })))
+        }
+        Err(e) => Ok(access_rejection(e)),
+    }
+}
+
 fn run(args: &[String]) -> Result<Outcome, Failure> {
     let (command, rest) = args.split_first().ok_or_else(|| Failure(USAGE.into()))?;
     match command.as_str() {
@@ -346,6 +491,7 @@ fn run(args: &[String]) -> Result<Outcome, Failure> {
         "verify-bindings" => verify_bindings_cmd(rest),
         "import" => import_cmd(rest),
         "audit" => audit_cmd(rest),
+        "check-access" => check_access_cmd(rest),
         _ => Err(Failure(USAGE.into())),
     }
 }
@@ -405,6 +551,140 @@ mod tests {
     fn unknown_command_is_a_usage_failure_not_a_rejection() {
         assert!(matches!(run(&strings(&["decrypt"])), Err(Failure(_))));
         assert!(matches!(run(&[]), Err(Failure(_))));
+    }
+
+    #[test]
+    fn rights_and_clock_flags_are_strict() {
+        assert!(matches!(parse_right("stream"), Ok(Right::Stream)));
+        assert!(matches!(
+            parse_right("managed-offline"),
+            Ok(Right::ManagedOffline)
+        ));
+        assert!(matches!(parse_right("export"), Ok(Right::Export)));
+        for bad in ["Stream", "offline", "", "export "] {
+            assert!(parse_right(bad).is_err(), "{bad}");
+        }
+        let mut flags = HashMap::new();
+        flags.insert("--now".to_owned(), "1760000000".to_owned());
+        assert_eq!(
+            parse_now(&flags).ok(),
+            Some(UNIX_EPOCH + Duration::from_secs(1_760_000_000))
+        );
+        for bad in ["-1", "1.5", "", "0x10", "9999999999999"] {
+            flags.insert("--now".to_owned(), bad.to_owned());
+            assert!(parse_now(&flags).is_err(), "{bad}");
+        }
+    }
+
+    #[test]
+    fn check_access_takes_no_private_key_options() {
+        for secret in [
+            "--content-key",
+            "--recipient-private",
+            "--x25519-private-hex",
+        ] {
+            let result = run(&strings(&["check-access", secret, "k"]));
+            assert!(matches!(result, Err(Failure(_))), "{secret}");
+        }
+    }
+
+    /// End-to-end through the CLI with Music's own Python-generated grants.
+    #[test]
+    fn check_access_with_python_generated_grants() {
+        let v: Value = serde_json::from_str(include_str!(
+            "../../content-core/testdata/music-entitlement-vectors.json"
+        ))
+        .unwrap();
+        let dir = tempfile::tempdir().unwrap();
+        let alice = v["agents"]["alice"].as_str().unwrap();
+        let p = &v["content"]["p"];
+        let bridge = json!({
+            "owner_key_binding": {"author": alice, "action_hash": "uhCkkA",
+                "body": {"schema": "holochain-storage/key-binding/v1", "agent": alice,
+                         "purpose": "owner-manifest",
+                         "signing_key_hex": v["keys"]["alice_ed25519_public_hex"]}},
+            "owner_commitment": {"author": alice, "action_hash": "uhCkkB",
+                "body": {"schema": "holochain-storage/file-commitment/v1", "owner_agent": alice,
+                         "file_id": p["file_id"], "manifest_sha256": p["manifest_sha256"]}},
+        });
+        let write = |name: &str, bytes: &[u8]| {
+            let path = dir.path().join(name);
+            std::fs::write(&path, bytes).unwrap();
+            path.display().to_string()
+        };
+        let bridge_path = write("bridge.json", bridge.to_string().as_bytes());
+        let manifest_path = write("m.json", p["manifest_text"].as_str().unwrap().as_bytes());
+        let check = |case: &str| {
+            let c = v["cases"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|c| c["name"] == case)
+                .unwrap();
+            let grant = write("g.json", c["grant_text"].as_str().unwrap().as_bytes());
+            run(&strings(&[
+                "check-access",
+                "--bridge-json",
+                &bridge_path,
+                "--manifest",
+                &manifest_path,
+                "--owner-agent",
+                alice,
+                "--grant",
+                &grant,
+                "--listener-agent",
+                c["subject"]["listener_agent"].as_str().unwrap(),
+                "--recipient-x25519-hex",
+                c["subject"]["recipient_key_hex"].as_str().unwrap(),
+                "--right",
+                c["right"].as_str().unwrap(),
+                "--now",
+                &c["now"].as_i64().unwrap().to_string(),
+            ]))
+        };
+        match check("licence_valid_for_export") {
+            Ok(Outcome::Accepted(out)) => {
+                assert_eq!(out["kind"], "perpetual-personal");
+                assert_eq!(
+                    out["rights"],
+                    json!(["stream", "managed-offline", "export"])
+                );
+                assert_eq!(out["expires_at"], Value::Null);
+            }
+            _ => panic!("licence not accepted"),
+        }
+        match check("stream_grant_valid_for_stream") {
+            Ok(Outcome::Accepted(out)) => assert_eq!(out["rights"], json!(["stream"])),
+            _ => panic!("grant not accepted"),
+        }
+        for (case, category, reason) in [
+            (
+                "stream_grant_does_not_confer_export",
+                "denied",
+                "RightNotGranted",
+            ),
+            ("stream_grant_expired_at_expires_at", "validity", "Expired"),
+            (
+                "grant_signed_by_mallory_key",
+                "unauthenticated",
+                "WrongIssuer",
+            ),
+            ("oversized_raw_input_whitespace", "malformed", "TooLarge"),
+            (
+                "legacy_personal_perpetual_grant_v1",
+                "unsupported",
+                "LegacyPerpetualGrant",
+            ),
+        ] {
+            match check(case) {
+                Ok(Outcome::Rejected(out)) => {
+                    assert_eq!(out["boundary"], "entitlement", "{case}");
+                    assert_eq!(out["category"], category, "{case}");
+                    assert_eq!(out["reason"], reason, "{case}");
+                }
+                _ => panic!("{case} not rejected at the entitlement boundary"),
+            }
+        }
     }
 
     #[test]
