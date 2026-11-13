@@ -68,11 +68,30 @@ def _out(value: dict) -> None:
     sys.stdout.write(json.dumps(value, sort_keys=True) + "\n")
 
 
+def _key_path(root: Path, ref: str) -> Path:
+    """Key references: `artist`, `artist:<generation>`, `host:<name>`,
+    `host:<name>:<generation>` (generation >= 2 lives in its own file)."""
+    parts = ref.split(":")
+    if parts[0] == "artist" and len(parts) in (1, 2):
+        base, gen = root, parts[1:]
+        name = "artist"
+    elif parts[0] == "host" and len(parts) in (2, 3) and parts[1].isalnum():
+        base, gen = root / "hosts" / parts[1], parts[2:]
+        name = "host"
+    else:
+        raise SystemExit(f"bad key reference {ref}")
+    if gen and gen[0] != "1":
+        if not gen[0].isdigit():
+            raise SystemExit(f"bad key reference {ref}")
+        return base / f"{name}.g{gen[0]}.ed25519"
+    return base / f"{name}.ed25519"
+
+
 def prepare(a) -> None:
     root = Path(a.root)
     pkg = root / a.package
     pkg.mkdir(mode=0o700, parents=True, exist_ok=False)
-    artist = _ed25519(root / "artist.ed25519")
+    artist = _ed25519(_key_path(root, a.artist_key))
     # Synthetic, non-sensitive "media": deterministic header + random tail.
     head = (f"CORE-004 synthetic media {a.package} ".encode() * 4096)[: a.size // 2]
     sample = head + os.urandom(a.size - len(head))
@@ -224,6 +243,75 @@ def bind_v2(a) -> None:
     _out({"entry": entry})
 
 
+# ---- S2 key lifecycle v2.1 (Music's holochain_storage.key_lifecycle) -------
+
+def _kl():
+    from holochain_storage import key_lifecycle
+    return key_lifecycle
+
+
+def v21_incept(a) -> None:
+    kl = _kl()
+    entry = kl.make_inception(_ed25519(_key_path(Path(a.root), a.key)), dna_hash=a.dna_hash,
+                              agent=a.agent, purpose=a.purpose)
+    _out({"entry": entry})
+
+
+def v21_rotate(a) -> None:
+    kl = _kl()
+    root = Path(a.root)
+    entry = kl.make_rotation(_ed25519(_key_path(root, a.new)), _ed25519(_key_path(root, a.old)),
+                             dna_hash=a.dna_hash, agent=a.agent, purpose=a.purpose,
+                             predecessor_action=a.predecessor_action,
+                             predecessor_generation=a.predecessor_generation)
+    _out({"entry": entry})
+
+
+def v21_recover(a) -> None:
+    kl = _kl()
+    entry = kl.make_recovery(_ed25519(_key_path(Path(a.root), a.new)), dna_hash=a.dna_hash,
+                             agent=a.agent, purpose=a.purpose, predecessor_action=a.predecessor_action,
+                             predecessor_key_hex=a.predecessor_key_hex,
+                             predecessor_generation=a.predecessor_generation)
+    _out({"entry": entry})
+
+
+def v21_revoke(a) -> None:
+    kl = _kl()
+    _out({"entry": kl.make_revocation(dna_hash=a.dna_hash, agent=a.agent, purpose=a.purpose,
+                                      generation=a.generation, signing_key_hex=a.key_hex,
+                                      target_action=a.target_action, scope=a.scope)})
+
+
+def v21_resolve(a) -> None:
+    """Music's own reader verdict over records from a real conductor."""
+    kl = _kl()
+    rows = json.loads(Path(a.records).read_text())
+    records = [kl.SequencedRecord(r["author"], r["action_hash"], r["action_seq"], r["body"]) for r in rows]
+    anchor = kl.ChainAnchor(a.agent, int(a.anchor_seq)) if a.anchor_seq else None
+    verdict = kl.evaluate_key(records, a.agent, a.purpose, a.dna_hash, a.key_hex, a.use, anchor)
+    _out({"verdict": verdict})
+
+
+def host_v2(a) -> None:
+    """Replicate and sign a host-attributed replica-receipt/v2 with Music's code."""
+    kl = _kl()
+    root = Path(a.root)
+    hdir = root / "hosts" / a.host
+    host_key = _ed25519(_key_path(root, a.host_key))
+    artist_pub = public_key_bytes(_ed25519(_key_path(root, a.artist_key)))
+    manifest = _manifest(root, a.package)
+    receipt = kl.replicate_package_v2(
+        manifest, root / a.package / "origin", hdir / "store", artist_pub, host_key,
+        dna_hash=a.dna_hash, host_agent=a.host_agent, host_key_generation=a.host_key_generation,
+        host_key_action=a.host_key_action, owner_agent=a.owner_agent)
+    path = hdir / f"{a.package}.receipt.json"
+    path.write_bytes(kl.receipt_v2_bytes(receipt))
+    _out({"host": a.host, "node_public_hex": public_key_bytes(host_key).hex(),
+          "receipt_sha256": kl.receipt_v2_digest(receipt), "store": str(hdir / "store"),
+          "receipt": str(path), "receipt_json": receipt})
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -232,6 +320,7 @@ def main() -> int:
     s.add_argument("--package", required=True)
     s.add_argument("--size", type=int, required=True)
     s.add_argument("--chunk-size", type=int, required=True)
+    s.add_argument("--artist-key", default="artist")
     s = sub.add_parser("host")
     s.add_argument("--root", required=True)
     s.add_argument("--package", required=True)
@@ -255,11 +344,37 @@ def main() -> int:
     s = sub.add_parser("bind-v2")
     for name in ("--root", "--key", "--agent", "--purpose", "--dna-hash"):
         s.add_argument(name, required=True)
+    s = sub.add_parser("v21-incept")
+    for name in ("--root", "--key", "--agent", "--purpose", "--dna-hash"):
+        s.add_argument(name, required=True)
+    s = sub.add_parser("v21-rotate")
+    for name in ("--root", "--old", "--new", "--agent", "--purpose", "--dna-hash",
+                 "--predecessor-action", "--predecessor-generation"):
+        s.add_argument(name, required=True)
+    s = sub.add_parser("v21-recover")
+    for name in ("--root", "--new", "--agent", "--purpose", "--dna-hash", "--predecessor-action",
+                 "--predecessor-key-hex", "--predecessor-generation"):
+        s.add_argument(name, required=True)
+    s = sub.add_parser("v21-revoke")
+    for name in ("--agent", "--purpose", "--dna-hash", "--generation", "--key-hex", "--target-action",
+                 "--scope"):
+        s.add_argument(name, required=True)
+    s = sub.add_parser("v21-resolve")
+    for name in ("--records", "--agent", "--purpose", "--dna-hash", "--key-hex", "--use"):
+        s.add_argument(name, required=True)
+    s.add_argument("--anchor-seq", default="")
+    s = sub.add_parser("host-v2")
+    for name in ("--root", "--package", "--host", "--host-key", "--dna-hash", "--host-agent",
+                 "--host-key-generation", "--host-key-action", "--owner-agent"):
+        s.add_argument(name, required=True)
+    s.add_argument("--artist-key", default="artist")
     a = p.parse_args()
     if a.cmd == "unlock":
         return unlock(a)
     {"prepare": prepare, "host": host, "served-list": served_list, "grants": grants,
-     "bind-v2": bind_v2}[a.cmd](a)
+     "bind-v2": bind_v2, "v21-incept": v21_incept, "v21-rotate": v21_rotate,
+     "v21-recover": v21_recover, "v21-revoke": v21_revoke, "v21-resolve": v21_resolve,
+     "host-v2": host_v2}[a.cmd](a)
     return 0
 
 
