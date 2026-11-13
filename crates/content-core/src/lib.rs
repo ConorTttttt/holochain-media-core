@@ -257,6 +257,24 @@ mod tests {
     }
 
     #[test]
+    fn canonical_json_sorts_keys_independently_of_serde_json_features() {
+        // Insertion order here is deliberately unsorted. With serde_json's
+        // `preserve_order` feature enabled (CI runs this test both ways),
+        // relying on map order would emit `{"b":...,"a":...}`.
+        let value = serde_json::json!({
+            "b": 1, "a": {"d": [1, "x\u{1}"], "c": "\u{e9}\n\""}, "A": 0
+        });
+        assert_eq!(
+            crate::compat::canonical_json(&value).unwrap(),
+            "{\"A\":0,\"a\":{\"c\":\"\u{e9}\\n\\\"\",\"d\":[1,\"x\\u0001\"]},\"b\":1}".as_bytes()
+        );
+        assert_eq!(
+            crate::compat::canonical_json(&serde_json::json!({"x": 1.5})),
+            None
+        );
+    }
+
+    #[test]
     fn unknown_rights_fail_closed() {
         assert_eq!(Rights::from_bits(0b1000), None);
         assert_eq!(Rights::from_bits(0xff), None);

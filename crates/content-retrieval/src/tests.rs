@@ -11,7 +11,7 @@ use crate::*;
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use ed25519_dalek::{Signer, SigningKey};
 use holochain_content_core::binding::*;
-use holochain_content_core::compat::{verify_music_manifest, VerifiedManifest};
+use holochain_content_core::compat::{canonical_json, verify_music_manifest, VerifiedManifest};
 use holochain_content_core::storage::VerifiedCas;
 use holochain_content_core::PackageId;
 use serde_json::{json, Value};
@@ -54,7 +54,7 @@ fn hex(bytes: &[u8]) -> String {
 }
 
 fn sign(body: Value, key: &SigningKey) -> Value {
-    let canonical = serde_json::to_vec(&body).unwrap();
+    let canonical = canonical_json(&body).unwrap();
     json!({
         "body": body,
         "signer": STANDARD.encode(key.verifying_key().to_bytes()),
@@ -530,7 +530,7 @@ fn world(hosts: &[(&str, u8, u16)]) -> World {
         let host_key = SigningKey::from_bytes(&[*seed; 32]);
         let signed = receipt(&pkg, &host_key);
         let receipt_sha = hex(&Sha256::digest(
-            serde_json::to_vec(&serde_json::from_slice::<Value>(&signed).unwrap()).unwrap(),
+            canonical_json(&serde_json::from_slice::<Value>(&signed).unwrap()).unwrap(),
         ));
         meta.keys.insert(
             (*agent).into(),
