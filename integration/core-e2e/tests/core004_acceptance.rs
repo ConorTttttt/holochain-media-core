@@ -30,7 +30,7 @@ use holochain_content_core::binding::{BindingError, EndpointPolicy};
 use holochain_content_core::compat::VerifyError;
 use holochain_content_core::storage::VerifiedCas;
 use holochain_content_core::PackageId;
-use holochain_content_holochain::{ConductorResolver, ConductorTarget};
+use holochain_content_holochain::{ConductorResolver, ConductorTarget, READ_FUNCTIONS};
 use holochain_content_moq::MoqHostTransport;
 use holochain_content_moq::{MoqConnector, Timeouts};
 use holochain_content_retrieval::{
@@ -193,14 +193,13 @@ fn connector(handshake_secs: u64, object_secs: u64) -> MoqConnector {
 }
 
 async fn authenticate(
-    net: &Net,
+    resolver: &mut ConductorResolver,
     owner: &str,
     pkg: &Value,
     c: &MoqConnector,
 ) -> Result<AuthenticatedContent<MoqHostTransport>, ResolveError> {
-    let mut resolver = net.bob_resolver().await;
     let resolved = resolve_content(
-        &mut resolver,
+        resolver,
         owner,
         package_id(pkg),
         EndpointPolicy::LoopbackOnly,
@@ -571,9 +570,72 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     net.settle().await;
     eprintln!("[core004] Holochain records published and consistent across 5 conductors");
 
+    // ------------------------------------------------------------ Bob's reader
+    // One resolver for the whole session (each connect commits a cap grant).
+    // A second connect proves the app interface is reused, and every signing
+    // grant is limited to the four read functions.
+    let mut bob_reader = net.bob_resolver().await;
+    assert_eq!(bob_reader.reader_agent(), bob);
+    let admin = holochain_client::AdminWebsocket::connect(
+        SocketAddr::from((
+            [127, 0, 0, 1],
+            net.conductors[BOB]
+                .get_arbitrary_admin_websocket_port()
+                .unwrap(),
+        )),
+        None,
+    )
+    .await
+    .expect("test admin socket");
+    let interfaces = admin.list_app_interfaces().await.unwrap().len();
+    drop(net.bob_resolver().await);
+    assert_eq!(
+        admin.list_app_interfaces().await.unwrap().len(),
+        interfaces,
+        "resolver must reuse its app interface"
+    );
+    // Holochain 0.7.0's ListCapabilityGrants returns nothing when
+    // include_revoked is false (every grant hits `continue`), so list all
+    // grants and select the active ones by `revoked_at`.
+    let grants = admin
+        .list_capability_grants(APP.into(), true)
+        .await
+        .unwrap();
+    let vacuous = admin
+        .list_capability_grants(APP.into(), false)
+        .await
+        .unwrap();
+    assert!(
+        vacuous.0.iter().all(|(_, g)| g.is_empty()),
+        "upstream include_revoked:false listing behaviour changed; revisit"
+    );
+    let read_only: std::collections::HashSet<(String, String)> = READ_FUNCTIONS
+        .iter()
+        .map(|f| (ZOME.to_string(), f.to_string()))
+        .collect();
+    let signing: Vec<_> = grants
+        .0
+        .iter()
+        .flat_map(|(_, g)| g.iter())
+        .filter(|g| g.cap_grant.tag == "zome-call-signing-key" && g.revoked_at.is_none())
+        .collect();
+    assert_eq!(signing.len(), 2, "one assigned grant per resolver connect");
+    for grant in signing {
+        let holochain_client::GrantedFunctions::Listed(functions) = &grant.cap_grant.functions
+        else {
+            panic!("resolver signing grant is not least-privilege: {grant:?}");
+        };
+        let functions: std::collections::HashSet<(String, String)> = functions
+            .iter()
+            .map(|(z, f)| (z.to_string(), f.to_string()))
+            .collect();
+        assert_eq!(functions, read_only);
+    }
+    eprintln!("[core004] Bob's resolver: read-only signing grant, app interface reused");
+
     // ------------------------------------------------------------ Bob: P1
     let c = connector(10, 8);
-    let mut content = authenticate(&net, &alice, &p1, &c)
+    let mut content = authenticate(&mut bob_reader, &alice, &p1, &c)
         .await
         .expect("P1 authenticates");
     assert_eq!(content.owned.owner_agent(), alice);
@@ -663,7 +725,7 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     )
     .unwrap();
     let mut sources = vec![take_host(
-        &mut authenticate(&net, &alice, &p1, &connector(3, 8))
+        &mut authenticate(&mut bob_reader, &alice, &p1, &connector(3, 8))
             .await
             .unwrap(),
         &carol,
@@ -789,7 +851,7 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     eprintln!("[core004] wrong-recipient, impersonation, forged, expired and keyless access denied by Music boundaries");
 
     // ------------------------------------------------------------ P2: forged receipt
-    let mut p2_content = authenticate(&net, &alice, &p2, &c)
+    let mut p2_content = authenticate(&mut bob_reader, &alice, &p2, &c)
         .await
         .expect("P2 authenticates via Carol");
     assert_eq!(
@@ -815,7 +877,7 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     // Bob asked for "Mallory's" P1. The manifest Mallory serves is Alice's,
     // signed by Alice's key, not the key Mallory bound: signature boundary.
     let Err(ResolveError::NoAuthenticatedHost(rejected)) =
-        authenticate(&net, &mallory, &p1, &c).await
+        authenticate(&mut bob_reader, &mallory, &p1, &c).await
     else {
         panic!("Mallory's ownership claim must not authenticate");
     };
@@ -842,7 +904,7 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     }
     drop(mallory_host);
     let Err(ResolveError::NoAuthenticatedHost(rejected)) =
-        authenticate(&net, &alice, &p1, &connector(3, 3)).await
+        authenticate(&mut bob_reader, &alice, &p1, &connector(3, 3)).await
     else {
         panic!("no host is reachable");
     };

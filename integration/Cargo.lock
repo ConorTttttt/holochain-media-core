@@ -2590,6 +2590,7 @@ dependencies = [
  "holochain-content-moq",
  "holochain-content-retrieval",
  "holochain-moq-realtime",
+ "holochain_client",
  "moq-native-ietf",
  "moq-transport",
  "serde",

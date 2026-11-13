@@ -10,8 +10,16 @@
 //! * the installed app's storage cell must have the caller-pinned DNA hash;
 //! * every record's `author` is the coordinator zome's
 //!   `record.action().author()` for a validated record, not a body field;
-//! * signing credentials only authorise this client's zome calls; no artist,
-//!   host or content key is involved.
+//! * signing credentials are restricted to the four read functions in
+//!   [`READ_FUNCTIONS`] (`GrantedFunctions::Listed`), so the resolver cannot
+//!   author entries, links or private-inbox messages as the reader; no artist,
+//!   host or content key is involved;
+//! * an existing app interface for this app and origin is reused rather than
+//!   attaching a new listener per connection.
+//!
+//! Each [`ConductorResolver::connect`] commits one assigned cap grant to the
+//! reader's source chain (the signing key exists only in this process).
+//! Create one resolver per process lifetime and reuse it.
 //!
 //! Connection or call failures surface as [`MetadataError`] (availability),
 //! never as a binding/authorisation denial.
@@ -21,7 +29,7 @@
 use holo_hash::{ActionHash, AgentPubKey};
 use holochain_client::{
     AdminWebsocket, AllowedOrigins, AppWebsocket, AuthorizeSigningCredentialsPayload, CellInfo,
-    ClientAgentSigner, DynAgentSigner, ExternIO, ZomeCallTarget,
+    ClientAgentSigner, DynAgentSigner, ExternIO, GrantedFunctions, ZomeCallTarget,
 };
 use holochain_content_core::binding::ConductorRecord;
 use holochain_content_core::PackageId;
@@ -34,6 +42,14 @@ use std::net::SocketAddr;
 pub const ORIGIN: &str = "holochain-media-core-reader";
 /// Music S2 coordinator zome name.
 pub const STORAGE_ZOME: &str = "music_storage";
+/// The only zome functions the resolver's signing credentials may call.
+pub const READ_FUNCTIONS: [&str; 4] = [
+    "get_signing_keys",
+    "get_file_commitments",
+    "get_replica_claims",
+    "get_moq_endpoints",
+];
+
 /// Upper bound on records accepted from one zome call.
 pub const MAX_RECORDS_PER_CALL: usize = 1024;
 
@@ -119,20 +135,36 @@ impl ConductorResolver {
         let credentials = admin
             .authorize_signing_credentials(AuthorizeSigningCredentialsPayload {
                 cell_id: cell.clone(),
-                functions: None,
+                // Least privilege: never `None` (which means *all* functions,
+                // including writes and the private inbox senders).
+                functions: Some(GrantedFunctions::Listed(
+                    READ_FUNCTIONS
+                        .iter()
+                        .map(|f| (STORAGE_ZOME.into(), (*f).into()))
+                        .collect(),
+                )),
             })
             .await
             .map_err(|e| unavailable("authorize signing credentials", e))?;
         signer.add_credentials(cell.clone(), credentials);
-        let app_port = admin
-            .attach_app_interface(
-                0,
-                None,
-                AllowedOrigins::from(ORIGIN.to_string()),
-                Some(target.app_id.clone()),
-            )
+        let origins = AllowedOrigins::from(ORIGIN.to_string());
+        let existing = admin
+            .list_app_interfaces()
             .await
-            .map_err(|e| unavailable("attach app interface", e))?;
+            .map_err(|e| unavailable("list app interfaces", e))?
+            .into_iter()
+            .find(|i| {
+                i.installed_app_id.as_deref() == Some(target.app_id.as_str())
+                    && i.allowed_origins == origins
+            })
+            .map(|i| i.port);
+        let app_port = match existing {
+            Some(port) => port,
+            None => admin
+                .attach_app_interface(0, None, origins, Some(target.app_id.clone()))
+                .await
+                .map_err(|e| unavailable("attach app interface", e))?,
+        };
         let token = admin
             .issue_app_auth_token(target.app_id.clone().into())
             .await
