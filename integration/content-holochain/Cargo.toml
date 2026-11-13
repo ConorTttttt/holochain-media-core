@@ -1,0 +1,15 @@
+[package]
+name = "holochain-content-holochain"
+description = "Read-only conductor resolver: Music S2 storage DNA records via an authenticated app WebSocket"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+holochain-content-core = { workspace = true }
+holochain-content-retrieval = { workspace = true }
+holochain_client = { workspace = true }
+holo_hash = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
