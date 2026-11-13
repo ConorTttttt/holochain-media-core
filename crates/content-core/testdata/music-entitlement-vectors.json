@@ -1,0 +1,1835 @@
+{
+ "agents": {
+  "alice": "uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000",
+  "bob": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+  "mallory": "uhCAkMalloryAgentForCore005TestsOnly00000000000000000"
+ },
+ "cases": [
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_valid_for_stream",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "kind": "stream",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f686b64662d6161642f7631007b22657870697265735f6174223a313736303030313830302c2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f7631227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_valid_at_lower_skew_edge",
+   "note": "issued_at == now + CLOCK_SKEW_SECONDS is accepted",
+   "now": 1759999880,
+   "python": {
+    "kind": "stream",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f686b64662d6161642f7631007b22657870697265735f6174223a313736303030313830302c2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f7631227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_valid_last_second",
+   "note": "",
+   "now": 1760001799,
+   "python": {
+    "kind": "stream",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f686b64662d6161642f7631007b22657870697265735f6174223a313736303030313830302c2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f7631227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"dec6c3103bb2d7daffe23d9d73a9d7955452d3d8d261f7aaf8f1cf437f0c8133\",\"expires_at\":1760086400,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"HrKsW8eglas0U1e1\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"nsVn5IyfPcFAJseGuV5DOA==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"VeRL+Lns1UIottonp03Kzm+C9MW6DNy3TM/iJMKqerBmQS0MD3Zlz5lfXpjtog3n\"},\"signature\":\"IX6yS3zaIdmAPD18Yt6d9Bn1vVIwaMTT3jrkCMQed6MsMz0QN7HzUS9N97Ub3sbOmm1vF3yD3BTyWfvcswSeBw==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_maximum_lifetime",
+   "note": "",
+   "now": 1760086399,
+   "python": {
+    "kind": "stream",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f686b64662d6161642f7631007b22657870697265735f6174223a313736303038363430302c2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f7631227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "q",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"69d16a0272fbef5858bc19f49d5ee2cc19f3f6efdc886dd25eac8fb4aedede39\",\"expires_at\":1760001800,\"file_id\":\"7d18b935c23a2209c85be7ff44e30a00efb0192f13a8ca93c5e265381e40d247\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"bdbac2dfa831547ec6b3ccb60b9b27657edc8fd166c834be545b20656350fccd\",\"nonce_b64\":\"YYvUbC8pwWBnUfpF\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"n1k/dgQEIKlj8DPEUpFICg==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"jyjw4c1qIzIUIiCWD+6lQM69V3FibdWlfX0JV5WeeNNy2od2+VTbcqB6T2ZP0j+6\"},\"signature\":\"uY7zq9wPrYru4rQDABh6BCgvEkZVyqvEX12axhS9CZjyrW37UOiPvKTDuXTQHW6CPf7Zu9ZMj5mEE/9tnA+lCg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_for_package_q",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "kind": "stream",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f686b64662d6161642f7631007b22657870697265735f6174223a313736303030313830302c2266696c655f6964223a2237643138623933356332336132323039633835626537666634346533306130306566623031393266313361386361393363356532363533383165343064323437222c226973737565645f6174223a313736303030303030302c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2262646261633264666138333135343765633662336363623630623962323736353765646338666431363663383334626535343562323036353633353066636364222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f7631227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"a91f9b956bda46bde02d3b0e98708baf5151180f57549fb70a768ffc0520b713\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"n9ytvsgmZQwRdJn7\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"cKcjTl+XL6XicXZJT07Luw==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"hNk5N2GQCI075sBoj3dCwd/UbAGNrBxzx+YCQ7EXkU6F/NilOddDQQFpYzkn+9dC\"},\"signature\":\"VEV7ZwVbURrpOYrfTRu9cWpUyXDO2Rf2NdrDSlW80le8NoHmuHcU9WbqFqjxkPu7BYwN4858bt4H4uAWJ4wSCg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_owner_is_listener",
+   "note": "owner and listener may be the same agent (Music self-licence pattern)",
+   "now": 1760000010,
+   "python": {
+    "kind": "stream",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f686b64662d6161642f7631007b22657870697265735f6174223a313736303030313830302c2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c697374656e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f7631227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"45dca541dd72f7d765a7fca6b59339cb\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"Sd8i7vfo2pJlfjM4otv+BHNw9FcKfGu+FDutBvdeq7+TLAEPjLmmDiATkaJbhxxfxN8c+gFAcXXcPghqMPm9Bg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_valid_for_stream",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "kind": "perpetual-personal",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f686b64662d6161642f7631007b2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c6963656e63655f6964223a223435646361353431646437326637643736356137666361366235393333396362222c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f7631222c227465726d73223a2270657270657475616c2d706572736f6e616c2d757365227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"45dca541dd72f7d765a7fca6b59339cb\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"Sd8i7vfo2pJlfjM4otv+BHNw9FcKfGu+FDutBvdeq7+TLAEPjLmmDiATkaJbhxxfxN8c+gFAcXXcPghqMPm9Bg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_valid_for_managed_offline",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "kind": "perpetual-personal",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f686b64662d6161642f7631007b2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c6963656e63655f6964223a223435646361353431646437326637643736356137666361366235393333396362222c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f7631222c227465726d73223a2270657270657475616c2d706572736f6e616c2d757365227d",
+   "right": "managed-offline",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"45dca541dd72f7d765a7fca6b59339cb\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"Sd8i7vfo2pJlfjM4otv+BHNw9FcKfGu+FDutBvdeq7+TLAEPjLmmDiATkaJbhxxfxN8c+gFAcXXcPghqMPm9Bg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_valid_for_export",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "kind": "perpetual-personal",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f686b64662d6161642f7631007b2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c6963656e63655f6964223a223435646361353431646437326637643736356137666361366235393333396362222c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f7631222c227465726d73223a2270657270657475616c2d706572736f6e616c2d757365227d",
+   "right": "export",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"45dca541dd72f7d765a7fca6b59339cb\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"Sd8i7vfo2pJlfjM4otv+BHNw9FcKfGu+FDutBvdeq7+TLAEPjLmmDiATkaJbhxxfxN8c+gFAcXXcPghqMPm9Bg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_does_not_expire_a_century_later",
+   "note": "",
+   "now": 4913600000,
+   "python": {
+    "kind": "perpetual-personal",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f686b64662d6161642f7631007b2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c6963656e63655f6964223a223435646361353431646437326637643736356137666361366235393333396362222c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f7631222c227465726d73223a2270657270657475616c2d706572736f6e616c2d757365227d",
+   "right": "export",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"45dca541dd72f7d765a7fca6b59339cb\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"Sd8i7vfo2pJlfjM4otv+BHNw9FcKfGu+FDutBvdeq7+TLAEPjLmmDiATkaJbhxxfxN8c+gFAcXXcPghqMPm9Bg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_valid_at_lower_skew_edge",
+   "note": "",
+   "now": 1759999880,
+   "python": {
+    "kind": "perpetual-personal",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f686b64662d6161642f7631007b2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c6963656e63655f6964223a223435646361353431646437326637643736356137666361366235393333396362222c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f7631222c227465726d73223a2270657270657475616c2d706572736f6e616c2d757365227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"34fab3901c5a67b755cdc4dbe6605cd63593a4f9b5e2ee869804e542922ba463\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":0,\"licence_id\":\"97454e1e0506bc5cf1262170badee9da\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"8Qba7GQ0rlyFIjEs\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"cg3zniLDnjhwLBdVooZEWw==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"POoB0GvHkhppJJkWnWFSLTnpq5vMuxJmWvOADqildWPfaMghah/HmSeJ26GLHA3F\"},\"signature\":\"xJCL0YARkHTGqb+K6iFF12il4reM9HKRzU5PZ2wOHDbuRIDhPJ6IFWoGs9l5YQyY594jZG+e//0JUHFO+2mbBQ==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_epoch_issued_at_parity",
+   "note": "Music accepts any integer issued_at not in the future for licences; Rust matches",
+   "now": 1760000010,
+   "python": {
+    "kind": "perpetual-personal",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f686b64662d6161642f7631007b2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a302c226c6963656e63655f6964223a223937343534653165303530366263356366313236323137306261646565396461222c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f706572736f6e616c2d6c6963656e63652f7631222c227465726d73223a2270657270657475616c2d706572736f6e616c2d757365227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "validity",
+    "decision": "rejected",
+    "reason": "Expired"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_expired_at_expires_at",
+   "note": "",
+   "now": 1760001800,
+   "python": {
+    "error": "grant is expired or outside its validity window",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "validity",
+    "decision": "rejected",
+    "reason": "Expired"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_expired_long_ago",
+   "note": "",
+   "now": 1760864000,
+   "python": {
+    "error": "grant is expired or outside its validity window",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "validity",
+    "decision": "rejected",
+    "reason": "NotYetValid"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_issued_in_future_beyond_skew",
+   "note": "",
+   "now": 1759999879,
+   "python": {
+    "error": "grant is expired or outside its validity window",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "validity",
+    "decision": "rejected",
+    "reason": "NotYetValid"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"45dca541dd72f7d765a7fca6b59339cb\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"Sd8i7vfo2pJlfjM4otv+BHNw9FcKfGu+FDutBvdeq7+TLAEPjLmmDiATkaJbhxxfxN8c+gFAcXXcPghqMPm9Bg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_issued_in_future_beyond_skew",
+   "note": "",
+   "now": 1759999879,
+   "python": {
+    "error": "invalid licence terms or issue time",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "export",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "validity",
+    "decision": "rejected",
+    "reason": "InvalidPeriod"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760000000,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"qRq8sl9nkDmCz9tHhPnytCoAYLK3VRNxsJhamaSasRm71Emez+gr4dvehwX+JdYX49M4G4M5LlvaV5l48IZwBA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_zero_lifetime",
+   "note": "",
+   "now": 1759999940,
+   "python": {
+    "error": "grant is expired or outside its validity window",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "validity",
+    "decision": "rejected",
+    "reason": "InvalidPeriod"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1759999995,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"kuWuM/+Fciwu35SqxopS3/tu2JsA9nHk/iC0tw0LPNNaZOvLdeFhwJIopV0Dq6zeWFc+JRw2uQuFO6gSeKhxDg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_negative_lifetime",
+   "note": "",
+   "now": 1759999940,
+   "python": {
+    "error": "grant is expired or outside its validity window",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "validity",
+    "decision": "rejected",
+    "reason": "InvalidPeriod"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760086401,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"lOotdFAAp26cRG1rN43FRcySX1Hb0QbzhXyrVgwT3XBc9MxvBmiA3ZtxaGfNpjJaZJL85dGAktCEcZHlqatEBQ==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_lifetime_exceeds_maximum",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant is expired or outside its validity window",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "validity",
+    "decision": "rejected",
+    "reason": "InvalidTimestamp"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":\"1760000000\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"5nXYkkdHyXpfU/UqLt7AZaLAwO8jnTgLOe9qAGcmxAjRz5xhhiXSqUVai/xTrDy4Bs/h15vFAxI2eq1pFFaOBQ==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_string_timestamp",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant timestamps",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "validity",
+    "decision": "rejected",
+    "reason": "InvalidTimestamp"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":true,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"fU6gk42iOeurd3dQ/BRhXaqsRTB+HtQw9pKkhY0xdiTXJ32i3Jhq5TiUe+mFQBPzWuOFixFPkVn0Q1IYTy1PCw==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_boolean_timestamp",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant timestamps",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "validity",
+    "decision": "rejected",
+    "reason": "InvalidTimestamp"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":null,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"ZA88kBEq1Wb9GwSLi1RzmFimIC2IgN3izdPlUXNkWWQzrHKbyWpinYs3WbWjFpQK+Wo/2kHA1zDWjECK7r61Bg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_null_timestamp",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant timestamps",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "NonCanonicalNumber"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000.5,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"TzerE0B5j5AnveO5Bi4Ub9TWBGEJr1iGTuZg7ffv6yFrR4KErXPW8yYApRaA+Dwq6UcXrebsfFM3V5n1XA4kAQ==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_float_timestamp",
+   "note": "Music signs 1760000000.5; Rust refuses to canonicalise floats (CORE-002 rule)",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant timestamps",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "validity",
+    "decision": "rejected",
+    "reason": "InvalidTimestamp"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":9223372036854775808,\"licence_id\":\"45dca541dd72f7d765a7fca6b59339cb\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"xFoVnbcTdvGYxP0vmFWzUh1ULsuzJuMQFr7gdIAxE5pNpzmQC8gdIWqvDoG87zk7mLAbsLEELo+tZFaCg3MvBA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_timestamp_beyond_i64",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid licence terms or issue time",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "divergence": "python-accepts-out-of-range-licence-issued-at",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "NonCanonicalNumber"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"6c490463f0666e1b3e4dccffd15d3a6e419b8dab9620a9301ed96b47b34c775e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":-10000000000000000000,\"licence_id\":\"507e9c22f62be08a4129c8717998b985\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"O7J3+k6roOSD3CCY\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"B4YmjjajBooSLzlympCmKA==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"vZoZ9YqA2zYa5k0TIrGD394MvBNVb6tyPS4PCVLEzOzn5dWDp5NTGDgDRF7QfzlB\"},\"signature\":\"57/Gb7iCTn7Eao+5RnwsqWrzliQbU79YwbUr19ldhFQji1ppEpi4sP2XFAeP95hqHRYGEFpx+Q8HyELcT9zBBA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_negative_timestamp_beyond_i64",
+   "note": "Music accepts any past integer; serde_json reads < i64::MIN as a float, which Rust refuses to canonicalise. Owner-signed only; Music never issues it.",
+   "now": 1760000010,
+   "python": {
+    "kind": "perpetual-personal",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "WrongIssuer"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"Rtv8iAomJSP5o+OP61l0Nby3LuiKNGONto7FL+RGnXqD6OCkhmSiFUgVmKToGYHbUxQcNSzj3llXCwhpIzDIAQ==\",\"signer\":\"F8t5+ytBIPKx7GXkGY1uCLKOgT/rAeSkAIObheGAgM4=\"}",
+   "name": "grant_signed_by_mallory_key",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not signed by registered artist",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "WrongIssuer"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"3abadd7c90a0f94caf1dec5a8e880df71b3d820942fee47f550fefbf5f5fc861\",\"expires_at\":1760001800,\"file_id\":\"f78bace8ac9345979438580c1a2a5d50f44e8a45308a6d613a08971842cc08e3\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"e1e5f590effafc05bf149e386d703ec89f2f254ce4a59e37571c7a28d968fc00\",\"nonce_b64\":\"1R1bvt97oMFFswQ/\",\"owner_agent\":\"uhCAkMalloryAgentForCore005TestsOnly00000000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"z0AZBXQbWofuRMKCXwXOhA==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"UqEiE0WIUyeS9hj6kf6SjmGN9wOYeo0YG3C1sQS4byaVHdsxD6JCXJXbUKqZGfZV\"},\"signature\":\"J7UW/eVqGJYmwNmQz85aim6mCHpt3F6XoWRiHNLqHO7urne3c7Zy31HiB/fbWRaPbq3/mqT2qSNmEhdpXF4uBA==\",\"signer\":\"F8t5+ytBIPKx7GXkGY1uCLKOgT/rAeSkAIObheGAgM4=\"}",
+   "name": "mallory_substitutes_her_own_package_grant",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not signed by registered artist",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "InvalidSignature"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"Rtv8iAomJSP5o+OP61l0Nby3LuiKNGONto7FL+RGnXqD6OCkhmSiFUgVmKToGYHbUxQcNSzj3llXCwhpIzDIAQ==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "forged_signature_under_alice_signer",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant signature or key authentication failed",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "InvalidSignature"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "all_zero_signature",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant signature or key authentication failed",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "MalformedSignature"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "truncated_signature_63_bytes",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant encoding or cryptographic field",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "MalformedSignature"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "signature_not_base64",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant encoding or cryptographic field",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "MalformedIssuerKey"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hw==\"}",
+   "name": "signer_field_wrong_length",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant encoding or cryptographic field",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "WrongIssuer"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"F8t5+ytBIPKx7GXkGY1uCLKOgT/rAeSkAIObheGAgM4=\"}",
+   "name": "signer_field_claims_mallory",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not signed by registered artist",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzd=\"}",
+   "name": "signer_field_noncanonical_base64_parity",
+   "note": "decodes to Alice's key in both implementations",
+   "now": 1760000010,
+   "python": {
+    "kind": "stream",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f686b64662d6161642f7631007b22657870697265735f6174223a313736303030313830302c2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f7631227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "InvalidSignature"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkMalloryAgentForCore005TestsOnly00000000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "modified_listener_without_resign",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant signature or key authentication failed",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkMalloryAgentForCore005TestsOnly00000000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "InvalidSignature"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760005400,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "modified_expiry_without_resign",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant signature or key authentication failed",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "InvalidSignature"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"ff2ee45601ec1b67310c7790404585ae697331eee1c1f8cf2419731c1fff3e6b\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "modified_recipient_without_resign",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant signature or key authentication failed",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "ff2ee45601ec1b67310c7790404585ae697331eee1c1f8cf2419731c1fff3e6b"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unauthenticated",
+    "decision": "rejected",
+    "reason": "InvalidSignature"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"abababababababababababababababab\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_relabelled_as_licence",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant signature or key authentication failed",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "export",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "OwnerMismatch"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"84732c4f0de315df5aeb9a2e35b87015f3f69c62296466c9f3b4aa63254c0b41\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"soeLwW7y5Wvq4mQ4\",\"owner_agent\":\"uhCAkMalloryAgentForCore005TestsOnly00000000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"q8mEElEgGaGaviPnIH6m8w==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"T1cVMNYXcvSJgEViJu3FMHGmGsLmGyHf5o6/inOibk6edHBG/mIgVQGro5eR1bJ0\"},\"signature\":\"srTcLUFlSb3JHSb9bfxCYl7SyEqfSJorKLDx0/NENM5dP11juhTWQ+NQXNSKRianunnGW1duhAqAXGSqrqZaCA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "wrong_owner_agent_in_alice_signed_grant",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not valid for this listener/owner/file",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "FileMismatch"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"ec8e434fd30013f63cc79529a63677a4ef78b0713113cb755e5c091e0a5e3e20\",\"expires_at\":1760001800,\"file_id\":\"7d18b935c23a2209c85be7ff44e30a00efb0192f13a8ca93c5e265381e40d247\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"bdbac2dfa831547ec6b3ccb60b9b27657edc8fd166c834be545b20656350fccd\",\"nonce_b64\":\"sPnbWyJrdDCQhwPt\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"RgUcqwhsQqwjLBEBKCS9vQ==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"ab+DWYHWVBLGbB+7Fr9i1VYQvFWDKdK3JOYWggEboz4LpIpI1dQEm2K7yVv9oj9u\"},\"signature\":\"LSGGjm33BM2A/Qtr76aLa9egi4f/xnFskqVsSytpa1+eV+X9DQpApRFJFazr7gj4BsJzTpsvgNiJgr+jgknbCg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "replay_grant_for_other_package",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not valid for this listener/owner/file",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "FileMismatch"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"faefa2f62690df1ddb471153163633d83f64ea5c9d8ad6fbfa16ff2d4c79ab12\",\"file_id\":\"7d18b935c23a2209c85be7ff44e30a00efb0192f13a8ca93c5e265381e40d247\",\"issued_at\":1760000000,\"licence_id\":\"591f08f90278e0275596ce99b0a0046f\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"bdbac2dfa831547ec6b3ccb60b9b27657edc8fd166c834be545b20656350fccd\",\"nonce_b64\":\"f1covJWwU1Zfqu0B\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"rffU6aWzkF9+FF2zwWl8/Q==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"JGRW9dR4mvh716xG//j4QMQ+ftHvshp+8NxtaZIIL4F2WwrKZFs/l2UG5W72ojPX\"},\"signature\":\"6ku30dg/GRKcMK77BfoQm4tEkIfvqmJYb5E7YWgABHxBsq5DS2QE647HnsZIvJjEUgRqN123KVlJyyCjcMcGAA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "replay_licence_for_other_package",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not valid for this listener/owner/file",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "export",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "FileMismatch"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"D3B12Da/lI6Wn3jhlWLRChbLn8iw+lHUkjW+b2mnpfAZtttBWz89JkyMaHNAhAyWs/gRprLWBHcaJXZE3WzoCA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "wrong_file_id_resigned",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not valid for this listener/owner/file",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "ManifestMismatch"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"aRjM/OQj9unmu17Rc7m32ld0XSly9WN18oKSlLPmDld5rF3JtcxhXRhq4dgXaHtGFHcw7aLdVc3S8gcajE68BQ==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "wrong_manifest_digest_resigned",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not valid for this listener/owner/file",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "ManifestMismatch"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54CBB0BF79BFFB65B6AEC37400EB5E1B5763B18ECC352B85A27108921C7BECB9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"hNbaHc3KIpVfcfNaKVv/8uwGj9CET4OiCEHlOT5SjtwBUL/TLfl3r9ghgyQ8L/kTTTdIKPwwbDT9SZJp/LhlAA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "uppercase_manifest_digest_resigned",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not valid for this listener/owner/file",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "ListenerMismatch"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "wrong_listener_agent",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not valid for this listener/owner/file",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkMalloryAgentForCore005TestsOnly00000000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "ListenerMismatch"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "mallory_presents_bobs_grant",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not valid for this listener/owner/file",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkMalloryAgentForCore005TestsOnly00000000000000000",
+    "recipient_key_hex": "ff2ee45601ec1b67310c7790404585ae697331eee1c1f8cf2419731c1fff3e6b"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "ListenerMismatch"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"45dca541dd72f7d765a7fca6b59339cb\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"Sd8i7vfo2pJlfjM4otv+BHNw9FcKfGu+FDutBvdeq7+TLAEPjLmmDiATkaJbhxxfxN8c+gFAcXXcPghqMPm9Bg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "mallory_presents_bobs_licence",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not valid for this listener/owner/file",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "export",
+   "subject": {
+    "listener_agent": "uhCAkMalloryAgentForCore005TestsOnly00000000000000000",
+    "recipient_key_hex": "ff2ee45601ec1b67310c7790404585ae697331eee1c1f8cf2419731c1fff3e6b"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "RecipientKeyMismatch"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "wrong_recipient_public_key",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not addressed to this X25519 reader",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "ff2ee45601ec1b67310c7790404585ae697331eee1c1f8cf2419731c1fff3e6b"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "RecipientKeyMismatch"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"4f16050ba5ef36c9849c744422686bb75cf77cee1a1d39f988774e43e9d77b39\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"b4uwy7Tu9SBiv8ly\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"ff2ee45601ec1b67310c7790404585ae697331eee1c1f8cf2419731c1fff3e6b\",\"salt_b64\":\"Z0m/l7jA5TC9cnhA7U+/Mw==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"gfeybJjBvrAafm1VHbyMKrJDS15wQ9VPtrhpjywHU8xgdkRQQjtWHVHdplU3z+JS\"},\"signature\":\"c65O0Mmtap3Fmxi5sEcDQQfci4HkbcEfJ+Rdx1q73Jnxg5e/FLe55UB0hy2xG3p4B8jLehBB28T2o5CllyG8AA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "grant_addressed_to_mallory_key",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not addressed to this X25519 reader",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "RecipientKey"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0FAA684ED28867B97F4A6A2DEE5DF8CE974E76B7018E3F22A1C4CF2678570F20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"TPg0x2VU48VpLuoiy1/eQVcU1A19NjFSJ79rkhw09JG0lXO4d1ThdVEGv/hX3yA+WrE9qND3YuxySDbd8f09CQ==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "uppercase_recipient_key_resigned",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid recipient public key",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "RecipientKey"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"NM/PTfJYUaL/YSttrDE9etqC5/URwuXFOAe/oZbAPp6S4MXnuhROyOJMKeOV+d/C+XkGUP2cm58TAXrfWGZuBw==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "short_recipient_key_resigned",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid recipient public key",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "EphemeralKey"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"64ygTpD2o9dBrI1QlX4b34c1jPDVBslsn75kHpW3zq0t918cINdZs9gfkz/tf/KXhGt6mnJbicjZmh5U+ccKAw==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "invalid_ephemeral_key_resigned",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid ephemeral public key",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "RightNotGranted"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_does_not_confer_managed_offline",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "kind": "stream",
+    "right_allowed": false,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "right": "managed-offline",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "RightNotGranted"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "stream_grant_does_not_confer_export",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "kind": "stream",
+    "right_allowed": false,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "right": "export",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "denied",
+    "decision": "rejected",
+    "reason": "RightNotGranted"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"f6021fd3f82365792a1663fe58850cc7f881c45593859b31390198b62c54fb28\",\"expires_at\":1760086400,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"MM8Tr+1cTvOu4GRR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"AUUPrNbeoUfh1d5vMUpDVQ==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"MZfQPM4h8Htvfk5VQzkbBRia3Q73f9KsShGnlU7jSfn43ZQZkTbbNWSNHjQ4Laf7\"},\"signature\":\"1dY5CgG9aA07XrX6rkL9koxtpdP14Ley5xuTFk0l8FHkLNn5OHeggGly2XRgrInDL0642LRlzxyVqtIeLN3TBw==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "max_lifetime_grant_does_not_confer_export",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "kind": "stream",
+    "right_allowed": false,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "right": "export",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unsupported",
+    "decision": "rejected",
+    "reason": "LicenceTerms"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"45dca541dd72f7d765a7fca6b59339cb\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"commercial-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"BndDAWQeDKctWM9iQ805OvcqDiJQVPRhc5k+9ZnQxisj+XcQeHyOIyN5b+quovNCQkZgTByll0a2SE13sxgzBg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_unknown_terms",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid licence terms or issue time",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "export",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "LicenceId"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"45DCA541DD72F7D765A7FCA6B59339CB\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"7ErAWP6gnLHK4m2qFtkvAl0Vk6ohNUHqbQjP0yc+TfEkR+NHtBnDZBRMFFG2+GztgUuMvnBfHmME1hTWyyplCQ==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_uppercase_licence_id",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid licence ID",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "LicenceId"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"ababababababababababababababab\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"j7Bjdyw3MLmBBffTJABd/qV7j+JfmT6UztC464OPE1rUvbgfgmXYiLd9a0rhJoReFiaARbPWi43P43WaIvgVBg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_short_licence_id",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid licence ID",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unsupported",
+    "decision": "rejected",
+    "reason": "UnknownSchema"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v2\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"EOOi+sEeDdyaw+wX/074YczFpkMct8exJSWaMTEPuZ/3WzmgfKynqqsmTnSU6UTq2eWMztnbQty2/pVAPcXfCw==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "unsupported_schema_version",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not valid for this listener/owner/file",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Structure"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"gW+I2k9p+xsyHJokr6NZgvRz9wqXEn526Ea07l6d9V6fJIh9McxQXF/Iwmde1CJFUSIjyDfpqMTy2mHmvGzmBA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "missing_schema",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant body",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "unsupported",
+    "decision": "rejected",
+    "reason": "LegacyPerpetualGrant"
+   },
+   "grant_text": "{\"body\":{\"buyer_public_key\":\"D6poTtKIZ7l/Smot7l34zpdOdrcBjj8iocTPJnhXDyA=\",\"ephemeral_public_key\":\"l0j3Og+vg+jdsorDIxVEiiO1jPeZOOOHUNbOtSkWGDQ=\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"granted_at\":\"2026-11-13T17:31:41+00:00\",\"license\":\"perpetual-personal-use\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce\":\"SKNXxMwHP3X25lUz\",\"schema\":\"holochain-music/personal-perpetual-grant/v1\",\"wrapped_key\":\"Q2G7ZU054cs8UuNHdM2P2X5AyN5E36K58iZWYGYY+WYE/W4sBc3y6Z9Df7iUOdFR\"},\"signature\":\"4ADFrxem/YF/Ah/xnCe3W5mrS2ohjbH365/P2uKkSJQn0Kf3U97H1DNYM0ZVp1n83Ctzpc411xwDTLxnmXm4Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "legacy_personal_perpetual_grant_v1",
+   "note": "holochain_storage/grant.py prototype schema: no owner/listener agent binding",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant body",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "export",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Structure"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"note\":\"hello\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"gqyHV1IyliUPQcN+YQsD005OuX+F5oXjqPLAPy5aFJi9Ak8v1bLP9sH08fpp682Y4BR3AVn8jNzdbus4gv6kCQ==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "unexpected_body_field",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant body",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Structure"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"76d8609f331ec19bd99f1f4206c43b352a26dce6e8075d4f663e54ff74a68e4e\",\"expires_at\":1760000060,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"licence_id\":\"45dca541dd72f7d765a7fca6b59339cb\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"Huh+EPRR9R0i6EnR\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"2SMuwNv9HhZSgvRA9gOgAQ==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"4ss3veavKC8ix684z8UVv6NlnV9pBFaQt8VxFKHq3dh5v4FokuyiRUJ5q2oLm5qb\"},\"signature\":\"9EUY4hGzHxf0fgSjZBv3JCjfm62/wLsAy8+qQInVMDZP7DDLRu9GfRmd3XAKGz0J/6mQgYM9MQheNc8Dxcx3Aw==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "licence_with_expiry_field",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant body",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Structure"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"swupRTIKSdCXeAR5wWPsT44JaUfpIh0HV0jZF8pZaPx7+1woYLttxbi+/8Byy1W1viF3gWCD3MEqW/qcElE9BA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "missing_body_field",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant body",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Structure"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":7,\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"nV6hTz7ngxU/AZHjr5uro31GZDEa/M4KzJKI0zeJSlmVx8SH/vsXLRbsNseKYO9BGn6qgt+/IeDwPiYIP9u0Aw==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "non_string_agent_resigned",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant not valid for this listener/owner/file",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Structure"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"note\":\"unsigned\",\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "unexpected_envelope_field",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant envelope",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Structure"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "missing_signature_field",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant envelope",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Json"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentFo",
+   "name": "truncated_envelope",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "json: JSONDecodeError",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Json"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}x",
+   "name": "trailing_garbage",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "json: JSONDecodeError",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Structure"
+   },
+   "grant_text": "[{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}]",
+   "name": "json_array_not_object",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant envelope",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Json"
+   },
+   "grant_text": "",
+   "name": "empty_input",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "json: JSONDecodeError",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "divergence": "rust-rejects-duplicate-json-keys",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Structure"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkMalloryAgentForCore005TestsOnly00000000000000000\",\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "duplicate_body_key_signed_value_last",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "kind": "stream",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Structure"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"listener_agent\":\"uhCAkMalloryAgentForCore005TestsOnly00000000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "duplicate_body_key_signed_value_first",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "grant signature or key authentication failed",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "divergence": "rust-rejects-duplicate-json-keys",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "Structure"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "duplicate_envelope_key",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "kind": "stream",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "TooLarge"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"dQ7i4Ra/AHsqKkHRGT0E2T9J1GhnaHMxwdE1FwxtoQskzLYGhPM5WNzHY8Kde+Fgn72DZE4uXF9uoeDCf9FeBA==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "oversized_canonical_grant",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "oversized grant",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "divergence": "rust-caps-raw-input-at-music-library-read-limit",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "TooLarge"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 \"expires_at\":1760001800,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 \"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 \"issued_at\":1760000000,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 \"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"+rxHm7EQNofX94NRbOfSVzjz1+w1aNdhWfR4lnv9RA+3pO/2oom0k7M9BAqAf4S+B8TClYg898sZDnwwccV8Cg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "oversized_raw_input_whitespace",
+   "note": "Music's Library.grant() refuses files > 16 KiB; unwrap_content_grant alone accepts",
+   "now": 1760000010,
+   "python": {
+    "kind": "stream",
+    "right_allowed": true,
+    "unwrap": "ok",
+    "unwrapped_key_matches_content_key": true
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "KeyEnvelope"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\"},\"signature\":\"hZiaTbIKznRKWoVjDldUevz6GngU80H4M5phtlUzxKJYAPR4Nizxsnnlo1Slfknnet1JHG0czn0njA2x6BdXDw==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "wrapped_key_wrong_length_resigned",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant encoding or cryptographic field",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "KeyEnvelope"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"***\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"6tIY7ofDYF4DHIW/8UojG9gOLh6nJkAm6gejdWUTr/yd74moJs5pFivPclZ2V8nsfUonQGD5GEl4pGaFfyyNBw==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "salt_not_base64_resigned",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant encoding or cryptographic field",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "expect": {
+    "category": "malformed",
+    "decision": "rejected",
+    "reason": "KeyEnvelope"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"AAAAAAAAAAAAAAA=\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"0YCnqmYYVKo1EdRc/jzg2uh1r+P2WAD0zt4yv8GKzlq4g7nLf++Gm3l0a7TzR+Sv/LlnMPKqY+CNy660c5XlDQ==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "nonce_wrong_length_resigned",
+   "note": "",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant encoding or cryptographic field",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "divergence": "key-unwrap-boundary",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"e06c3c01e22c05a7fb906ed2c9d11854f21e65d7d6d97bdf8f3ad6a78b83291c\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XAZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"TqFx1RfsULJR1avNIktlHnGAnjnXSNdRxGnB03Gyr2TxOe/GXRPFzfHOPj7ifP77UHQiZbIbTeC35rbItP7ICg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "wrapped_key_corrupted_but_owner_signed",
+   "note": "CORE-005 authorises the signed policy only; Music's AES-GCM unwrap then rejects",
+   "now": 1760000010,
+   "python": {
+    "error": "grant signature or key authentication failed",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f686b64662d6161642f7631007b22657870697265735f6174223a313736303030313830302c2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f7631227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  },
+  {
+   "content": "p",
+   "divergence": "key-unwrap-boundary",
+   "expect": {
+    "decision": "authorized"
+   },
+   "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"expires_at\":1760001800,\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForCore005TestsOnly000000000000\",\"manifest_sha256\":\"54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9\",\"nonce_b64\":\"xLnh0E9/PYSKeKAG\",\"owner_agent\":\"uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000\",\"recipient_key_hex\":\"0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20\",\"salt_b64\":\"3qMIX+pPNjInvXwo8Yki9g==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"XQZsloja8Glul9SPOuRsRWK1NMvm/zuDqRE74ToYQJJr+2IasggIsqBhL4rwvUzh\"},\"signature\":\"QrioHgUkdBc2ZljdbY//NdYOtAWeHHr9glTqact9C8l3lsb9XvNsV3uFwRfLCTsBrVnLXB4nzDOYD9hX2+HXAg==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "name": "ephemeral_key_low_order_but_owner_signed",
+   "note": "X25519 exchange with a low-order point fails only at unwrap time",
+   "now": 1760000010,
+   "python": {
+    "error": "invalid grant encoding or cryptographic field",
+    "right_allowed": false,
+    "unwrap": "rejected"
+   },
+   "python_hkdf_context_hex": "686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f686b64662d6161642f7631007b22657870697265735f6174223a313736303030313830302c2266696c655f6964223a2263353961326565303061313165376561356265323335616531626430356266363732653438626133653635316663633662656665313932626632343637643634222c226973737565645f6174223a313736303030303030302c226c697374656e65725f6167656e74223a22756843416b426f624c697374656e65724167656e74466f72436f726530303554657374734f6e6c79303030303030303030303030222c226d616e69666573745f736861323536223a2235346362623062663739626666623635623661656333373430306562356531623537363362313865636333353262383561323731303839323163376265636239222c226f776e65725f6167656e74223a22756843416b416c6963654f776e65724167656e74466f72436f726530303554657374734f6e6c7930303030303030303030303030222c22726563697069656e745f6b65795f686578223a2230666161363834656432383836376239376634613661326465653564663863653937346537366237303138653366323261316334636632363738353730663230222c22736368656d61223a22686f6c6f636861696e2d6d757369632f636f6e74656e742d6772616e742f7631227d",
+   "right": "stream",
+   "subject": {
+    "listener_agent": "uhCAkBobListenerAgentForCore005TestsOnly000000000000",
+    "recipient_key_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20"
+   }
+  }
+ ],
+ "clock_t0": 1760000000,
+ "constants": {
+  "clock_skew_seconds": 120,
+  "grant_schema": "holochain-music/content-grant/v1",
+  "legacy_grant_schema": "holochain-music/personal-perpetual-grant/v1",
+  "licence_schema": "holochain-music/personal-licence/v1",
+  "licence_terms": "perpetual-personal-use",
+  "max_grant_bytes": 4096,
+  "max_lifetime_seconds": 86400
+ },
+ "content": {
+  "p": {
+   "file_id": "c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64",
+   "manifest_sha256": "54cbb0bf79bffb65b6aec37400eb5e1b5763b18ecc352b85a27108921c7becb9",
+   "manifest_text": "{\"body\":{\"chunk_size\":16,\"chunks\":[{\"cipher_bytes\":32,\"index\":0,\"nonce\":\"1m0pt5BsVeBSuret\",\"plain_bytes\":16,\"sha256\":\"592abaef51334400a3a0c5525f62dd97ca5fce9ae87f5b45f8aa3a85a6a9cfb1\"},{\"cipher_bytes\":32,\"index\":1,\"nonce\":\"h1V0ZfeA8BshN1Yo\",\"plain_bytes\":16,\"sha256\":\"5692a3756e0c0b5e7ea11594bfd65d893903300b607e9194e55172ca84c93ea7\"},{\"cipher_bytes\":32,\"index\":2,\"nonce\":\"c8JlOLz+YnWTuvz+\",\"plain_bytes\":16,\"sha256\":\"23d38e0f948c40c2730b06c5881ea34cb3f56685283d268def8afc6ba2a00b10\"},{\"cipher_bytes\":32,\"index\":3,\"nonce\":\"bsTi4QO9KjLtfThC\",\"plain_bytes\":16,\"sha256\":\"b6b6034000421ac0b1f1a425ce3256e3fe893738ff1ea93375d5e398bc1dd5a4\"},{\"cipher_bytes\":20,\"index\":4,\"nonce\":\"OI8yozjXRTWR8H6T\",\"plain_bytes\":4,\"sha256\":\"c071dbfb2e9f9cf8b477b0a1d068f4f5fdce1e0780a068a77f326f4900e5dc9f\"}],\"cipher\":\"AES-256-GCM\",\"file_id\":\"c59a2ee00a11e7ea5be235ae1bd05bf672e48ba3e651fcc6befe192bf2467d64\",\"schema\":\"holochain-storage/encrypted-package/v1\",\"total_plain_bytes\":68},\"signature\":\"Ztm98+2XxuVkVpPnjO7WFS/fd95Z2XQ43OfxHCsJ8tY60UVugkOXFKExC5tJvjSS2ycSjyeXqLoZGYMAXA//Ag==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "owner_agent": "uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000"
+  },
+  "q": {
+   "file_id": "7d18b935c23a2209c85be7ff44e30a00efb0192f13a8ca93c5e265381e40d247",
+   "manifest_sha256": "bdbac2dfa831547ec6b3ccb60b9b27657edc8fd166c834be545b20656350fccd",
+   "manifest_text": "{\"body\":{\"chunk_size\":16,\"chunks\":[{\"cipher_bytes\":32,\"index\":0,\"nonce\":\"BbrZxBcS5K403gCW\",\"plain_bytes\":16,\"sha256\":\"b5cc65fe8408e799b365ba6e671a2b22702dc78255f992c2d26e350adceb96e0\"},{\"cipher_bytes\":32,\"index\":1,\"nonce\":\"elEn7HiR4uOLyo4u\",\"plain_bytes\":16,\"sha256\":\"d78b242017918c4f3773fcf9396d957ac42ed8dd723d7bc20845537e04ee9b2e\"},{\"cipher_bytes\":32,\"index\":2,\"nonce\":\"378Rd5VPDmZijEx6\",\"plain_bytes\":16,\"sha256\":\"25df67a0bcab49398a5781dfbf84e01bac1e1fe8fb8133f6abe0a8d8e676831d\"},{\"cipher_bytes\":28,\"index\":3,\"nonce\":\"pErlR6q/U2sG96QI\",\"plain_bytes\":12,\"sha256\":\"b3a532246c28bdfa51008d32d3bf361f9b15a70b8edbc634e817aeecaa68ef98\"}],\"cipher\":\"AES-256-GCM\",\"file_id\":\"7d18b935c23a2209c85be7ff44e30a00efb0192f13a8ca93c5e265381e40d247\",\"schema\":\"holochain-storage/encrypted-package/v1\",\"total_plain_bytes\":60},\"signature\":\"T/p0skJZjwUO4mflkaWd3rPSKs8C14HOmtk7c1XSm2ThPp/YTHrlHNEcPnqsZpt6p7szY02HpvWZgMgaoR93Ag==\",\"signer\":\"0EqyMnQrtKs6E2i9RhXk5tAiSrcaAWuvhSCjMsl3hzc=\"}",
+   "owner_agent": "uhCAkAliceOwnerAgentForCore005TestsOnly0000000000000"
+  }
+ },
+ "cryptography_version": "46.0.4",
+ "keys": {
+  "alice_ed25519_public_hex": "d04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737",
+  "bob_x25519_public_hex": "0faa684ed28867b97f4a6a2dee5df8ce974e76b7018e3f22a1c4cf2678570f20",
+  "mallory_ed25519_public_hex": "17cb79fb2b4120f2b1ec65e4198d6e08b28e813feb01e4a400839b85e18080ce",
+  "mallory_x25519_public_hex": "ff2ee45601ec1b67310c7790404585ae697331eee1c1f8cf2419731c1fff3e6b"
+ },
+ "music_commit": "bd7aabc3e9ea1fef1e8e8f674301e1b5ffecb637",
+ "schema": "holochain-media-core/music-entitlement-vectors/v1"
+}
