@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/content-core", "crates/content-retrieval"]
+members = ["crates/content-core", "crates/content-retrieval", "crates/content-cli", "crates/content-release"]
 exclude = ["integration"]
 
 [workspace.package]
