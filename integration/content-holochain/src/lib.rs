@@ -209,7 +209,10 @@ impl ConductorResolver {
 }
 
 impl MetadataSource for ConductorResolver {
-    async fn signing_keys(&mut self, agent_id: &str) -> Result<Vec<ConductorRecord>, MetadataError> {
+    async fn signing_keys(
+        &mut self,
+        agent_id: &str,
+    ) -> Result<Vec<ConductorRecord>, MetadataError> {
         let key = agent(agent_id)?;
         self.records("get_signing_keys", &key).await
     }

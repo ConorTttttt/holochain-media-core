@@ -53,9 +53,12 @@ impl Paths {
             "HOLOCHAIN_MUSIC_REPO",
             manifest_dir.join("../../../holochain-music"),
         );
-        let music = music
-            .canonicalize()
-            .unwrap_or_else(|_| panic!("holochain-music checkout missing at {}; set HOLOCHAIN_MUSIC_REPO", music.display()));
+        let music = music.canonicalize().unwrap_or_else(|_| {
+            panic!(
+                "holochain-music checkout missing at {}; set HOLOCHAIN_MUSIC_REPO",
+                music.display()
+            )
+        });
         let head = Command::new("git")
             .arg("-C")
             .arg(&music)
@@ -312,7 +315,11 @@ impl Drop for MaliciousHost {
     }
 }
 
-fn load_served(manifest_path: &Path, receipt_path: &Path, store: &Path) -> Result<(String, Served)> {
+fn load_served(
+    manifest_path: &Path,
+    receipt_path: &Path,
+    store: &Path,
+) -> Result<(String, Served)> {
     let manifest = fs::read(manifest_path)?;
     let value: Value = serde_json::from_slice(&manifest)?;
     let body = &value["body"];
@@ -356,7 +363,11 @@ async fn serve_track(
             .split(',')
             .map(|i| {
                 let i: usize = i.parse()?;
-                let mut bytes = served.objects.get(i).ok_or_else(|| anyhow!("index"))?.to_vec();
+                let mut bytes = served
+                    .objects
+                    .get(i)
+                    .ok_or_else(|| anyhow!("index"))?
+                    .to_vec();
                 match tamper {
                     Tamper::FlipBit => bytes[0] ^= 0x01,
                 }
@@ -387,7 +398,12 @@ async fn serve_track(
 
 impl MaliciousHost {
     /// `files`: (manifest path, receipt path) pairs, objects read from `store`.
-    pub async fn start(dir: &Path, store: &Path, files: &[(PathBuf, PathBuf)], tamper: Tamper) -> Self {
+    pub async fn start(
+        dir: &Path,
+        store: &Path,
+        files: &[(PathBuf, PathBuf)],
+        tamper: Tamper,
+    ) -> Self {
         let mut catalogue = HashMap::new();
         for (manifest, receipt) in files {
             let (id, served) = load_served(manifest, receipt, store).expect("load Mallory files");
@@ -464,9 +480,18 @@ pub fn ensure_files_bounded(store: &Path, manifest: &VerifiedManifest) -> Result
     let expected: std::collections::HashSet<String> = manifest
         .chunks()
         .iter()
-        .map(|c| c.ciphertext_sha256.iter().map(|b| format!("{b:02x}")).collect())
+        .map(|c| {
+            c.ciphertext_sha256
+                .iter()
+                .map(|b| format!("{b:02x}"))
+                .collect()
+        })
         .collect();
-    ensure!(files.len() == expected.len(), "unexpected file count {}", files.len());
+    ensure!(
+        files.len() == expected.len(),
+        "unexpected file count {}",
+        files.len()
+    );
     for f in files {
         let name = f.file_name().unwrap().to_string_lossy().to_string();
         ensure!(expected.contains(&name), "unexpected file {name}");

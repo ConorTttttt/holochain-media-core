@@ -30,7 +30,8 @@ test-only IPv6 errno shim on this kernel.
 | Root workspace after CORE-004 (fmt, clippy, tests; plus `serde_json/preserve_order`) | pass: core 20, retrieval 10, cli 4, release 4 |
 | Python interop after CORE-004 (with and without `preserve_order`) | pass: core 41 |
 | `integration` `holochain-content-moq` unit tests | pass (2) |
-| `core004_acceptance` (5 conductors, real MoQ hosts) | **pass**, 240.8 s |
+| `core004_acceptance` (5 conductors, real MoQ hosts) | **pass** twice: 240.8 s, and 246.7 s on final code |
+| `integration` workspace fmt + `clippy -D warnings` | pass |
 | Music `python -m unittest discover -s tests` on `main` | 444 OK, 34 skipped |
 | Same on Music CORE-004 branch with adapter enabled | 453 OK, 34 skipped |
 

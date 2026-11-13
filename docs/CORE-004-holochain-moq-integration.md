@@ -190,7 +190,9 @@ verified locally (no network objects are needed).
   interop 41 (core) pass with and without `preserve_order` (includes a test
   pinning finding 2 below).
 * Integration crates: `holochain-content-moq` unit tests 2 pass.
-* `core004_acceptance`: **1 passed** in 240.8 s (5 conductors). Log lines:
+* `core004_acceptance`: **1 passed** in 240.8 s (5 conductors); re-run on the
+  final lint-clean code: **1 passed** in 246.7 s, Python driven from a clean
+  `bd7aabc` checkout. Log lines:
 
 ```
 [core004] Holochain records published and consistent across 5 conductors

@@ -31,12 +31,12 @@ use holochain_content_core::compat::VerifyError;
 use holochain_content_core::storage::VerifiedCas;
 use holochain_content_core::PackageId;
 use holochain_content_holochain::{ConductorResolver, ConductorTarget};
+use holochain_content_moq::MoqHostTransport;
 use holochain_content_moq::{MoqConnector, Timeouts};
 use holochain_content_retrieval::{
     authenticate_content, fetch_verified_content, resolve_content, AuthenticatedContent,
     FetchError, FetchOptions, HostSource, RejectReason, ResolveError, TransportFailure,
 };
-use holochain_content_moq::MoqHostTransport;
 use serde::Serialize;
 use serde_json::Value;
 use std::{
@@ -199,9 +199,13 @@ async fn authenticate(
     c: &MoqConnector,
 ) -> Result<AuthenticatedContent<MoqHostTransport>, ResolveError> {
     let mut resolver = net.bob_resolver().await;
-    let resolved =
-        resolve_content(&mut resolver, owner, package_id(pkg), EndpointPolicy::LoopbackOnly)
-            .await?;
+    let resolved = resolve_content(
+        &mut resolver,
+        owner,
+        package_id(pkg),
+        EndpointPolicy::LoopbackOnly,
+    )
+    .await?;
     authenticate_content(resolved, c).await
 }
 
@@ -221,7 +225,10 @@ fn take_host(
     }
 }
 
-fn rejection<'a>(rejected: &'a [holochain_content_retrieval::HostRejection], agent: &str) -> &'a RejectReason {
+fn rejection<'a>(
+    rejected: &'a [holochain_content_retrieval::HostRejection],
+    agent: &str,
+) -> &'a RejectReason {
     &rejected
         .iter()
         .find(|r| r.node_agent == agent)
@@ -229,6 +236,7 @@ fn rejection<'a>(rejected: &'a [holochain_content_retrieval::HostRejection], age
         .reason
 }
 
+#[allow(clippy::too_many_arguments)] // test helper mirroring the CLI flags
 fn unlock_args(
     root: &Path,
     pkg: &str,
@@ -277,10 +285,30 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     // ------------------------------------------------------------ Alice: S1
     // P1: 24 x 16 KiB chunks; P2: small second package.
     let p1 = paths
-        .python_ok(args(&["prepare", "--root", &r, "--package", "p1", "--size", "393216", "--chunk-size", "16384"]))
+        .python_ok(args(&[
+            "prepare",
+            "--root",
+            &r,
+            "--package",
+            "p1",
+            "--size",
+            "393216",
+            "--chunk-size",
+            "16384",
+        ]))
         .await;
     let p2 = paths
-        .python_ok(args(&["prepare", "--root", &r, "--package", "p2", "--size", "40000", "--chunk-size", "16384"]))
+        .python_ok(args(&[
+            "prepare",
+            "--root",
+            &r,
+            "--package",
+            "p2",
+            "--size",
+            "40000",
+            "--chunk-size",
+            "16384",
+        ]))
         .await;
     let chunks = p1["chunk_count"].as_u64().unwrap() as usize;
     assert_eq!(chunks, 24);
@@ -324,12 +352,33 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     let artist_hex = s(&p1, "artist_public_hex");
 
     // Alice: owner key, commitments, and her own host role for P1.
-    net.call(ALICE, "register_signing_key", &key(&alice, "owner-manifest", &artist_hex)).await;
-    net.call(ALICE, "publish_file_commitment", &commitment(&alice, &p1)).await;
-    net.call(ALICE, "publish_file_commitment", &commitment(&alice, &p2)).await;
-    for (i, agent, name) in [(ALICE, &alice, "alice"), (CAROL, &carol, "carol"), (MALLORY, &mallory, "mallory"), (EVE, &eve, "eve")] {
-        let any = hosts.iter().find(|(k, _)| k.starts_with(&format!("{name}/"))).unwrap().1;
-        net.call(i, "register_signing_key", &key(agent, "host-receipt", &s(any, "node_public_hex"))).await;
+    net.call(
+        ALICE,
+        "register_signing_key",
+        &key(&alice, "owner-manifest", &artist_hex),
+    )
+    .await;
+    net.call(ALICE, "publish_file_commitment", &commitment(&alice, &p1))
+        .await;
+    net.call(ALICE, "publish_file_commitment", &commitment(&alice, &p2))
+        .await;
+    for (i, agent, name) in [
+        (ALICE, &alice, "alice"),
+        (CAROL, &carol, "carol"),
+        (MALLORY, &mallory, "mallory"),
+        (EVE, &eve, "eve"),
+    ] {
+        let any = hosts
+            .iter()
+            .find(|(k, _)| k.starts_with(&format!("{name}/")))
+            .unwrap()
+            .1;
+        net.call(
+            i,
+            "register_signing_key",
+            &key(agent, "host-receipt", &s(any, "node_public_hex")),
+        )
+        .await;
     }
     for (i, agent, k, pkg) in [
         (ALICE, &alice, "alice/p1", &p1),
@@ -339,19 +388,47 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
         (EVE, &eve, "eve/p1", &p1),
         (EVE, &eve, "eve/p2", &p2),
     ] {
-        net.call(i, "publish_replica_claim", &claim(agent, &alice, pkg, &s(&hosts[k], "receipt_sha256"))).await;
+        net.call(
+            i,
+            "publish_replica_claim",
+            &claim(agent, &alice, pkg, &s(&hosts[k], "receipt_sha256")),
+        )
+        .await;
     }
 
     // Mallory's forgeries are refused by the Music integrity zome itself.
-    net.forbidden(MALLORY, "register_signing_key", &key(&alice, "owner-manifest", &"ab".repeat(32))).await;
-    net.forbidden(MALLORY, "publish_file_commitment", &commitment(&alice, &p1)).await;
-    net.forbidden(MALLORY, "publish_replica_claim", &claim(&carol, &alice, &p1, &"cd".repeat(32))).await;
+    net.forbidden(
+        MALLORY,
+        "register_signing_key",
+        &key(&alice, "owner-manifest", &"ab".repeat(32)),
+    )
+    .await;
+    net.forbidden(MALLORY, "publish_file_commitment", &commitment(&alice, &p1))
+        .await;
+    net.forbidden(
+        MALLORY,
+        "publish_replica_claim",
+        &claim(&carol, &alice, &p1, &"cd".repeat(32)),
+    )
+    .await;
 
     // ------------------------------------------------------------ MoQ hosts
     let mut music_hosts = std::collections::HashMap::new();
-    for (name, pkgs, rate) in [("alice", "p1", 64 * 1024), ("carol", "p1,p2", 8 * 1024 * 1024), ("eve", "p2", 8 * 1024 * 1024)] {
+    for (name, pkgs, rate) in [
+        ("alice", "p1", 64 * 1024),
+        ("carol", "p1,p2", 8 * 1024 * 1024),
+        ("eve", "p2", 8 * 1024 * 1024),
+    ] {
         let served = paths
-            .python_ok(args(&["served-list", "--root", &r, "--host", name, "--packages", pkgs]))
+            .python_ok(args(&[
+                "served-list",
+                "--root",
+                &r,
+                "--host",
+                name,
+                "--packages",
+                pkgs,
+            ]))
             .await;
         let hdir = root.join("hosts").join(name);
         let host = MusicHost::start(
@@ -367,43 +444,161 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     let mallory_host = MaliciousHost::start(
         &temp.0,
         &root.join("hosts/mallory/store"),
-        &[(root.join("p1/manifest.json"), root.join("hosts/mallory/p1.receipt.json"))],
+        &[(
+            root.join("p1/manifest.json"),
+            root.join("hosts/mallory/p1.receipt.json"),
+        )],
         Tamper::FlipBit,
     )
     .await;
     // Each host authors its own endpoint from its own readiness data.
-    net.call(ALICE, "publish_moq_endpoint", &endpoint(&alice, &alice, &p1, &music_hosts["alice"].url, &music_hosts["alice"].fingerprint_hex)).await;
+    net.call(
+        ALICE,
+        "publish_moq_endpoint",
+        &endpoint(
+            &alice,
+            &alice,
+            &p1,
+            &music_hosts["alice"].url,
+            &music_hosts["alice"].fingerprint_hex,
+        ),
+    )
+    .await;
     for pkg in [&p1, &p2] {
-        net.call(CAROL, "publish_moq_endpoint", &endpoint(&carol, &alice, pkg, &music_hosts["carol"].url, &music_hosts["carol"].fingerprint_hex)).await;
+        net.call(
+            CAROL,
+            "publish_moq_endpoint",
+            &endpoint(
+                &carol,
+                &alice,
+                pkg,
+                &music_hosts["carol"].url,
+                &music_hosts["carol"].fingerprint_hex,
+            ),
+        )
+        .await;
     }
-    net.call(MALLORY, "publish_moq_endpoint", &endpoint(&mallory, &alice, &p1, &mallory_host.url, &mallory_host.fingerprint_hex)).await;
+    net.call(
+        MALLORY,
+        "publish_moq_endpoint",
+        &endpoint(
+            &mallory,
+            &alice,
+            &p1,
+            &mallory_host.url,
+            &mallory_host.fingerprint_hex,
+        ),
+    )
+    .await;
     // Eve's P1 endpoint points at Carol's server with a pin Carol's
     // certificate does not have.
-    net.call(EVE, "publish_moq_endpoint", &endpoint(&eve, &alice, &p1, &music_hosts["carol"].url, &"e5".repeat(32))).await;
-    net.call(EVE, "publish_moq_endpoint", &endpoint(&eve, &alice, &p2, &music_hosts["eve"].url, &music_hosts["eve"].fingerprint_hex)).await;
-    net.forbidden(MALLORY, "publish_moq_endpoint", &endpoint(&carol, &alice, &p1, &mallory_host.url, &mallory_host.fingerprint_hex)).await;
+    net.call(
+        EVE,
+        "publish_moq_endpoint",
+        &endpoint(
+            &eve,
+            &alice,
+            &p1,
+            &music_hosts["carol"].url,
+            &"e5".repeat(32),
+        ),
+    )
+    .await;
+    net.call(
+        EVE,
+        "publish_moq_endpoint",
+        &endpoint(
+            &eve,
+            &alice,
+            &p2,
+            &music_hosts["eve"].url,
+            &music_hosts["eve"].fingerprint_hex,
+        ),
+    )
+    .await;
+    net.forbidden(
+        MALLORY,
+        "publish_moq_endpoint",
+        &endpoint(
+            &carol,
+            &alice,
+            &p1,
+            &mallory_host.url,
+            &mallory_host.fingerprint_hex,
+        ),
+    )
+    .await;
     // Mallory claims Alice's P1 as her own content, with her own owner key.
-    net.call(MALLORY, "register_signing_key", &key(&mallory, "owner-manifest", &s(&hosts["mallory/p1"], "node_public_hex"))).await;
-    net.call(MALLORY, "publish_file_commitment", &commitment(&mallory, &p1)).await;
-    net.call(MALLORY, "publish_replica_claim", &claim(&mallory, &mallory, &p1, &s(&hosts["mallory/p1"], "receipt_sha256"))).await;
-    net.call(MALLORY, "publish_moq_endpoint", &endpoint(&mallory, &mallory, &p1, &mallory_host.url, &mallory_host.fingerprint_hex)).await;
+    net.call(
+        MALLORY,
+        "register_signing_key",
+        &key(
+            &mallory,
+            "owner-manifest",
+            &s(&hosts["mallory/p1"], "node_public_hex"),
+        ),
+    )
+    .await;
+    net.call(
+        MALLORY,
+        "publish_file_commitment",
+        &commitment(&mallory, &p1),
+    )
+    .await;
+    net.call(
+        MALLORY,
+        "publish_replica_claim",
+        &claim(
+            &mallory,
+            &mallory,
+            &p1,
+            &s(&hosts["mallory/p1"], "receipt_sha256"),
+        ),
+    )
+    .await;
+    net.call(
+        MALLORY,
+        "publish_moq_endpoint",
+        &endpoint(
+            &mallory,
+            &mallory,
+            &p1,
+            &mallory_host.url,
+            &mallory_host.fingerprint_hex,
+        ),
+    )
+    .await;
     net.settle().await;
     eprintln!("[core004] Holochain records published and consistent across 5 conductors");
 
     // ------------------------------------------------------------ Bob: P1
     let c = connector(10, 8);
-    let mut content = authenticate(&net, &alice, &p1, &c).await.expect("P1 authenticates");
+    let mut content = authenticate(&net, &alice, &p1, &c)
+        .await
+        .expect("P1 authenticates");
     assert_eq!(content.owned.owner_agent(), alice);
-    assert_eq!(content.owned.manifest().digest().to_string(), s(&p1, "manifest_sha256"));
+    assert_eq!(
+        content.owned.manifest().digest().to_string(),
+        s(&p1, "manifest_sha256")
+    );
     assert_eq!(hex(content.owned.manifest().signer()), artist_hex);
     // TLS certificate mismatch: rejected by the pin, not reported as denial.
     assert!(
-        matches!(rejection(&content.rejected, &eve), RejectReason::Transport(TransportFailure::IdentityMismatch(_))),
+        matches!(
+            rejection(&content.rejected, &eve),
+            RejectReason::Transport(TransportFailure::IdentityMismatch(_))
+        ),
         "Eve: {:?}",
         rejection(&content.rejected, &eve)
     );
-    assert_eq!(content.hosts.len(), 3, "Alice, Carol and Mallory hold valid receipts");
-    eprintln!("[core004] P1 authenticated hosts: Alice, Carol, Mallory; Eve rejected by certificate pin");
+    assert_eq!(
+        content.hosts.len(),
+        3,
+        "Alice, Carol and Mallory hold valid receipts"
+    );
+    eprintln!(
+        "[core004] P1 authenticated hosts: Alice, Carol, Mallory; Eve rejected by certificate pin"
+    );
 
     // Interrupted transfer: Alice's host is killed after 5 verified objects.
     let bob_store = temp.0.join("bob-cas");
@@ -433,14 +628,20 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
         report.hosts[0].failure,
         Some(TransportFailure::Interrupted { .. } | TransportFailure::TimedOut(_))
     ));
-    eprintln!("[core004] interrupted after {partial}/{chunks} verified objects: {:?}", report.hosts[0].failure);
+    eprintln!(
+        "[core004] interrupted after {partial}/{chunks} verified objects: {:?}",
+        report.hosts[0].failure
+    );
 
     // Client restart: new store handle; Mallory first (tampered objects),
     // then Carol. Only missing objects are requested; Mallory's first object
     // is rejected before it touches disk; Carol completes.
     drop(cas);
     let cas = VerifiedCas::new(&bob_store).unwrap();
-    let mut sources = vec![take_host(&mut content, &mallory), take_host(&mut content, &carol)];
+    let mut sources = vec![
+        take_host(&mut content, &mallory),
+        take_host(&mut content, &carol),
+    ];
     let report = fetch_verified_content(&manifest, &mut sources, &cas, FetchOptions::default())
         .await
         .expect("resume completes from an alternate host");
@@ -456,15 +657,35 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
 
     // Corrupt local chunk repair, then duplicate retrieval is a no-op.
     let sha = hex(&manifest.chunks()[3].ciphertext_sha256);
-    std::fs::write(bob_store.join("objects/sha256").join(&sha[..2]).join(&sha), b"bit rot").unwrap();
+    std::fs::write(
+        bob_store.join("objects/sha256").join(&sha[..2]).join(&sha),
+        b"bit rot",
+    )
+    .unwrap();
     let mut sources = vec![take_host(
-        &mut authenticate(&net, &alice, &p1, &connector(3, 8)).await.unwrap(),
+        &mut authenticate(&net, &alice, &p1, &connector(3, 8))
+            .await
+            .unwrap(),
         &carol,
     )];
-    let report = fetch_verified_content(&manifest, &mut sources, &cas, FetchOptions::default()).await.unwrap();
-    assert_eq!((report.initial.corrupt, report.repaired, report.downloaded), (1, 1, 0));
-    let report = fetch_verified_content(&manifest, &mut sources, &cas, FetchOptions::default()).await.unwrap();
-    assert_eq!((report.already_verified, report.downloaded, report.hosts.len()), (chunks, 0, 0));
+    let report = fetch_verified_content(&manifest, &mut sources, &cas, FetchOptions::default())
+        .await
+        .unwrap();
+    assert_eq!(
+        (report.initial.corrupt, report.repaired, report.downloaded),
+        (1, 1, 0)
+    );
+    let report = fetch_verified_content(&manifest, &mut sources, &cas, FetchOptions::default())
+        .await
+        .unwrap();
+    assert_eq!(
+        (
+            report.already_verified,
+            report.downloaded,
+            report.hosts.len()
+        ),
+        (chunks, 0, 0)
+    );
     ensure_files_bounded(&bob_store, &manifest).unwrap();
 
     // ------------------------------------------------------------ Music grants
@@ -472,43 +693,105 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     // Bob's Holochain path authenticated, not a fixture value.
     let trusted = hex(manifest.signer());
     paths
-        .python_ok(args(&["grants", "--root", &r, "--package", "p1", "--owner-agent", &alice, "--bob-agent", &bob, "--mallory-agent", &mallory]))
+        .python_ok(args(&[
+            "grants",
+            "--root",
+            &r,
+            "--package",
+            "p1",
+            "--owner-agent",
+            &alice,
+            "--bob-agent",
+            &bob,
+            "--mallory-agent",
+            &mallory,
+        ]))
         .await;
     let out = temp.0.join("bob-plain.bin");
     for grant in ["bob_licence", "bob_stream"] {
-        let (code, v) = paths.python(unlock_args(&root, "p1", &bob_store, grant, "bob", &bob, &alice, &trusted, &out)).await;
+        let (code, v) = paths
+            .python(unlock_args(
+                &root, "p1", &bob_store, grant, "bob", &bob, &alice, &trusted, &out,
+            ))
+            .await;
         assert_eq!(code, 0, "{grant}: {v}");
-        assert_eq!(s(&v, "sha256"), s(&p1, "sample_sha256"), "Bob recovers the original bytes");
+        assert_eq!(
+            s(&v, "sha256"),
+            s(&p1, "sample_sha256"),
+            "Bob recovers the original bytes"
+        );
     }
     eprintln!("[core004] Bob decrypted the VerifiedCas replica with Music grants; plaintext SHA-256 matches");
     // Each denial must come from the applicable Music boundary.
     for (grant, recipient, listener, wait, boundary, needle) in [
         // Mallory uses Bob's grant with her own key and identity.
-        ("bob_licence", "mallory", &mallory, false, "content-grant", "not valid for this listener"),
+        (
+            "bob_licence",
+            "mallory",
+            &mallory,
+            false,
+            "content-grant",
+            "not valid for this listener",
+        ),
         // Bob presents a licence addressed to Mallory.
-        ("mallory_licence", "bob", &bob, false, "content-grant", "not valid for this listener"),
+        (
+            "mallory_licence",
+            "bob",
+            &bob,
+            false,
+            "content-grant",
+            "not valid for this listener",
+        ),
         // Bob claims to be Mallory but lacks her X25519 key.
-        ("mallory_licence", "bob", &mallory, false, "content-grant", "not addressed to this X25519 reader"),
+        (
+            "mallory_licence",
+            "bob",
+            &mallory,
+            false,
+            "content-grant",
+            "not addressed to this X25519 reader",
+        ),
         // Licence signed by a key that is not Alice's registered key.
-        ("forged_licence", "bob", &bob, false, "content-grant", "not signed by registered artist"),
+        (
+            "forged_licence",
+            "bob",
+            &bob,
+            false,
+            "content-grant",
+            "not signed by registered artist",
+        ),
         // Expired streaming grant.
         ("bob_short", "bob", &bob, true, "content-grant", "expired"),
         // No grant at all: guessing a content key fails AES-GCM.
-        ("none-random-key", "bob", &bob, false, "aes-gcm", "decryption failed"),
+        (
+            "none-random-key",
+            "bob",
+            &bob,
+            false,
+            "aes-gcm",
+            "decryption failed",
+        ),
     ] {
-        let mut a = unlock_args(&root, "p1", &bob_store, grant, recipient, listener, &alice, &trusted, &out);
+        let mut a = unlock_args(
+            &root, "p1", &bob_store, grant, recipient, listener, &alice, &trusted, &out,
+        );
         if wait {
             a.push("--wait-expiry".into());
         }
         let (code, v) = paths.python(a).await;
-        assert!(code == 3 || code == 4, "{grant}/{recipient}: expected a denial, got {code}: {v}");
+        assert!(
+            code == 3 || code == 4,
+            "{grant}/{recipient}: expected a denial, got {code}: {v}"
+        );
         assert_eq!(s(&v, "boundary"), boundary, "{grant}/{recipient}: {v}");
         assert!(s(&v, "error").contains(needle), "{grant}/{recipient}: {v}");
     }
     eprintln!("[core004] wrong-recipient, impersonation, forged, expired and keyless access denied by Music boundaries");
 
     // ------------------------------------------------------------ P2: forged receipt
-    let mut p2_content = authenticate(&net, &alice, &p2, &c).await.expect("P2 authenticates via Carol");
+    let mut p2_content = authenticate(&net, &alice, &p2, &c)
+        .await
+        .expect("P2 authenticates via Carol");
     assert_eq!(
         rejection(&p2_content.rejected, &eve),
         &RejectReason::Binding(BindingError::Receipt(VerifyError::WrongSigner))
@@ -517,14 +800,23 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     let p2_cas = VerifiedCas::new(&p2_store).unwrap();
     let mut sources = vec![take_host(&mut p2_content, &carol)];
     let manifest2 = p2_content.owned.manifest().clone();
-    fetch_verified_content(&manifest2, &mut sources, &p2_cas, FetchOptions::default()).await.unwrap();
-    assert_eq!(p2_cas.audit(&manifest2).unwrap().verified, manifest2.chunks().len());
-    eprintln!("[core004] P2: Eve's forged receipt rejected by the receipt signer check; Carol served P2");
+    fetch_verified_content(&manifest2, &mut sources, &p2_cas, FetchOptions::default())
+        .await
+        .unwrap();
+    assert_eq!(
+        p2_cas.audit(&manifest2).unwrap().verified,
+        manifest2.chunks().len()
+    );
+    eprintln!(
+        "[core004] P2: Eve's forged receipt rejected by the receipt signer check; Carol served P2"
+    );
 
     // ------------------------------------------------------------ false ownership
     // Bob asked for "Mallory's" P1. The manifest Mallory serves is Alice's,
     // signed by Alice's key, not the key Mallory bound: signature boundary.
-    let Err(ResolveError::NoAuthenticatedHost(rejected)) = authenticate(&net, &mallory, &p1, &c).await else {
+    let Err(ResolveError::NoAuthenticatedHost(rejected)) =
+        authenticate(&net, &mallory, &p1, &c).await
+    else {
         panic!("Mallory's ownership claim must not authenticate");
     };
     assert_eq!(
@@ -549,7 +841,9 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
         host.kill();
     }
     drop(mallory_host);
-    let Err(ResolveError::NoAuthenticatedHost(rejected)) = authenticate(&net, &alice, &p1, &connector(3, 3)).await else {
+    let Err(ResolveError::NoAuthenticatedHost(rejected)) =
+        authenticate(&net, &alice, &p1, &connector(3, 3)).await
+    else {
         panic!("no host is reachable");
     };
     assert_eq!(rejected.len(), 4);
@@ -557,7 +851,9 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
         assert!(
             matches!(
                 r.reason,
-                RejectReason::Transport(TransportFailure::Unavailable(_) | TransportFailure::TimedOut(_))
+                RejectReason::Transport(
+                    TransportFailure::Unavailable(_) | TransportFailure::TimedOut(_)
+                )
             ),
             "{} : {:?}",
             r.node_agent,

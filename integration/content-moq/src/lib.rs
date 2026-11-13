@@ -133,11 +133,7 @@ impl MoqHostTransport {
         )
         .map_err(|e| TransportFailure::Protocol(format!("client setup: {e:#}")))?;
         match tokio::time::timeout(self.timeouts.handshake, node.connect()).await {
-            Err(_) => {
-                return Err(TransportFailure::TimedOut(
-                    "QUIC/TLS/MoQT handshake".into(),
-                ))
-            }
+            Err(_) => return Err(TransportFailure::TimedOut("QUIC/TLS/MoQT handshake".into())),
             Ok(Err(e)) => return Err(classify_connect(e)),
             Ok(Ok(())) => {}
         }
@@ -213,10 +209,7 @@ impl ObjectTransport for MoqHostTransport {
         let package = manifest.package_id();
         let mut delivered = 0usize;
         for batch in indices.chunks(MAX_OBJECTS_PER_REQUEST) {
-            if batch
-                .iter()
-                .any(|&i| i >= manifest.chunks().len())
-            {
+            if batch.iter().any(|&i| i >= manifest.chunks().len()) {
                 return Err(TransportFailure::Protocol(
                     "requested index outside the signed manifest".into(),
                 ));
