@@ -33,8 +33,9 @@ pub use fetch::{
     fetch_verified_content, FetchError, FetchOptions, FetchReport, HostReport, HostSource,
 };
 pub use resolve::{
-    authenticate_content, resolve_content, AuthenticatedContent, AuthenticatedHost, HostPins,
-    HostRejection, MetadataError, MetadataSource, RejectReason, ResolveError, ResolvedContent,
+    authenticate_content, resolve_content, resolve_content_with, AuthenticatedContent,
+    AuthenticatedHost, HostPins, HostRejection, MetadataError, MetadataSource, RejectReason,
+    ResolveError, ResolvedContent,
 };
 pub use transport::{
     Delivery, DocumentKind, HostConnector, ObjectTransport, TransportFailure,

@@ -453,6 +453,7 @@ struct MockMeta {
     commitments: HashMap<String, Vec<ConductorRecord>>,
     claims: Vec<ConductorRecord>,
     endpoints: HashMap<String, Vec<ConductorRecord>>,
+    keys_v2: HashMap<String, Vec<ConductorRecord>>,
     offline: bool,
 }
 
@@ -479,6 +480,57 @@ impl MetadataSource for MockMeta {
     async fn moq_endpoints(&mut self, host: &str) -> Result<Vec<ConductorRecord>, MetadataError> {
         self.get(&self.endpoints, host)
     }
+    async fn signing_keys_v2(
+        &mut self,
+        agent: &str,
+    ) -> Result<Vec<ConductorRecord>, MetadataError> {
+        self.get(&self.keys_v2, agent)
+    }
+}
+
+/// A source that predates key-binding v2 (default `signing_keys_v2`).
+struct NoV2(MockMeta);
+impl MetadataSource for NoV2 {
+    async fn signing_keys(&mut self, agent: &str) -> Result<Vec<ConductorRecord>, MetadataError> {
+        self.0.signing_keys(agent).await
+    }
+    async fn file_commitments(
+        &mut self,
+        agent: &str,
+    ) -> Result<Vec<ConductorRecord>, MetadataError> {
+        self.0.file_commitments(agent).await
+    }
+    async fn replica_claims(
+        &mut self,
+        owner: &str,
+        package: PackageId,
+    ) -> Result<Vec<ConductorRecord>, MetadataError> {
+        self.0.replica_claims(owner, package).await
+    }
+    async fn moq_endpoints(&mut self, host: &str) -> Result<Vec<ConductorRecord>, MetadataError> {
+        self.0.moq_endpoints(host).await
+    }
+}
+
+const V2_DNA: &str = "uhC0kRetrievalV2TestDna";
+
+/// v2 binding signed by `key` itself (synthetic fixture; Music-generated v2
+/// bindings are tested in content-core).
+fn key_record_v2(agent: &str, purpose: &str, key: &SigningKey) -> ConductorRecord {
+    let key_hex = hex(&key.verifying_key().to_bytes());
+    let proof = key.sign(&key_binding_v2_message(
+        V2_DNA,
+        agent,
+        purpose,
+        &key_hex,
+        KEY_GENERATION_V2,
+    ));
+    rec(
+        agent,
+        json!({"schema": KEY_BINDING_V2, "dna_hash": V2_DNA, "agent": agent,
+               "purpose": purpose, "signing_key_hex": key_hex, "generation": "1",
+               "proof_signature_hex": hex(&proof.to_bytes())}),
+    )
 }
 
 impl MockMeta {
@@ -739,5 +791,122 @@ fn resolution_failures_are_classified() {
     assert_eq!(
         rejected[0].reason,
         RejectReason::Binding(BindingError::EndpointNotAllowed)
+    );
+}
+
+// ---------------------------------------------------------------- S2 v2
+
+fn v2_world(hosts: &[(&str, u8, u16)]) -> World {
+    let mut w = world(hosts);
+    w.meta.keys_v2.insert(
+        ALICE.into(),
+        vec![key_record_v2(ALICE, "owner-manifest", &w.pkg.artist)],
+    );
+    for (agent, seed, _) in hosts {
+        let host_key = SigningKey::from_bytes(&[*seed; 32]);
+        w.meta.keys_v2.insert(
+            (*agent).into(),
+            vec![key_record_v2(agent, "host-receipt", &host_key)],
+        );
+    }
+    w
+}
+
+fn v2_policy() -> KeyBindingPolicy {
+    KeyBindingPolicy::ProofOfPossessionV2 {
+        dna_hash: V2_DNA.into(),
+    }
+}
+
+#[test]
+fn v2_policy_resolves_and_authenticates_with_proof_of_possession() {
+    let mut w = v2_world(&[(CAROL, 2, 4001)]);
+    let resolved = block_on(resolve_content_with(
+        &mut w.meta,
+        ALICE,
+        w.pkg.manifest.package_id(),
+        EndpointPolicy::LoopbackOnly,
+        &v2_policy(),
+    ))
+    .unwrap();
+    assert_eq!(
+        resolved.owner_key.assurance(),
+        BindingAssurance::ProofOfPossessionV2
+    );
+    let mut carol = full_host(&w.pkg);
+    carol.receipt = Some(w.receipts[CAROL].clone());
+    let connector = Connector(HashMap::from([(4001, carol)]));
+    let content = block_on(authenticate_content(resolved, &connector)).unwrap();
+    assert_eq!(
+        content.owned.owner_assurance(),
+        BindingAssurance::ProofOfPossessionV2
+    );
+    assert_eq!(
+        content.hosts[0].replica.node_assurance(),
+        BindingAssurance::ProofOfPossessionV2
+    );
+    // The default policy on the same world stays legacy v1.
+    let legacy = block_on(resolve_content(
+        &mut w.meta,
+        ALICE,
+        w.pkg.manifest.package_id(),
+        EndpointPolicy::LoopbackOnly,
+    ))
+    .unwrap();
+    assert_eq!(
+        legacy.owner_key.assurance(),
+        BindingAssurance::LegacyAuthoredV1
+    );
+}
+
+#[test]
+fn v2_policy_never_falls_back_to_v1() {
+    // v1 records only: no v2 owner binding is "not found", not a v1 success.
+    let mut w = world(&[(CAROL, 2, 4001)]);
+    assert_eq!(
+        block_on(resolve_content_with(
+            &mut w.meta,
+            ALICE,
+            w.pkg.manifest.package_id(),
+            EndpointPolicy::LoopbackOnly,
+            &v2_policy(),
+        ))
+        .unwrap_err(),
+        ResolveError::NotFound("owner-manifest key binding")
+    );
+    // A source without v2 support is unavailability, never a denial or v1.
+    let w = world(&[(CAROL, 2, 4001)]);
+    let id = w.pkg.manifest.package_id();
+    let mut old = NoV2(w.meta);
+    assert!(matches!(
+        block_on(resolve_content_with(
+            &mut old,
+            ALICE,
+            id,
+            EndpointPolicy::LoopbackOnly,
+            &v2_policy(),
+        )),
+        Err(ResolveError::Metadata(_))
+    ));
+    // Mallory binds Carol's host key with a copied proof: Carol's host is
+    // excluded, and an invalid v2 record is a binding error, not skipped.
+    let mut w = v2_world(&[(CAROL, 2, 4001), (MALLORY, 4, 4003)]);
+    let mut copied = w.meta.keys_v2[CAROL][0].body().clone();
+    copied.insert("agent".into(), json!(MALLORY));
+    w.meta
+        .keys_v2
+        .insert(MALLORY.into(), vec![rec(MALLORY, Value::Object(copied))]);
+    let resolved = block_on(resolve_content_with(
+        &mut w.meta,
+        ALICE,
+        w.pkg.manifest.package_id(),
+        EndpointPolicy::LoopbackOnly,
+        &v2_policy(),
+    ))
+    .unwrap();
+    assert_eq!(resolved.hosts.len(), 1);
+    assert_eq!(
+        resolved.rejected[0].reason,
+        RejectReason::Binding(BindingError::InvalidProof)
     );
 }
