@@ -198,6 +198,10 @@ what Music's issuer produces and no Music file is changed.
   `unproven_key_binding_cannot_turn_alices_grants_into_mallorys`). Fixing the
   binding needs a versioned S2 v2 with signed proof of possession; no DNA
   migration was made here.
+  **Update (S2 v2):** on the v2 storage DNA the owner key is bound with proof
+  of possession; `VerifiedEntitlement::owner_assurance()` reports it and
+  `check_content_access_requiring(.., BindingAssurance::ProofOfPossessionV2)`
+  refuses legacy owners (docs/S2-KEY-BINDING-V2.md).
 * **Listener identity** is supplied by the application. The library cannot
   prove a string came from the local conductor; `from_trusted_context` is the
   documented contract (as for `ConductorRecord`).

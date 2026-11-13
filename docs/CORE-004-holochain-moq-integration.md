@@ -246,6 +246,9 @@ hosts bind 127.0.0.1 and the default endpoint policy is loopback-only.
    Mallory's attribution. Decryption still needs Alice's grant. Fix requires a
    signed proof of possession in the binding (a Music DNA/format change: out of
    scope for this milestone; needs versioning and a migration plan).
+   **Update:** addressed for new networks by S2 key-binding v2 (separate v2
+   storage DNA; docs/S2-KEY-BINDING-V2.md). The v1 DNA is unchanged and keeps
+   this limitation.
 3. **Receipts do not name the host agent**, which enables (2a).
 4. **Holochain 0.7.0 dual-bind on IPv6-less kernels** (see shim above).
 5. **Music v1 host refuses empty packages** (`served package has no chunks`).
