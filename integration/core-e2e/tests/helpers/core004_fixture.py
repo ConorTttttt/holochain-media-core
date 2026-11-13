@@ -167,7 +167,10 @@ def grants(a) -> None:
                                 "signature": b64(forger.sign(canonical(body)))}
     for name, grant in issued.items():
         (gdir / f"{name}.json").write_bytes(canonical(grant))
-    _out({"grants": sorted(issued)})
+    # X25519 *public* keys only: the Rust CORE-005 check needs the listener's
+    # recipient key, never a private key.
+    _out({"grants": sorted(issued),
+          "recipients": {"bob": _x_pub(bob).hex(), "mallory": _x_pub(mallory).hex()}})
 
 
 def unlock(a) -> int:
