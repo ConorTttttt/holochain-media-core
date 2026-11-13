@@ -693,7 +693,7 @@ fn resolution_failures_are_classified() {
             PackageId::from_bytes([1; 32]),
             EndpointPolicy::LoopbackOnly
         )),
-        Err(ResolveError::Binding(BindingError::MissingRecord))
+        Err(ResolveError::NotFound("owner file commitment"))
     );
     // A second owner key makes the owner binding ambiguous.
     let mut w = world(&[(CAROL, 2, 4001)]);
@@ -708,6 +708,19 @@ fn resolution_failures_are_classified() {
         )),
         Err(ResolveError::Binding(BindingError::Ambiguous))
     );
+    // A host whose endpoint record has not propagated is "not found", not
+    // rejected by a security boundary.
+    let mut w = world(&[(CAROL, 2, 4001)]);
+    w.meta.endpoints.clear();
+    let Err(ResolveError::NoAuthenticatedHost(rejected)) = block_on(resolve_content(
+        &mut w.meta,
+        ALICE,
+        w.pkg.manifest.package_id(),
+        EndpointPolicy::LoopbackOnly,
+    )) else {
+        panic!("expected exclusion");
+    };
+    assert_eq!(rejected[0].reason, RejectReason::NotFound("MoQ endpoint"));
     // A host whose endpoint is not loopback is excluded under the default
     // policy with the endpoint boundary as the reason.
     let mut w = world(&[(CAROL, 2, 4001)]);

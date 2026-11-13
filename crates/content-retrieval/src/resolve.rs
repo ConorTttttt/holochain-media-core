@@ -63,6 +63,11 @@ pub trait MetadataSource {
 /// Why a host was excluded.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RejectReason {
+    /// A required Holochain record was not (yet) returned by the conductor.
+    /// The Music storage coordinator skips link targets it cannot fetch, so
+    /// this includes records still propagating through the DHT. It is neither
+    /// a security rejection nor proof that the record does not exist.
+    NotFound(&'static str),
     /// A Holochain binding, signature, receipt or endpoint check failed.
     Binding(BindingError),
     /// The host could not be reached or answered incorrectly at transport
@@ -116,6 +121,9 @@ pub struct ResolvedContent {
 pub enum ResolveError {
     /// The conductor could not answer (availability, not denial).
     Metadata(MetadataError),
+    /// The owner's commitment or key binding was not (yet) returned; may be
+    /// DHT propagation lag. Not a denial.
+    NotFound(&'static str),
     /// The owner's own records are missing, ambiguous or inconsistent.
     Binding(BindingError),
     /// No host survived resolution/authentication.
@@ -126,6 +134,7 @@ impl fmt::Display for ResolveError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Metadata(e) => write!(f, "{e}"),
+            Self::NotFound(what) => write!(f, "{what} not found (may not have propagated)"),
             Self::Binding(e) => write!(f, "owner binding rejected: {e}"),
             Self::NoAuthenticatedHost(r) => {
                 write!(f, "no authenticated host ({} rejected)", r.len())
@@ -135,6 +144,20 @@ impl fmt::Display for ResolveError {
 }
 
 impl std::error::Error for ResolveError {}
+
+fn host_select(what: &'static str) -> impl Fn(BindingError) -> RejectReason {
+    move |e| match e {
+        BindingError::MissingRecord => RejectReason::NotFound(what),
+        other => RejectReason::Binding(other),
+    }
+}
+
+fn owner_select(what: &'static str) -> impl Fn(BindingError) -> ResolveError {
+    move |e| match e {
+        BindingError::MissingRecord => ResolveError::NotFound(what),
+        other => ResolveError::Binding(other),
+    }
+}
 
 fn is_commitment_for(record: &ConductorRecord, owner: &str, package: PackageId) -> bool {
     let text = |k: &str| record.body().get(k).and_then(Value::as_str);
@@ -159,21 +182,21 @@ async fn host_pins<M: MetadataSource>(
     policy: EndpointPolicy,
 ) -> Result<HostPins, RejectReason> {
     let claim = select_unique(claims, |r| claim_node(r) == Some(node))
-        .map_err(RejectReason::Binding)?
+        .map_err(host_select("replica claim"))?
         .clone();
     let keys = meta
         .signing_keys(node)
         .await
         .map_err(RejectReason::Metadata)?;
     let key_binding = select_unique(&keys, |r| is_key_binding(r, node, KeyPurpose::HostReceipt))
-        .map_err(RejectReason::Binding)?
+        .map_err(host_select("host-receipt key binding"))?
         .clone();
     let endpoints = meta
         .moq_endpoints(node)
         .await
         .map_err(RejectReason::Metadata)?;
     let record = select_unique(&endpoints, |r| is_endpoint_for(r, node, owner_agent, pin))
-        .map_err(RejectReason::Binding)?;
+        .map_err(host_select("MoQ endpoint"))?;
     let endpoint = verify_moq_endpoint(record, node, owner_agent, pin, policy)
         .map_err(RejectReason::Binding)?;
     Ok(HostPins {
@@ -201,7 +224,7 @@ pub async fn resolve_content<M: MetadataSource>(
         .await
         .map_err(ResolveError::Metadata)?;
     let commitment = select_unique(&commitments, |r| is_commitment_for(r, owner_agent, package))
-        .map_err(ResolveError::Binding)?
+        .map_err(owner_select("owner file commitment"))?
         .clone();
     let pin = commitment_pin(&commitment, owner_agent).map_err(ResolveError::Binding)?;
     let owner_keys = meta
@@ -211,7 +234,7 @@ pub async fn resolve_content<M: MetadataSource>(
     let owner_key_binding = select_unique(&owner_keys, |r| {
         is_key_binding(r, owner_agent, KeyPurpose::OwnerManifest)
     })
-    .map_err(ResolveError::Binding)?
+    .map_err(owner_select("owner-manifest key binding"))?
     .clone();
 
     let claims = meta
