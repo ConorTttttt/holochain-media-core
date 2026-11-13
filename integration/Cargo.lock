@@ -2583,6 +2583,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bytes",
+ "ed25519-dalek 2.2.0",
  "holo_hash",
  "holochain",
  "holochain-content-core",
