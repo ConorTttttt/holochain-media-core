@@ -38,7 +38,7 @@
 //! not proof of payment, nor that the content is currently available from
 //! any host. See `docs/CORE-005-entitlement-verification.md`.
 
-use crate::binding::OwnedManifest;
+use crate::binding::{BindingAssurance, OwnedManifest};
 use crate::compat::canonical_json;
 use crate::{ManifestDigest, PackageId, Right, Rights};
 use base64::alphabet;
@@ -247,6 +247,10 @@ pub enum Unauthenticated {
     MalformedSignature,
     /// Ed25519 (strict) verification over the canonical body failed.
     InvalidSignature,
+    /// The issuer key is bound to the owner only at a lower assurance level
+    /// than the caller required (e.g. a legacy v1 binding where S2 v2 proof
+    /// of possession is required).
+    InsufficientOwnerAssurance,
 }
 
 /// The document is (or claims to be) a scheme or term this version does not
@@ -423,9 +427,15 @@ pub struct VerifiedEntitlement {
     expires_at: Option<i64>,
     licence_id: Option<String>,
     key: WrappedContentKey,
+    owner_assurance: BindingAssurance,
 }
 
 impl VerifiedEntitlement {
+    /// Assurance of the owner key binding that authenticated the issuer
+    /// (copied from the [`OwnedManifest`]; not settable by callers).
+    pub fn owner_assurance(&self) -> BindingAssurance {
+        self.owner_assurance
+    }
     /// The verified scheme.
     pub fn scheme(&self) -> EntitlementScheme {
         self.scheme
@@ -767,6 +777,7 @@ fn verify_stream(
         expires_at: Some(expires_at),
         licence_id: None,
         key,
+        owner_assurance: content.owner_assurance(),
     })
 }
 
@@ -823,6 +834,7 @@ fn verify_licence(
         expires_at: None,
         licence_id: Some(b.licence_id.clone()),
         key,
+        owner_assurance: content.owner_assurance(),
     })
 }
 
@@ -870,4 +882,25 @@ pub fn check_content_access(
     now: SystemTime,
 ) -> Result<AccessDecision, AccessError> {
     verify_entitlement(content, subject, entitlement, now)?.authorize(requested)
+}
+
+/// [`check_content_access`] that additionally requires the owner's key
+/// binding to be at least `required` (use
+/// [`BindingAssurance::ProofOfPossessionV2`] for new security-sensitive
+/// operations). The assurance comes from how CORE-004/S2 verified the
+/// content, never from the grant or the caller.
+pub fn check_content_access_requiring(
+    content: &OwnedManifest,
+    subject: &AuthenticatedSubject,
+    entitlement: &[u8],
+    requested: Right,
+    now: SystemTime,
+    required: BindingAssurance,
+) -> Result<AccessDecision, AccessError> {
+    if content.owner_assurance() < required {
+        return Err(AccessError::Unauthenticated(
+            Unauthenticated::InsufficientOwnerAssurance,
+        ));
+    }
+    check_content_access(content, subject, entitlement, requested, now)
 }

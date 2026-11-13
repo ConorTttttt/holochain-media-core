@@ -1,0 +1,714 @@
+{
+ "agents": {
+  "alice": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+  "bob": "uhCAkBobListenerAgentForS2TestsOnly00000000000000000",
+  "carol": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
+  "mallory": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000"
+ },
+ "bindings": {
+  "alice_owner": {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "generation": "1",
+   "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+   "purpose": "owner-manifest",
+   "schema": "holochain-storage/key-binding/v2",
+   "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+  },
+  "alice_owner_second_key": {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "generation": "1",
+   "proof_signature_hex": "c343e96eb5360fd071b3a2753ab388deb9c24e2ac8605c4b694b5a100398f82f42ce54c08c1695329848c6679a964867c974213389e1406b0979d27b25c9c909",
+   "purpose": "owner-manifest",
+   "schema": "holochain-storage/key-binding/v2",
+   "signing_key_hex": "c6822637c7d310ec57627be00ba259d253749f4aaf644470cffbe53a35f73242"
+  },
+  "carol_host": {
+   "agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "generation": "1",
+   "proof_signature_hex": "2825dc42bf579e43c7a8770dbc5f3a576f95a54bef28370107e4358d6fde63ae552ab6a6bbf2b9c6a4d6efdfc209e4e391391eaaa5420a649a1ff69e9a77ad01",
+   "purpose": "host-receipt",
+   "schema": "holochain-storage/key-binding/v2",
+   "signing_key_hex": "2012cb90ca60e8e5d8daf66e2272d2233e0486d557e8c66141ed8920177d7eb7"
+  },
+  "mallory_owner": {
+   "agent": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "generation": "1",
+   "proof_signature_hex": "34db4857c9fea33650fb7eaa04d75aae9a9caa02e30223899d6e47d8756efb55f12b36ef2ee57d28d5e4b4f958aca77936e7bb1ae367b4c00362573930669101",
+   "purpose": "owner-manifest",
+   "schema": "holochain-storage/key-binding/v2",
+   "signing_key_hex": "f80cccdce4ae1c07ae208a2adf99a310ae4207e0306fa0236110b06827bbb8d0"
+  }
+ },
+ "cases": [
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "result": "accepted"
+   },
+   "name": "a_alice_owner_v2",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a",
+    "verdict": "accepted"
+   }
+  },
+  {
+   "agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
+   "author": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
+   "body": {
+    "agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "2825dc42bf579e43c7a8770dbc5f3a576f95a54bef28370107e4358d6fde63ae552ab6a6bbf2b9c6a4d6efdfc209e4e391391eaaa5420a649a1ff69e9a77ad01",
+    "purpose": "host-receipt",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "2012cb90ca60e8e5d8daf66e2272d2233e0486d557e8c66141ed8920177d7eb7"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "result": "accepted"
+   },
+   "name": "j_carol_host_v2",
+   "note": "",
+   "purpose": "host-receipt",
+   "python": {
+    "key_hex": "2012cb90ca60e8e5d8daf66e2272d2233e0486d557e8c66141ed8920177d7eb7",
+    "verdict": "accepted"
+   }
+  },
+  {
+   "agent": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+   "author": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+   "body": {
+    "agent": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "34db4857c9fea33650fb7eaa04d75aae9a9caa02e30223899d6e47d8756efb55f12b36ef2ee57d28d5e4b4f958aca77936e7bb1ae367b4c00362573930669101",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "f80cccdce4ae1c07ae208a2adf99a310ae4207e0306fa0236110b06827bbb8d0"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "result": "accepted"
+   },
+   "name": "mallory_own_key_v2",
+   "note": "Mallory may bind HER OWN key; that gives her nothing over Alice's content",
+   "purpose": "owner-manifest",
+   "python": {
+    "key_hex": "f80cccdce4ae1c07ae208a2adf99a310ae4207e0306fa0236110b06827bbb8d0",
+    "verdict": "accepted"
+   }
+  },
+  {
+   "agent": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+   "author": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+   "body": {
+    "agent": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "36f839912546337f7f7e42c901fa11f2a8329b28641e57f331f7816c29b4b4dd7f9bfff64177a9339a8ca7cdd2d2ed46052cd43a4542d13817e237c90ecb2101",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidProof",
+    "result": "rejected"
+   },
+   "name": "b_mallory_binds_alice_key_own_signature",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "proof of possession does not verify",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+   "author": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+   "body": {
+    "agent": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidProof",
+    "result": "rejected"
+   },
+   "name": "c_alice_proof_replayed_for_mallory",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "proof of possession does not verify",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+   "author": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+   "body": {
+    "agent": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "2825dc42bf579e43c7a8770dbc5f3a576f95a54bef28370107e4358d6fde63ae552ab6a6bbf2b9c6a4d6efdfc209e4e391391eaaa5420a649a1ff69e9a77ad01",
+    "purpose": "host-receipt",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "2012cb90ca60e8e5d8daf66e2272d2233e0486d557e8c66141ed8920177d7eb7"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidProof",
+    "result": "rejected"
+   },
+   "name": "j_mallory_binds_carol_host_key",
+   "note": "",
+   "purpose": "host-receipt",
+   "python": {
+    "error": "proof of possession does not verify",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "host-receipt",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidProof",
+    "result": "rejected"
+   },
+   "name": "d_owner_proof_used_for_host_purpose",
+   "note": "",
+   "purpose": "host-receipt",
+   "python": {
+    "error": "proof of possession does not verify",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "KeyNotBound",
+    "result": "rejected"
+   },
+   "name": "d_owner_binding_requested_as_host",
+   "note": "",
+   "purpose": "host-receipt",
+   "python": {
+    "error": "signing key not bound to expected agent/purpose",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kADifferentStorageDnaForS2TestsOnly00000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kADifferentStorageDnaForS2TestsOnly00000000000",
+   "expect": {
+    "reason": "InvalidProof",
+    "result": "rejected"
+   },
+   "name": "e_proof_for_other_dna_moved_here",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "proof of possession does not verify",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kADifferentStorageDnaForS2TestsOnly00000000000",
+   "expect": {
+    "reason": "WrongDna",
+    "result": "rejected"
+   },
+   "name": "e_binding_read_on_other_dna",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "key binding is for a different DNA",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "f80cccdce4ae1c07ae208a2adf99a310ae4207e0306fa0236110b06827bbb8d0"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidProof",
+    "result": "rejected"
+   },
+   "name": "f_modified_public_key",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "proof of possession does not verify",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "AuthorMismatch",
+    "result": "rejected"
+   },
+   "name": "author_is_not_agent",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "Holochain action author mismatch",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidRecord",
+    "result": "rejected"
+   },
+   "name": "g_missing_signature",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "invalid Holochain storage record",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "ababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidProof",
+    "result": "rejected"
+   },
+   "name": "g_short_signature",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "invalid proof signature encoding",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569E1CC3820BA934D9C3BE4240FB0F5589CC5B36DFB68D82D6B1A074B0F6D9FEE05EC83153320F5757063F73312A0FA165271761B8FD27CEB6533866D695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidProof",
+    "result": "rejected"
+   },
+   "name": "g_uppercase_signature",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "invalid proof signature encoding",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidProof",
+    "result": "rejected"
+   },
+   "name": "g_non_hex_signature",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "invalid proof signature encoding",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidProof",
+    "result": "rejected"
+   },
+   "name": "g_zero_signature",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "proof of possession does not verify",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v1",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidRecord",
+    "result": "rejected"
+   },
+   "name": "g_v1_schema",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "invalid Holochain storage record",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v3",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidRecord",
+    "result": "rejected"
+   },
+   "name": "g_future_schema",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "invalid Holochain storage record",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "868499ea1dd1541c7904c7a76889e4820f8d7e1a844c8dd34c67baebe6652baae8218a46aa551b6088bab6b8ccc24761bd96d39cd1b79d71f78fa600f4931d0e",
+    "purpose": "grant-issuer",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "KeyNotBound",
+    "result": "rejected"
+   },
+   "name": "g_unsupported_purpose",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "signing key not bound to expected agent/purpose",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "note": "x",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidRecord",
+    "result": "rejected"
+   },
+   "name": "g_extra_field",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "invalid Holochain storage record",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "2",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidRecord",
+    "result": "rejected"
+   },
+   "name": "g_generation_2",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "unsupported key generation",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": 1,
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidRecord",
+    "result": "rejected"
+   },
+   "name": "g_numeric_generation",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "invalid Holochain storage record",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "ababababababababababababababababababababababababababababababab"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidRecord",
+    "result": "rejected"
+   },
+   "name": "g_short_key",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "invalid 32-byte hex field",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+   "body": {
+    "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "C050C5637A44FA8629FFF3CCCCE2300CB362A63D99D95FC54145266F4332445A"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "InvalidRecord",
+    "result": "rejected"
+   },
+   "name": "g_uppercase_key",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "invalid 32-byte hex field",
+    "verdict": "rejected"
+   }
+  },
+  {
+   "agent": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "author": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "body": {
+    "agent": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+    "generation": "1",
+    "proof_signature_hex": "6569e1cc3820ba934d9c3be4240fb0f5589cc5b36dfb68d82d6b1a074b0f6d9fee05ec83153320f5757063f73312a0fa165271761b8fd27ceb6533866d695704",
+    "purpose": "owner-manifest",
+    "schema": "holochain-storage/key-binding/v2",
+    "signing_key_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a"
+   },
+   "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+   "expect": {
+    "reason": "MissingRecord",
+    "result": "rejected"
+   },
+   "name": "g_oversized_agent",
+   "note": "",
+   "purpose": "owner-manifest",
+   "python": {
+    "error": "proof of possession does not verify",
+    "verdict": "rejected"
+   }
+  }
+ ],
+ "chain": {
+  "file_id": "4376979e7d43aa1cbbec13a70deb13842a745a90ab71bbcea492dcbd67eb0ff0",
+  "grant_text": "{\"body\":{\"ephemeral_key_hex\":\"803c140da17928e8344ee889543feff6c04248ba40c685e437ee6a2e6f034430\",\"expires_at\":1760001800,\"file_id\":\"4376979e7d43aa1cbbec13a70deb13842a745a90ab71bbcea492dcbd67eb0ff0\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForS2TestsOnly00000000000000000\",\"manifest_sha256\":\"211430bfe6b5046190ab9f5f4381bf1bb1cb1e53609fbf24f4e57ec4a3448661\",\"nonce_b64\":\"YCwKAGAFSWT3khQe\",\"owner_agent\":\"uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000\",\"recipient_key_hex\":\"94e9c71ccacddd2c6fbf529e263f0d39baf0fed469de0d227d24ad81a4394b70\",\"salt_b64\":\"3sxqblQZFI+vTXlBNQMKRA==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"xogom9CG1VlhhTnVvFfmLglxGP+19ucB5hfckbf29wAulRSKqOSAQnQV3OlKXpLx\"},\"signature\":\"PNaTpdFMZA0BCk9rB7+19xWCOub++YAATBXC/IkuqsFB9W+B551rpeQo5cVBtmfbpmX15IyMc6X5mU+CkTv3CQ==\",\"signer\":\"wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=\"}",
+  "licence_text": "{\"body\":{\"ephemeral_key_hex\":\"841f382b482eab3197ab654d2a18107339199093dc9b5b44b8baef54a90d252d\",\"file_id\":\"4376979e7d43aa1cbbec13a70deb13842a745a90ab71bbcea492dcbd67eb0ff0\",\"issued_at\":1760000000,\"licence_id\":\"9c381b4f8ff1934c9433ed22c5f764ba\",\"listener_agent\":\"uhCAkBobListenerAgentForS2TestsOnly00000000000000000\",\"manifest_sha256\":\"211430bfe6b5046190ab9f5f4381bf1bb1cb1e53609fbf24f4e57ec4a3448661\",\"nonce_b64\":\"N8xcOHz2UfRQjgvX\",\"owner_agent\":\"uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000\",\"recipient_key_hex\":\"94e9c71ccacddd2c6fbf529e263f0d39baf0fed469de0d227d24ad81a4394b70\",\"salt_b64\":\"txTr4ykZNLb/FOttGASzBg==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"K4qp4Cpze2gz6fbfBNmTKiSPZxfqEfJVeQpGiyYihzKIwQdABnJDf0+1bgZIUc4u\"},\"signature\":\"XwUqTVJh0O05M/ZzE9yAdGGpR5koV8+Zc2SLgLBu8lWl4ZCPAnSbF7MmUVzC3BUx4JBkeeruL+eJNePGnCF2Ag==\",\"signer\":\"wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=\"}",
+  "manifest_sha256": "211430bfe6b5046190ab9f5f4381bf1bb1cb1e53609fbf24f4e57ec4a3448661",
+  "manifest_text": "{\"body\":{\"chunk_size\":32,\"chunks\":[{\"cipher_bytes\":48,\"index\":0,\"nonce\":\"2Hqc5JO5i0y1aLpE\",\"plain_bytes\":32,\"sha256\":\"93321743d1c5d2c69c6868bfb8e313df16fda2a03cf472bd1bb7dc2cd51f3e53\"},{\"cipher_bytes\":48,\"index\":1,\"nonce\":\"vY5u1HkRos5Zf5W3\",\"plain_bytes\":32,\"sha256\":\"471c5ca8014ce3fa0e4c490c73c23c0d476c2aebc4bafd74be35b9667ad6eea4\"},{\"cipher_bytes\":48,\"index\":2,\"nonce\":\"OqyVKAKAF/1oxevS\",\"plain_bytes\":32,\"sha256\":\"9822ec5a660ffe5cedcc9c3e4a24a5db31206ff932c3584ae58be89ac4885c72\"},{\"cipher_bytes\":25,\"index\":3,\"nonce\":\"aZaLCoaJ2sQRKiTM\",\"plain_bytes\":9,\"sha256\":\"e6a0b9f312da2eb78b57440644519cf6bf992deed9e475025cab9bddc5725e73\"}],\"cipher\":\"AES-256-GCM\",\"file_id\":\"4376979e7d43aa1cbbec13a70deb13842a745a90ab71bbcea492dcbd67eb0ff0\",\"schema\":\"holochain-storage/encrypted-package/v1\",\"total_plain_bytes\":105},\"signature\":\"bTB72jq6UGxanXKJCfugmDBTPxz3zDY8bNIywiZW7HjwJNh972ZZbNRsKAlBA39SsZdlf3Uw+ijr7CFy4VS1CQ==\",\"signer\":\"wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=\"}",
+  "now": 1760000010
+ },
+ "dna_hash": "uhC0kStorageV2DnaForCore005S2TestsOnly0000000000000",
+ "keys": {
+  "alice_ed25519_public_hex": "c050c5637a44fa8629fff3cccce2300cb362a63d99d95fc54145266f4332445a",
+  "bob_x25519_public_hex": "94e9c71ccacddd2c6fbf529e263f0d39baf0fed469de0d227d24ad81a4394b70",
+  "carol_ed25519_public_hex": "2012cb90ca60e8e5d8daf66e2272d2233e0486d557e8c66141ed8920177d7eb7",
+  "mallory_ed25519_public_hex": "f80cccdce4ae1c07ae208a2adf99a310ae4207e0306fa0236110b06827bbb8d0"
+ },
+ "message_hex": "686f6c6f636861696e2d73746f726167652f6b65792d62696e64696e672d706f702f76320000000020686f6c6f636861696e2d73746f726167652f6b65792d62696e64696e672f763200000033756843306b53746f726167655632446e61466f72436f7265303035533254657374734f6e6c793030303030303030303030303000000034756843416b416c6963654f776e65724167656e74466f72533254657374734f6e6c793030303030303030303030303030303030300000000e6f776e65722d6d616e696665737400000040633035306335363337613434666138363239666666336363636365323330306362333632613633643939643935666335343134353236366634333332343435610000000131",
+ "music_commit": "f091d5a5da0c2cb46228ea619ab816338311ef9b",
+ "other_dna_hash": "uhC0kADifferentStorageDnaForS2TestsOnly00000000000",
+ "schema": "holochain-media-core/music-key-binding-v2-vectors/v1"
+}
