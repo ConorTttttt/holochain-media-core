@@ -1,6 +1,8 @@
 # `access-grant/v2`: issuer authority independent of the manifest key
 
-Status: **proposal for review. No protocol bytes are implemented.** This
+Status: **proposal for review; reviewer decisions of 14 Nov 2026 recorded in
+§12. Grant protocol bytes are not implemented; the grant-anchor entry (§3.5,
+§4) is being implemented on `feat/grant-anchor-v21` for review.** This
 document is the specification and plan; the canonical test vectors (Part 1
 of §11) are the first deliverable after review. Builds on S2 v2.1
 (`feat/s2-v21-key-lifecycle`, holochain-media-core#4, holochain-music#44).
@@ -37,7 +39,7 @@ The defect is the *format*: it conflates two different claims.
   at issuance**, which may differ from the manifest's key. It names that
   key's generation and transition action.
 * Every v2 grant is **anchored on the issuer's own source chain** by a public
-  `grant-anchor/v2` record. The anchor commits to the grant digest, so
+  `grant-anchor/v2` record. The anchor commits to the complete signed grant (a domain-separated commitment), so
   verifiers can apply the existing v2.1 chain-ordered policy:
   * a key that was rotated or revoked *before* the anchor cannot have issued
     it;
@@ -163,20 +165,33 @@ itself is the existing S1 key, so there is **no re-encryption**.
 
 ### 3.5 Grant anchor `holochain-storage/grant-anchor/v2` (public DHT entry)
 
+The anchor is deliberately minimal. It carries **no** recipient identity, no
+track or manifest identifier, no rights, terms, prices or licence details, no
+key material, and no transaction data. Exactly these string fields:
+
 | Field | Rule |
 |---|---|
 | `schema` | `holochain-storage/grant-anchor/v2` |
-| `dna_hash` | this DNA |
-| `issuer_agent` | must equal the action author |
-| `grant_id` | as in the grant |
-| `grant_digest` | SHA-256 of the grant message (§3.3), 64 hex |
-| `issuer_key_hex`, `issuer_key_generation`, `issuer_key_action` | as in the grant |
+| `dna_hash` | this DNA (`dna_info().hash`); binds the anchor to one network |
+| `grant_id` | 32 lowercase hex: the grant's random 128-bit id (uniqueness scope: per issuer agent, per DNA) |
+| `grant_commitment` | 64 lowercase hex: `SHA-256("holochain-storage/grant-anchor-commitment/v2\0" ‖ grant_message)`, where `grant_message` is the exact signed message of §3.3 |
+| `issuer_key_action` | action hash of the issuer's `owner-manifest` lifecycle transition whose key signs the grant |
 
-The anchor reveals that the issuer made *some* grant at that chain position.
-The `grant_digest` covers a random `grant_id`, so it does not identify the
-listener or the track. The *count and timing* of an artist's grants become
-visible. The same is already true today, because the actions of the private
-inbox entries are public.
+The **issuer is the action author**: there is no agent field to forge or to
+disagree with. The key and generation are not repeated, because they follow
+from `issuer_key_action` through the author's validated lifecycle.
+
+The commitment is domain-separated and covers the complete signed grant
+(including its random `grant_id`, ephemeral key and wrapped key), so it
+cannot be inverted or brute-forced to recover the listener, track or rights.
+It binds the anchor to exactly one grant, and through `grant_id` the grant
+names its anchor's uniqueness slot.
+
+**What remains visible (documented, accepted):** that the issuer authorised
+*some* grant, at which position on their chain (and so roughly when), and
+with which key generation. Grant issuance **frequency and timing** per artist
+are therefore public. This was already true for the public actions of
+private inbox entries.
 
 ### 3.6 Delivery wrapper (unsigned transport)
 
@@ -192,41 +207,58 @@ new inbox kind, which is a DNA change for a later version.
 
 ## 4. DNA rules (conductor-enforced)
 
-The anchor needs one new entry type. Options:
+**Decision (14 Nov 2026): option A.** `GrantAnchorV2` is added to the
+existing `dna-v21` integrity zome before v2.1 is released. The v2.1 DNA hash
+changes once, before any deployment; v1 and v2 are untouched. The entry and
+link types are appended after the v2.1 types, so earlier type positions do
+not move.
 
-| Option | Network effect | Recommendation |
-|---|---|---|
-| **A. Add `GrantAnchorV2` to `dna-v21` before v2.1 is released** | the v2.1 DNA hash changes once, before anyone uses it; one network | **recommended**: v2.1 is draft and undeployed, so there is no migration cost |
-| B. New `dna-v22` after v2.1 ships | a fourth network, and every v2.1 identity migrates again | only if v2.1 must ship first |
+Integrity rules for a `GrantAnchorV2` create, deterministic, using the v2.1
+chain walk (`must_get_agent_activity` from `prev_action` to genesis,
+`must_get_valid_record` for lifecycle and anchor actions only):
 
-Either way, v1 and v2 are untouched. Integrity rules for `GrantAnchorV2`,
-deterministic, using the same `purpose_history` chain walk as v2.1:
-
-1. `issuer_agent` == action author.
+1. Exact fields; schema; lowercase-hex lengths for `grant_id` (32) and
+   `grant_commitment` (64); `issuer_key_action` non-empty and ≤ 160 B.
 2. `dna_hash` == `dna_info().hash`.
-3. Exact fields; hex and length rules; `issuer_key_generation` canonical.
-4. At this chain position, `(issuer_key_action, generation, key)` is the
-   author's **current, unrevoked** `owner-manifest` generation (the last
-   transition before this action, with no revocation of it before this
-   action).
-5. No earlier `GrantAnchorV2` on the author's chain has the same `grant_id`
-   (no grant-id reuse).
-6. Updates and deletes are forbidden (existing rule).
+3. At this chain position, `issuer_key_action` is the author's **current**
+   `owner-manifest` transition (the last one before this action) and that
+   transition has **no revocation** before this action. A transition of
+   another purpose, of another agent, a superseded one or a revoked one is
+   refused.
+4. No earlier `GrantAnchorV2` on the author's chain has the same `grant_id`
+   (uniqueness scope: author × DNA).
+5. Updates and deletes are forbidden (existing rule).
 
-The anchor is created with a link from the issuer agent, so readers can list
-anchors; for verification they fetch by action hash.
+The author is the issuer by construction (rule: the action author). A
+`publish_grant_anchor_v2` coordinator function creates the entry and an
+`AgentToGrantAnchorV2` link from the author; readers verify by action hash
+with `get_grant_anchor_v2`, which also returns the chain position.
 
-**What the conductor enforces** (on any honest conductor, for any stored
-anchor):
+**Conductor-enforced** (true of every anchor an honest conductor stores):
 
-* the anchor's author is the issuer;
-* the issuer key was the author's active, unrevoked generation at that point
-  in the chain;
-* grant ids are unique per issuer.
+* only the content owner's agent (as the author) can anchor a grant under
+  their lifecycle; possession of a media key alone cannot;
+* the signing generation was current and unrevoked at the anchor's position,
+  so a rotated or revoked key cannot anchor a new grant after its authority
+  ended;
+* grant ids are unique per author and DNA;
+* the anchor names this network.
 
-**What it does not:** the grant body itself (private, never on the DHT) and
-any check by the recipient. Verifiers re-check rule 4 from the lifecycle in
-any case (§5), so a modified conductor gains nothing.
+**Not enforceable by the DNA; verifiers (Music and Media Core) must check:**
+
+* that the grant body matches the anchor (`grant_commitment`, `grant_id`,
+  `issuer_key_action`), because the grant is private and never on the DHT;
+* that the grant signature verifies with the generation's key;
+* that the author is the content owner of *this* manifest (the anchor names
+  no content);
+* the recovery policy (§5 B7): a recovered generation is a legitimate,
+  agent-authorised state, so the DNA accepts its anchors and the verifier
+  rejects them by default;
+* lifecycle completeness and freshness of the reader's view (§5).
+
+Verifiers re-derive rule 3 from the lifecycle in any case (§5 B6), so a
+modified conductor that skips validation gains nothing against an honest
+reader.
 
 ## 5. Verification
 
@@ -275,8 +307,9 @@ typed error.
 5. **Anchor:**
    * the anchor record is authored by `issuer_agent`;
    * it has a chain position;
-   * its exact fields match the grant (id, digest, key, generation, action,
-     DNA).
+   * `grant_id`, `issuer_key_action` and `dna_hash` match the grant, and
+     `grant_commitment` equals the commitment recomputed from the grant
+     message (§3.5).
 6. **Issuer validity:** `owner_lifecycle.classify(key, Historical { anchor })`
    ∈ {`Active`, `HistoricalOnly`}. An anchor after the key's end yields
    `Rotated` or `Revoked`, and the grant is refused. Unanchored use is never
@@ -394,22 +427,22 @@ an explicit typed error asserted by tests, never a timeout.
 | # | Threat | Stopped by | Expected error |
 |---|---|---|---|
 | 1 | Forged grant issuer (Mallory's key) | V3: key not in the owner lifecycle | `Unauthenticated::IssuerNotInLifecycle` |
-| 2 | Wrong Holochain agent (`issuer_agent` ≠ owner, or anchor by another author) | V2/V5; C1 | `Denied::OwnerMismatch` / `Unauthenticated::AnchorMismatch` |
-| 3 | Obsolete (rotated) key issues a new grant | C4 (anchor refused); V6 (anchor after end) | integrity "issuer key is not the author's current owner-manifest key"; `KeyRotated` |
-| 4 | Revoked key issues a new grant | C4; V6 | integrity refusal; `KeyRevoked` |
-| 5 | Wrong signing generation (key/generation/action mismatch) | V3; C4 | `Unauthenticated::IssuerGenerationMismatch` |
+| 2 | Wrong Holochain agent (`issuer_agent` ≠ owner, or anchor by another author) | V2/V5; C (author = issuer) | `Denied::OwnerMismatch` / `Unauthenticated::AnchorMismatch` |
+| 3 | Obsolete (rotated) key issues a new grant | C3 (anchor refused); V6 (anchor after end) | integrity "issuer key is not the author's current owner-manifest key"; `KeyRotated` |
+| 4 | Revoked key issues a new grant | C3; V6 | integrity refusal; `KeyRevoked` |
+| 5 | Wrong signing generation (key/generation/action mismatch) | V3; C3 | `Unauthenticated::IssuerGenerationMismatch` |
 | 6 | Wrong media manifest | V2 (digest, `manifest_key_hex`); key-wrap AAD | `Denied::ManifestMismatch` |
 | 7 | Modified rights or term | V4 signature; AAD | `Unauthenticated::InvalidSignature` |
 | 8 | Wrong recipient | V2 | `Denied::ListenerMismatch` / `RecipientKeyMismatch` |
-| 9 | Cross-DNA or cross-network replay | V2 (`dna_hash`); C2; lifecycle DNA | `Denied::NetworkMismatch` |
-| 10 | Grant id reuse, malicious replay | C5 (unique per issuer); V5 (anchor digest == grant digest); same grant to the same listener is idempotent | integrity refusal; `Unauthenticated::AnchorMismatch` |
+| 9 | Cross-DNA or cross-network replay | V2 (`dna_hash`); C (anchor `dna_hash`); lifecycle DNA | `Denied::NetworkMismatch` |
+| 10 | Grant id reuse, malicious replay | C4 (unique per issuer and DNA); V5 (anchor commitment == recomputed grant commitment); same grant to the same listener is idempotent | integrity refusal; `Unauthenticated::AnchorMismatch` |
 | 11 | Forged lineage (fake rotation, predecessor) | v2.1 DNA and reader lifecycle rules | `Ambiguous` / `Invalid` / `LifecycleIncomplete` |
 | 12 | Unauthorised recovered key | V7 default `Reject` | `Unauthenticated::RecoveredIssuerRefused` |
 | 13 | Signature for another purpose (host key, receipt, lifecycle proof, v1 grant) | domain prefix; `issuer_purpose`; lifecycle purpose | `InvalidSignature` / `IssuerNotInLifecycle` |
 | 14 | Grant for another encrypted package | V2 `file_id`; AAD | `Denied::FileMismatch` |
 | 15 | Expired, not-yet-valid or unsupported terms | V8 | `Validity::Expired` / `NotYetValid` / `Unsupported::Terms` |
 | 16 | Conflicting or ambiguous lifecycle history | reader lifecycle | `Ambiguous` (never first- or latest-match) |
-| 17 | Issuance after a compromise without authorisation | C4 (a revoked key cannot anchor); V6 | integrity refusal; `KeyRevoked` |
+| 17 | Issuance after a compromise without authorisation | C3 (a revoked key cannot anchor); V6 | integrity refusal; `KeyRevoked` |
 | 18 | Legacy rules used to bypass v2 | exact schema and shape dispatch; no promotion | `Unsupported::WrongVersion` / `RequiresLifecycle` |
 | + | **Legitimate:** Alice rotates g1→g2, issues a v2 grant for a g1 track | A (`HistoricalOnly` manifest) + B (`Active` issuer, anchored) | `Ok`, scheme v2, issuer generation 2 |
 
@@ -484,7 +517,7 @@ approved.
 | Part | Repo / branch | Scope | Depends on | Tests and acceptance | Main risks |
 |---|---|---|---|---|---|
 | 1. Spec and vectors | Media Core `feat/access-grant-v2-spec` (this doc) + Music `feat/access-grant-v2-reference` | finalise §3–§8; Music reference `issue_access_grant_v2`/`make_grant_anchor` (Python only, behind no app path); generator producing grants, anchors, AAD and digests plus Music's verdict for every §8 case | review of this doc | byte-exact messages; ≥ 1 vector per threat; deterministic parts reproducible in CI | ambiguity in canonical JSON for integers and arrays; mitigated by explicit vectors |
-| 2. Anchor in the DNA | Music `feat/access-grant-v2-dna` | `GrantAnchorV2` in `dna-v21` (option A) or `dna-v22`; integrity rules C1–C6; coordinator routes | 1, plus the A/B decision | integrity unit tests; v1/v2 hashes unchanged; new hash recorded | DNA hash change; re-run the v2.1 suite |
+| 2. Anchor in the DNA | Music + Media Core `feat/grant-anchor-v21` | `GrantAnchorV2` in `dna-v21` (option A, decided); integrity rules 1–5 of §4; coordinator routes; Python and Rust anchor verifiers; anchor conductor tests | 1 (anchor fields only) | integrity unit tests; v1/v2 hashes unchanged; new hash recorded | DNA hash change; re-run the v2.1 suite |
 | 3. Media Core verifier | Media Core `feat/access-grant-v2-verify` | `verify_access_grant_v2`, typed errors, `RecoveredIssuerPolicy`; v1 paths untouched | 1 | vectors: Rust verdict = Music verdict for every case; mutation sweep; `preserve_order` | treating any v1 field as v2 authority; mitigated by exact-shape dispatch |
 | 4. Interop and CORE-005 | Media Core, same branch | `check_content_access_v2`; retrieval anchor lookup; resolver read set | 2, 3 | CI regenerates the vectors from the pinned Music commit; parity 100 % | pinned commit must be reachable (push Music first) |
 | 5. Real-agent acceptance | Media Core `feat/access-grant-v2-e2e` | §10 suite | 2–4 | all steps pass twice, no concurrent suites | flakiness; only explicit errors count |
@@ -498,11 +531,20 @@ Release gates:
 * a two-device run;
 * **no default switch** until the gates pass.
 
-## 12. Decisions requested from the reviewer
+## 12. Reviewer decisions (14 Nov 2026)
 
-1. Option A (anchor in `dna-v21` before release) or option B (`dna-v22`).
-2. Default `RecoveredIssuerPolicy` (`Reject` proposed).
-3. Whether `window` rentals and subscriptions with `managed-offline` should
-   be specified now or deferred (deferred proposed).
-4. Whether the public anchor's count/timing leakage is acceptable (proposed:
-   yes, documented; it already exists for inbox actions).
+1. **Option A:** `grant-anchor/v2` goes into the existing `dna-v21` before
+   release; no `dna-v22`.
+2. **Recovered issuers:** new grants signed by a
+   `RecoveredWithoutContinuity` generation are **rejected by default**
+   (`RecoveredIssuerPolicy::Reject`); `Accept` is an explicit, labelled
+   opt-in.
+3. **Rentals and subscriptions:** policy implementation is deferred. The
+   format (`term = window`, `rights`, `basis`, `entitlement_ref`) stays
+   compatible with a future hybrid model of purchases, rentals and
+   subscriptions, which will be a reviewed policy version, not a format
+   change.
+4. **Public anchors:** allowed, with minimised metadata (§3.5): no recipient
+   identity, plaintext licence details, content keys or unnecessary
+   transaction data. Issuance frequency and timing remain visible and are
+   documented as such.
