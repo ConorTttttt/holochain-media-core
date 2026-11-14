@@ -364,9 +364,12 @@ fn time_policy_boundaries_use_the_injected_clock() {
     )
     .is_ok());
     // Licences never expire, and do not depend on the clock beyond "not
-    // issued in the future".
+    // issued in the future". The far-future instant is 9999-12-31T23:59:59Z,
+    // the last RFC 3339 second: every supported platform's `SystemTime` can
+    // represent it (Windows `SystemTime` ends in the year 30828, so 2^40 s
+    // after the epoch overflows there).
     let l = case(&v, "licence_valid_for_export");
-    for now in [issued, issued + 86_400 * 365 * 500, 1_i64 << 40] {
+    for now in [issued, issued + 86_400 * 365 * 500, 253_402_300_799] {
         assert!(check_content_access(
             &owned(&v, "p"),
             &subject(l),
