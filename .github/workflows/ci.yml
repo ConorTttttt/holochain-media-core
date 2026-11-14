@@ -88,11 +88,11 @@ jobs:
           ref: f091d5a5da0c2cb46228ea619ab816338311ef9b
           path: target/music-s2-v2
           persist-credentials: false
-      - name: Checkout Music S2 v2.1 reference (key lifecycle implementation)
+      - name: Checkout Music S2 v2.1 reference (key lifecycle + grant anchors)
         uses: actions/checkout@v4
         with:
           repository: ConorTttttt/holochain-music
-          ref: cfd48073dec341c6b89339c91026799218644c0a
+          ref: 64f57d416f42c37d3e3aca1a2170142c0a4cf206
           path: target/music-s2-v21
           persist-credentials: false
       - name: Set up Python
@@ -129,7 +129,7 @@ jobs:
           import json
           a = json.load(open("crates/content-core/testdata/music-key-lifecycle-v21-vectors.json"))
           b = json.load(open("target/kl-v21.json"))
-          for k in ("scenarios", "lifecycle", "keys", "agents", "dna_hash", "music_commit"):
+          for k in ("scenarios", "lifecycle", "grant_anchors", "keys", "agents", "dna_hash", "music_commit"):
               assert a[k] == b[k], f"committed vectors differ from a fresh Music run: {k}"
           for k in ("rotation_successor_hex", "rotation_predecessor_hex"):
               assert a["messages"][k] == b["messages"][k], k
