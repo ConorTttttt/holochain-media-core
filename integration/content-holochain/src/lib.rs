@@ -63,9 +63,10 @@ pub const READ_FUNCTIONS_V2: [&str; 4] = [
 /// Upper bound on records accepted from one zome call.
 /// S2 key lifecycle v2.1 read set (v2.1 storage DNA): lifecycle records with
 /// chain positions, and chain positions for historical anchors. No writes.
-pub const READ_FUNCTIONS_V21: [&str; 5] = [
+pub const READ_FUNCTIONS_V21: [&str; 6] = [
     "get_key_lifecycle_v21",
     "get_action_position_v21",
+    "get_grant_anchor_v2",
     "get_file_commitments",
     "get_replica_claims",
     "get_moq_endpoints",
@@ -268,6 +269,37 @@ impl ConductorResolver {
 
     /// DNA hash of the storage cell (checked against the caller's pin). Use
     /// it for `KeyBindingPolicy::ProofOfPossessionV2`.
+    /// The grant anchor at `action_hash` with its author and chain position
+    /// (`get_grant_anchor_v2`). `Ok(None)` means not (yet) available: the
+    /// caller must not accept the grant (fail closed).
+    pub async fn grant_anchor_v21(
+        &self,
+        action_hash: &str,
+    ) -> Result<Option<ConductorRecord>, MetadataError> {
+        if !self.key_lifecycle_v21 {
+            return Err(MetadataError(
+                "resolver was not connected for key lifecycle v2.1".into(),
+            ));
+        }
+        let hash =
+            ActionHash::try_from(action_hash).map_err(|e| unavailable("invalid action hash", e))?;
+        let row: Option<SequencedWire> = self.call("get_grant_anchor_v2", &hash).await?;
+        let Some(r) = row else { return Ok(None) };
+        if r.action_hash.to_string() != action_hash {
+            return Err(MetadataError(
+                "conductor returned a different grant anchor".into(),
+            ));
+        }
+        ConductorRecord::from_validated_conductor_at(
+            r.author,
+            r.action_hash.to_string(),
+            r.action_seq,
+            r.body,
+        )
+        .map(Some)
+        .map_err(|e| MetadataError(format!("get_grant_anchor_v2: {e}")))
+    }
+
     /// Whether this resolver reads the v2.1 key lifecycle.
     pub fn key_lifecycle_v21(&self) -> bool {
         self.key_lifecycle_v21
