@@ -2,7 +2,7 @@
 
 Reusable, file-type-independent content contracts and security interfaces for Holochain Music, Video, and future applications.
 
-**Status: CORE-005 technical milestone / pre-release (not production).** The workspace verifies Holochain Music S1 signed manifests and receipts (CORE-002), stores verified ciphertext in a resumable content-addressed store (CORE-003), binds Holochain identity, discovery and certificate-pinned MoQ retrieval to that store (CORE-004, real five-conductor acceptance suite), and verifies Music's signed streaming grants and personal licences against Holochain-authenticated owners and listeners (CORE-005). It does **not** encrypt files, issue grants, unwrap content keys, approve publications, serve public media, or accept payments. A CORE-005 `Authorized` result is a policy decision: the application must still unwrap the key (AES-GCM authenticated) before plaintext access. See docs/CORE-005-entitlement-verification.md and docs/CORE-004-holochain-moq-integration.md. S2 key-binding v2 (proof of possession, opt-in separate v2 storage DNA; explicit `BindingAssurance` levels) is described in docs/S2-KEY-BINDING-V2.md.
+**Status: CORE-005 technical milestone / pre-release (not production).** The workspace verifies Holochain Music S1 signed manifests and receipts (CORE-002), stores verified ciphertext in a resumable content-addressed store (CORE-003), binds Holochain identity, discovery and certificate-pinned MoQ retrieval to that store (CORE-004, real five-conductor acceptance suite), and verifies Music's signed streaming grants and personal licences against Holochain-authenticated owners and listeners (CORE-005). It does **not** encrypt files, issue grants, unwrap content keys, approve publications, serve public media, or accept payments. A CORE-005 `Authorized` result is a policy decision: the application must still unwrap the key (AES-GCM authenticated) before plaintext access. See docs/CORE-005-entitlement-verification.md and docs/CORE-004-holochain-moq-integration.md. S2 key-binding v2 (proof of possession, opt-in separate v2 storage DNA; explicit `BindingAssurance` levels) is described in docs/S2-KEY-BINDING-V2.md. S2 key lifecycle v2.1 (rotation, recovery, revocation with explicit `KeyValidity`, host-attributed `replica-receipt/v2`; opt-in separate v2.1 storage DNA) is described in docs/S2-KEY-LIFECYCLE-V21.md.
 
 ## Boundaries
 
@@ -23,7 +23,8 @@ The first implementation reuses Music's existing package/receipt formats through
 - integration/: separate workspace with the MoQ client, conductor resolver and the real-service acceptance suite.
 - docs/CORE-004-holochain-moq-integration.md, docs/CORE-004-video-integration.md: integration, quickstart, evidence, findings.
 - docs/CORE-005-entitlement-verification.md: entitlement API, schemas, rights mapping, Python compatibility, limitations.
-- docs/S2-KEY-BINDING-V2.md: proof-of-possession key bindings, assurance levels, DNA compatibility, migration, outstanding rotation/receipt work.
+- docs/S2-KEY-BINDING-V2.md: proof-of-possession key bindings, assurance levels, DNA compatibility, migration.
+- docs/S2-KEY-LIFECYCLE-V21.md: key rotation/recovery/revocation, historical verification policy, host-attributed receipts, v2.1 DNA, migration and rollback.
 - scripts/generate_music_vectors.py, scripts/generate_music_entitlement_vectors.py, scripts/generate_music_key_binding_vectors.py: independent vectors from pinned Music Python code.
 - docs/architecture.md: component responsibilities and boundaries.
 - docs/contracts.md: compatibility baseline for Music's v1 signed packages.

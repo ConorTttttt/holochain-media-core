@@ -61,7 +61,32 @@ pub const READ_FUNCTIONS_V2: [&str; 4] = [
 ];
 
 /// Upper bound on records accepted from one zome call.
+/// S2 key lifecycle v2.1 read set (v2.1 storage DNA): lifecycle records with
+/// chain positions, and chain positions for historical anchors. No writes.
+pub const READ_FUNCTIONS_V21: [&str; 5] = [
+    "get_key_lifecycle_v21",
+    "get_action_position_v21",
+    "get_file_commitments",
+    "get_replica_claims",
+    "get_moq_endpoints",
+];
+
 pub const MAX_RECORDS_PER_CALL: usize = 1024;
+
+#[derive(Debug, Deserialize)]
+struct SequencedWire {
+    author: String,
+    action_hash: ActionHash,
+    action_seq: u32,
+    body: Value,
+}
+
+#[derive(Debug, Deserialize)]
+struct PositionWire {
+    author: String,
+    action_hash: ActionHash,
+    action_seq: u32,
+}
 
 #[derive(Debug, Deserialize)]
 struct WireRecord {
@@ -82,6 +107,15 @@ pub fn read_functions(key_binding_v2: bool) -> [&'static str; 4] {
         READ_FUNCTIONS_V2
     } else {
         READ_FUNCTIONS
+    }
+}
+
+/// The zome functions a resolver connected for `target` may call.
+pub fn read_functions_for(target: &ConductorTarget) -> Vec<&'static str> {
+    if target.key_lifecycle_v21 {
+        READ_FUNCTIONS_V21.to_vec()
+    } else {
+        read_functions(target.key_binding_v2).to_vec()
     }
 }
 
@@ -107,6 +141,9 @@ pub struct ConductorTarget {
     /// Read S2 key-binding v2 records (the `music_storage_v2` DNA) instead of
     /// v1. Explicit: the resolver never switches between them by itself.
     pub key_binding_v2: bool,
+    /// Read S2 key lifecycle v2.1 records (the `music_storage_v21` DNA).
+    /// Explicit and exclusive with `key_binding_v2`.
+    pub key_lifecycle_v21: bool,
 }
 
 /// An authenticated, read-only connection to the storage cell.
@@ -116,11 +153,17 @@ pub struct ConductorResolver {
     reader_agent: String,
     dna_hash: String,
     key_binding_v2: bool,
+    key_lifecycle_v21: bool,
 }
 
 impl ConductorResolver {
     /// Connect, check the app/role/DNA pin and open a signed app socket.
     pub async fn connect(target: &ConductorTarget) -> Result<Self, MetadataError> {
+        if target.key_binding_v2 && target.key_lifecycle_v21 {
+            return Err(MetadataError(
+                "choose one key-binding mode (v2 or v2.1)".into(),
+            ));
+        }
         if !target.admin.ip().is_loopback() || target.admin.port() == 0 {
             return Err(MetadataError(
                 "admin WebSocket must be a loopback address".into(),
@@ -162,7 +205,7 @@ impl ConductorResolver {
                 // Least privilege: never `None` (which means *all* functions,
                 // including writes and the private inbox senders).
                 functions: Some(GrantedFunctions::Listed(
-                    read_functions(target.key_binding_v2)
+                    read_functions_for(target)
                         .iter()
                         .map(|f| (STORAGE_ZOME.into(), (*f).into()))
                         .collect(),
@@ -214,6 +257,7 @@ impl ConductorResolver {
             app,
             role: target.storage_role.clone(),
             key_binding_v2: target.key_binding_v2,
+            key_lifecycle_v21: target.key_lifecycle_v21,
         })
     }
 
@@ -224,6 +268,11 @@ impl ConductorResolver {
 
     /// DNA hash of the storage cell (checked against the caller's pin). Use
     /// it for `KeyBindingPolicy::ProofOfPossessionV2`.
+    /// Whether this resolver reads the v2.1 key lifecycle.
+    pub fn key_lifecycle_v21(&self) -> bool {
+        self.key_lifecycle_v21
+    }
+
     pub fn dna_hash(&self) -> &str {
         &self.dna_hash
     }
@@ -326,5 +375,66 @@ impl MetadataSource for ConductorResolver {
         }
         let key = agent(agent_id)?;
         self.records("get_signing_keys_v2", &key).await
+    }
+
+    async fn key_lifecycle_v21(
+        &mut self,
+        agent_id: &str,
+    ) -> Result<Vec<ConductorRecord>, MetadataError> {
+        if !self.key_lifecycle_v21 {
+            return Err(MetadataError(
+                "resolver was not connected for key lifecycle v2.1".into(),
+            ));
+        }
+        let key = agent(agent_id)?;
+        let rows: Vec<SequencedWire> = self.call("get_key_lifecycle_v21", &key).await?;
+        if rows.len() > MAX_RECORDS_PER_CALL {
+            return Err(MetadataError(
+                "get_key_lifecycle_v21: too many records".into(),
+            ));
+        }
+        // Unlike other reads, a malformed lifecycle row is NOT skipped: the
+        // lifecycle verifier must see every record, so this fails closed.
+        rows.into_iter()
+            .map(|r| {
+                ConductorRecord::from_validated_conductor_at(
+                    r.author,
+                    r.action_hash.to_string(),
+                    r.action_seq,
+                    r.body,
+                )
+                .map_err(|e| MetadataError(format!("get_key_lifecycle_v21: {e}")))
+            })
+            .collect()
+    }
+
+    async fn with_chain_position(
+        &mut self,
+        record: ConductorRecord,
+    ) -> Result<ConductorRecord, MetadataError> {
+        if !self.key_lifecycle_v21 {
+            return Err(MetadataError(
+                "resolver was not connected for key lifecycle v2.1".into(),
+            ));
+        }
+        let hash = ActionHash::try_from(record.action_hash())
+            .map_err(|e| unavailable("invalid action hash", e))?;
+        let position: Option<PositionWire> = self.call("get_action_position_v21", &hash).await?;
+        let position =
+            position.ok_or_else(|| MetadataError("action position not (yet) available".into()))?;
+        if position.author != record.author()
+            || position.action_hash.to_string() != record.action_hash()
+        {
+            return Err(MetadataError(
+                "conductor returned a position for a different action".into(),
+            ));
+        }
+        ConductorRecord::from_validated_conductor_at(
+            record.author(),
+            record.action_hash(),
+            position.action_seq,
+            Value::Object(record.body().clone()),
+        )
+        .map_err(|e| MetadataError(format!("chain position: {e}")))
     }
 }

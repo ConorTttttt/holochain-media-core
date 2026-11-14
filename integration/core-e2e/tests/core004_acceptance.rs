@@ -236,6 +236,7 @@ impl Net {
             storage_role: dna.clone(),
             expected_storage_dna: dna,
             key_binding_v2: self.v2,
+            key_lifecycle_v21: false,
         })
         .await
         .expect("Bob's authenticated conductor resolver")
@@ -1118,6 +1119,7 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
         storage_role: "x".into(),
         expected_storage_dna: "x".into(),
         key_binding_v2: false,
+        key_lifecycle_v21: false,
     })
     .await;
     assert!(missing.is_err());

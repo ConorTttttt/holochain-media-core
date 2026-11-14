@@ -21,6 +21,7 @@
 use crate::compat::{
     verify_music_manifest, verify_music_receipt, VerifiedManifest, VerifiedReceipt, VerifyError,
 };
+pub use crate::lifecycle::{KeyContinuity, KeyValidity};
 use crate::{ManifestDigest, PackageId};
 use ed25519_dalek::{Signature, VerifyingKey};
 use serde_json::{Map, Value};
@@ -96,6 +97,21 @@ pub enum BindingError {
     /// The binding's assurance level is below what the operation requires
     /// (for example a legacy v1 binding where proof of possession is needed).
     InsufficientAssurance,
+    /// v2.1: a lifecycle record refers to a predecessor/target that was not
+    /// returned (a gap). May be DHT propagation; never resolved by guessing.
+    LifecycleIncomplete,
+    /// v2.1: the key was superseded by a rotation/recovery and is not
+    /// acceptable for this use (a new operation, or an artifact anchored
+    /// after the key ended).
+    KeyRotated,
+    /// v2.1: the key was revoked and is not acceptable for this use.
+    KeyRevoked,
+    /// v2.1: a replica receipt names a different host agent than the one
+    /// whose lifecycle and claim authenticate it.
+    ReceiptHostMismatch,
+    /// v2.1: the operation requires a host-attributed `replica-receipt/v2`
+    /// and was given a legacy, unattributed receipt.
+    InsufficientReceiptAttribution,
 }
 
 impl fmt::Display for BindingError {
@@ -121,6 +137,17 @@ impl fmt::Display for BindingError {
             Self::InsufficientAssurance => {
                 f.write_str("key binding assurance is below the required level")
             }
+            Self::LifecycleIncomplete => f.write_str("key lifecycle incomplete (missing record)"),
+            Self::KeyRotated => {
+                f.write_str("signing key was rotated and is not valid for this use")
+            }
+            Self::KeyRevoked => {
+                f.write_str("signing key was revoked and is not valid for this use")
+            }
+            Self::ReceiptHostMismatch => f.write_str("replica receipt names a different host"),
+            Self::InsufficientReceiptAttribution => {
+                f.write_str("a host-attributed replica receipt is required")
+            }
         }
     }
 }
@@ -136,6 +163,7 @@ impl std::error::Error for BindingError {}
 pub struct ConductorRecord {
     author: String,
     action_hash: String,
+    action_seq: Option<u32>,
     body: Map<String, Value>,
 }
 
@@ -164,8 +192,29 @@ impl ConductorRecord {
         Ok(Self {
             author,
             action_hash,
+            action_seq: None,
             body,
         })
+    }
+
+    /// [`Self::from_validated_conductor`] plus the action's position on its
+    /// author's source chain (`action_seq`), as returned by the conductor.
+    /// v2.1 lifecycle records and historical anchors need it.
+    pub fn from_validated_conductor_at(
+        author: impl Into<String>,
+        action_hash: impl Into<String>,
+        action_seq: u32,
+        body: Value,
+    ) -> Result<Self, BindingError> {
+        let mut record = Self::from_validated_conductor(author, action_hash, body)?;
+        record.action_seq = Some(action_seq);
+        Ok(record)
+    }
+
+    /// Position of the action on its author's chain, when the conductor
+    /// returned it.
+    pub fn action_seq(&self) -> Option<u32> {
+        self.action_seq
     }
 
     /// The validated Holochain action author.
@@ -183,11 +232,11 @@ impl ConductorRecord {
         &self.body
     }
 
-    fn schema(&self) -> Option<&str> {
+    pub(crate) fn schema(&self) -> Option<&str> {
         self.body.get("schema").and_then(Value::as_str)
     }
 
-    fn text(&self, key: &str) -> Result<&str, BindingError> {
+    pub(crate) fn text(&self, key: &str) -> Result<&str, BindingError> {
         self.body
             .get(key)
             .and_then(Value::as_str)
@@ -303,6 +352,8 @@ pub struct OwnedManifest {
     owner_agent: String,
     manifest: VerifiedManifest,
     owner_assurance: BindingAssurance,
+    owner_key_generation: u32,
+    owner_key_validity: KeyValidity,
 }
 
 impl OwnedManifest {
@@ -313,6 +364,15 @@ impl OwnedManifest {
     /// [`BindingAssurance::ProofOfPossessionV2`].
     pub fn owner_assurance(&self) -> BindingAssurance {
         self.owner_assurance
+    }
+    /// Lifecycle generation of the key that signed the manifest (1 for v1/v2).
+    pub fn owner_key_generation(&self) -> u32 {
+        self.owner_key_generation
+    }
+    /// Validity of the signing key for this (historical) manifest:
+    /// [`KeyValidity::Active`] or [`KeyValidity::HistoricalOnly`].
+    pub fn owner_key_validity(&self) -> KeyValidity {
+        self.owner_key_validity
     }
     /// Holochain agent that authored both the key binding and commitment.
     pub fn owner_agent(&self) -> &str {
@@ -389,7 +449,36 @@ pub fn verify_owned_manifest_with_key(
         owner_agent: owner_agent.to_owned(),
         manifest,
         owner_assurance: owner_key.assurance,
+        owner_key_generation: owner_key.generation,
+        owner_key_validity: owner_key.validity,
     })
+}
+
+/// v2.1: authenticate an untrusted signed manifest whose signing key is
+/// governed by the owner's verified `owner-manifest` lifecycle. The signer
+/// named by the envelope must be a generation of that lifecycle acceptable
+/// for historical use anchored at the owner's commitment (when the conductor
+/// returned its chain position): a manifest committed after its key was
+/// rotated or revoked is a new operation with a stale key and is refused.
+pub fn verify_owned_manifest_lifecycle(
+    manifest_json: &[u8],
+    owner: &crate::lifecycle::KeyLifecycle,
+    commitment: &ConductorRecord,
+) -> Result<OwnedManifest, BindingError> {
+    if owner.purpose() != KeyPurpose::OwnerManifest {
+        return Err(BindingError::KeyNotBound);
+    }
+    if commitment.author() != owner.agent() {
+        return Err(BindingError::AuthorMismatch);
+    }
+    let anchor = match commitment.action_seq() {
+        Some(_) => Some(crate::lifecycle::ChainAnchor::from_record(commitment)?),
+        None => None,
+    };
+    let signer =
+        crate::compat::music_envelope_signer(manifest_json).map_err(BindingError::Manifest)?;
+    let key = owner.authorize(&signer, &crate::lifecycle::KeyUse::Historical { anchor })?;
+    verify_owned_manifest_with_key(manifest_json, owner.agent(), &key, commitment)
 }
 
 /// A storage host whose signed receipt and Holochain replica claim both
@@ -397,10 +486,24 @@ pub fn verify_owned_manifest_with_key(
 /// acceptance, **not** current custody or availability.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AuthenticatedReplica {
-    node_agent: String,
-    node_key: [u8; 32],
-    receipt: VerifiedReceipt,
-    node_assurance: BindingAssurance,
+    pub(crate) node_agent: String,
+    pub(crate) node_key: [u8; 32],
+    pub(crate) receipt: VerifiedReceipt,
+    pub(crate) node_assurance: BindingAssurance,
+    pub(crate) attribution: ReceiptAttribution,
+    pub(crate) receipt_v2: Option<crate::receipt_v2::VerifiedReceiptV2>,
+}
+
+/// What a verified replica receipt says about *which* host accepted the
+/// content. Ordered: v2 is stronger.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum ReceiptAttribution {
+    /// S1 `replica-receipt/v1`: signed by a key; does not name the host
+    /// agent. Attribution comes only from the separate Holochain claim.
+    LegacyUnattributedV1,
+    /// `replica-receipt/v2`: the signed statement itself names the host
+    /// agent, its exact key generation, DNA, owner and manifest.
+    HostAttributedV2,
 }
 
 impl AuthenticatedReplica {
@@ -409,6 +512,15 @@ impl AuthenticatedReplica {
     /// docs/S2-KEY-BINDING-V2.md (receipt attribution).
     pub fn node_assurance(&self) -> BindingAssurance {
         self.node_assurance
+    }
+    /// Legacy unattributed (S1) or host-attributed (v2) receipt.
+    pub fn attribution(&self) -> ReceiptAttribution {
+        self.attribution
+    }
+    /// The verified v2 receipt, when [`Self::attribution`] is
+    /// [`ReceiptAttribution::HostAttributedV2`].
+    pub fn receipt_v2(&self) -> Option<&crate::receipt_v2::VerifiedReceiptV2> {
+        self.receipt_v2.as_ref()
     }
     /// Holochain agent of the storage host.
     pub fn node_agent(&self) -> &str {
@@ -478,6 +590,8 @@ pub fn verify_replica_claim_with_key(
         node_key,
         receipt,
         node_assurance,
+        attribution: ReceiptAttribution::LegacyUnattributedV1,
+        receipt_v2: None,
     })
 }
 
@@ -495,6 +609,14 @@ pub enum BindingAssurance {
     /// `key-binding/v2`: authored by the agent AND carrying a verified
     /// Ed25519 proof of possession for this agent, purpose and DNA.
     ProofOfPossessionV2,
+    /// `key-lifecycle/v2.1` reached through a **recovery**: proof of
+    /// possession, agent-authorised, DNA-enforced single lineage, but no
+    /// continuity signature by the predecessor key.
+    KeyLifecycleRecoveredV21,
+    /// `key-lifecycle/v2.1` inception or normal rotation (continuity signed
+    /// by the predecessor key): proof of possession, agent-authorised,
+    /// DNA-enforced single lineage with revocation status.
+    KeyLifecycleV21,
 }
 
 /// Which bindings a resolution may use. There is deliberately no "try v2,
@@ -510,6 +632,13 @@ pub enum KeyBindingPolicy {
         /// `uhC0k…` hash of the v2 storage DNA the records were read from.
         dna_hash: String,
     },
+    /// Read `key-lifecycle/v2.1` / `key-revocation/v2.1` records only (the
+    /// v2.1 DNA), resolved by predecessor references and chain positions.
+    /// v1 and v2 records are never consulted.
+    KeyLifecycleV21 {
+        /// `uhC0k…` hash of the v2.1 storage DNA the records were read from.
+        dna_hash: String,
+    },
 }
 
 /// A signing key bound to an agent for one purpose, with its assurance level.
@@ -518,11 +647,14 @@ pub enum KeyBindingPolicy {
 /// raised by a caller.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedKeyBinding {
-    agent: String,
-    purpose: KeyPurpose,
-    key: [u8; 32],
-    assurance: BindingAssurance,
-    action_hash: String,
+    pub(crate) agent: String,
+    pub(crate) purpose: KeyPurpose,
+    pub(crate) key: [u8; 32],
+    pub(crate) assurance: BindingAssurance,
+    pub(crate) action_hash: String,
+    pub(crate) generation: u32,
+    pub(crate) continuity: KeyContinuity,
+    pub(crate) validity: KeyValidity,
 }
 
 impl VerifiedKeyBinding {
@@ -546,6 +678,19 @@ impl VerifiedKeyBinding {
     pub fn action_hash(&self) -> &str {
         &self.action_hash
     }
+    /// Key generation (always 1 for v1/v2 bindings).
+    pub fn generation(&self) -> u32 {
+        self.generation
+    }
+    /// How this generation was introduced.
+    pub fn continuity(&self) -> KeyContinuity {
+        self.continuity
+    }
+    /// Validity of the key for the use it was resolved for. v1/v2 bindings
+    /// have no lifecycle and are reported [`KeyValidity::Active`].
+    pub fn validity(&self) -> KeyValidity {
+        self.validity
+    }
 }
 
 /// Fail unless `binding` has proof of possession. Use before any new
@@ -553,7 +698,7 @@ impl VerifiedKeyBinding {
 pub fn require_proof_of_possession(
     binding: &VerifiedKeyBinding,
 ) -> Result<&VerifiedKeyBinding, BindingError> {
-    if binding.assurance == BindingAssurance::ProofOfPossessionV2 {
+    if binding.assurance >= BindingAssurance::ProofOfPossessionV2 {
         Ok(binding)
     } else {
         Err(BindingError::InsufficientAssurance)
@@ -600,6 +745,9 @@ pub fn verify_key_binding_v1(
         key,
         assurance: BindingAssurance::LegacyAuthoredV1,
         action_hash: record.action_hash.clone(),
+        generation: 1,
+        continuity: KeyContinuity::Inception,
+        validity: KeyValidity::Active,
     })
 }
 
@@ -652,6 +800,9 @@ pub fn verify_key_binding_v2(
         key,
         assurance: BindingAssurance::ProofOfPossessionV2,
         action_hash: record.action_hash.clone(),
+        generation: 1,
+        continuity: KeyContinuity::Inception,
+        validity: KeyValidity::Active,
     })
 }
 
@@ -673,6 +824,11 @@ pub fn resolve_signing_key(
     let schema = match policy {
         KeyBindingPolicy::LegacyV1 => KEY_BINDING_V1,
         KeyBindingPolicy::ProofOfPossessionV2 { .. } => KEY_BINDING_V2,
+        KeyBindingPolicy::KeyLifecycleV21 { dna_hash } => {
+            // The key for NEW operations: the active generation only.
+            return crate::lifecycle::resolve_key_lifecycle(records, agent, purpose, dna_hash)?
+                .active();
+        }
     };
     let mut found: Option<VerifiedKeyBinding> = None;
     for record in records.iter().filter(|r| {
@@ -685,6 +841,8 @@ pub fn resolve_signing_key(
             KeyBindingPolicy::ProofOfPossessionV2 { dna_hash } => {
                 verify_key_binding_v2(record, agent, purpose, dna_hash)?
             }
+            // Returned before the loop; never reached.
+            KeyBindingPolicy::KeyLifecycleV21 { .. } => return Err(BindingError::InvalidRecord),
         };
         match &found {
             None => found = Some(verified),

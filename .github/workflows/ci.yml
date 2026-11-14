@@ -72,6 +72,70 @@ jobs:
           MUSIC_ENTITLEMENT_VECTORS: target/music-entitlement-vectors.json
         run: cargo test -p holochain-content-core --features music-interop-tests,serde_json/preserve_order --all-targets
 
+  music-s2-identity-interop:
+    # S2 key-binding v2 and key-lifecycle v2.1 vectors, regenerated from
+    # Music's own Python at the exact commits the committed vectors came
+    # from. The S1 and CORE-005 references above are not changed.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout Core
+        uses: actions/checkout@v4
+      - name: Checkout Music S2 v2 reference (key-binding v2 implementation)
+        uses: actions/checkout@v4
+        with:
+          repository: ConorTttttt/holochain-music
+          ref: f091d5a5da0c2cb46228ea619ab816338311ef9b
+          path: target/music-s2-v2
+          persist-credentials: false
+      - name: Checkout Music S2 v2.1 reference (key lifecycle implementation)
+        uses: actions/checkout@v4
+        with:
+          repository: ConorTttttt/holochain-music
+          ref: cfd48073dec341c6b89339c91026799218644c0a
+          path: target/music-s2-v21
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install reference package crypto dependency
+        run: python -m pip install 'cryptography==46.0.4'
+      - name: Generate key-binding v2 vectors with Music's own code
+        run: |
+          python scripts/generate_music_key_binding_vectors.py \
+            --music-repo target/music-s2-v2 --output target/kb-v2.json
+      - name: Generate key-lifecycle v2.1 and replica-receipt/v2 vectors with Music's own code
+        run: |
+          python scripts/generate_music_key_lifecycle_vectors.py \
+            --music-repo target/music-s2-v21 --output target/kl-v21.json
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Rust verdicts equal Music's on fresh vectors
+        env:
+          MUSIC_KEY_BINDING_VECTORS: target/kb-v2.json
+          MUSIC_KEY_LIFECYCLE_VECTORS: target/kl-v21.json
+        run: cargo test -p holochain-content-core --all-targets
+      - name: Same with serde_json preserve_order
+        env:
+          MUSIC_KEY_BINDING_VECTORS: target/kb-v2.json
+          MUSIC_KEY_LIFECYCLE_VECTORS: target/kl-v21.json
+        run: cargo test -p holochain-content-core --features serde_json/preserve_order --all-targets
+      - name: Deterministic part of the committed v2.1 vectors reproduces exactly
+        # Lifecycle records are Ed25519 (deterministic) over fixed test keys;
+        # packages, receipts and grants use fresh random content keys/nonces.
+        run: |
+          python - <<'PY'
+          import json
+          a = json.load(open("crates/content-core/testdata/music-key-lifecycle-v21-vectors.json"))
+          b = json.load(open("target/kl-v21.json"))
+          for k in ("scenarios", "lifecycle", "keys", "agents", "dna_hash", "music_commit"):
+              assert a[k] == b[k], f"committed vectors differ from a fresh Music run: {k}"
+          for k in ("rotation_successor_hex", "rotation_predecessor_hex"):
+              assert a["messages"][k] == b["messages"][k], k
+          print("deterministic v2.1 vectors reproduce exactly")
+          PY
+
   windows:
     runs-on: windows-latest
     timeout-minutes: 20

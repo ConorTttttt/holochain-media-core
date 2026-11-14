@@ -340,6 +340,18 @@ pub fn verify_music_ciphertext(
     Ok(())
 }
 
+/// The `signer` named by an untrusted S1 envelope (manifest or receipt).
+/// Says nothing about authenticity: callers must check that the key is
+/// trusted and then verify the envelope with it.
+pub fn music_envelope_signer(input: &[u8]) -> Result<[u8; 32], VerifyError> {
+    if input.len() > MAX_ENVELOPE_BYTES {
+        return Err(VerifyError::TooLarge);
+    }
+    let envelope: Envelope<Value> =
+        serde_json::from_slice(input).map_err(|_| VerifyError::InvalidJson)?;
+    decode_array::<32>(&envelope.signer, VerifyError::WrongSigner)
+}
+
 /// Verify a signed replica receipt for an exact verified manifest.
 /// A receipt is not proof of ongoing storage or guaranteed availability.
 pub fn verify_music_receipt(

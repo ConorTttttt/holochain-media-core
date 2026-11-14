@@ -1,6 +1,25 @@
 # Audit baseline and completion status
 
-## S2 key-binding v2 update (13 November 2026, latest)
+## S2 key lifecycle v2.1 update (13 November 2026, latest)
+
+Branches (local, not pushed): Media Core `feat/s2-v21-key-lifecycle` from
+`feat/s2-key-binding-v2` @ d42b20f; Music `feat/s2-v21-key-lifecycle` from
+`feat/s2-key-binding-v2` @ 17a6276, code at cfd4807 (lifecycle vectors pinned
+there). Full results table: docs/S2-KEY-LIFECYCLE-V21.md §14.
+
+| Check | Result |
+|---|---|
+| v1 / v2 DNA hashes | unchanged (rebuilt) |
+| v2.1 DNA | `uhC0kiNH8oLxWdMyNxpTP-cxCnB6M04rVfcdPkcFmY2cUbVm8Brti`; integrity tests 12 pass |
+| Media Core workspace (also `preserve_order`) | **74 pass** (core 48, retrieval 15, cli 7, release 4) |
+| Interop, fresh vectors from all pinned Music commits (also `preserve_order`) | core **69 pass**; 154/154 lifecycle queries and 23/23 receipt cases match Music |
+| `s2_key_lifecycle_v21` (4 conductors, MoQ, CORE-005, Music decrypt) | **pass 154.3 s; 143.0 s on committed code** |
+| `s2_key_binding_v2`, `core004_acceptance` v1 and v2 | **pass** 304.4 s / 235.1 s / 215.8 s |
+| Music unittest | **506 run: 458 OK / 48 skipped / 0 fail** |
+
+Not run: Windows CI, GitHub Actions (nothing pushed), two-device network.
+
+## S2 key-binding v2 update (13 November 2026)
 
 Branches (local, not pushed): Media Core `feat/s2-key-binding-v2` from
 `claude/core-005-entitlements-i7zm0e` @ 5f7adf5 (pushed CORE-005); Music

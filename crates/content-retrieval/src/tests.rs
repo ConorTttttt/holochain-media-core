@@ -454,6 +454,8 @@ struct MockMeta {
     claims: Vec<ConductorRecord>,
     endpoints: HashMap<String, Vec<ConductorRecord>>,
     keys_v2: HashMap<String, Vec<ConductorRecord>>,
+    lifecycle: HashMap<String, Vec<ConductorRecord>>,
+    positions: HashMap<String, u32>,
     offline: bool,
 }
 
@@ -485,6 +487,28 @@ impl MetadataSource for MockMeta {
         agent: &str,
     ) -> Result<Vec<ConductorRecord>, MetadataError> {
         self.get(&self.keys_v2, agent)
+    }
+    async fn key_lifecycle_v21(
+        &mut self,
+        agent: &str,
+    ) -> Result<Vec<ConductorRecord>, MetadataError> {
+        self.get(&self.lifecycle, agent)
+    }
+    async fn with_chain_position(
+        &mut self,
+        record: ConductorRecord,
+    ) -> Result<ConductorRecord, MetadataError> {
+        let seq = *self
+            .positions
+            .get(record.action_hash())
+            .ok_or_else(|| MetadataError("no position".into()))?;
+        Ok(ConductorRecord::from_validated_conductor_at(
+            record.author(),
+            record.action_hash(),
+            seq,
+            Value::Object(record.body().clone()),
+        )
+        .unwrap())
     }
 }
 
@@ -909,4 +933,328 @@ fn v2_policy_never_falls_back_to_v1() {
         resolved.rejected[0].reason,
         RejectReason::Binding(BindingError::InvalidProof)
     );
+}
+
+// ---------------------------------------------------------------- S2 v2.1
+
+use holochain_content_core::lifecycle::{
+    key_transition_v21_message, KeyValidity, ROLE_PREDECESSOR, ROLE_SUCCESSOR,
+};
+use holochain_content_core::receipt_v2::{replica_receipt_v2_message, RECEIPT_V2_SIGNED_FIELDS};
+
+const V21_DNA: &str = "uhC0kRetrievalV21TestDna";
+
+fn seq_rec(author: &str, action: &str, seq: u32, body: Value) -> ConductorRecord {
+    ConductorRecord::from_validated_conductor_at(author, action, seq, body).unwrap()
+}
+
+/// Synthetic lifecycle transition (Music-generated ones are tested in
+/// content-core against Music's own verdicts).
+fn transition(
+    agent: &str,
+    purpose: &str,
+    generation: u32,
+    key: &SigningKey,
+    predecessor: Option<(&str, &SigningKey)>,
+) -> Value {
+    let key_hex = hex(&key.verifying_key().to_bytes());
+    let (kind, pred_action, pred_key) = match predecessor {
+        None => ("inception", String::new(), String::new()),
+        Some((a, k)) => ("rotation", a.to_owned(), hex(&k.verifying_key().to_bytes())),
+    };
+    let generation = generation.to_string();
+    let message = |role| {
+        key_transition_v21_message(
+            role,
+            V21_DNA,
+            agent,
+            purpose,
+            &generation,
+            kind,
+            &key_hex,
+            &pred_action,
+            &pred_key,
+        )
+    };
+    let continuity = predecessor
+        .map(|(_, k)| hex(&k.sign(&message(ROLE_PREDECESSOR)).to_bytes()))
+        .unwrap_or_default();
+    json!({"schema": "holochain-storage/key-lifecycle/v2.1", "dna_hash": V21_DNA, "agent": agent,
+           "purpose": purpose, "generation": generation, "kind": kind, "signing_key_hex": key_hex,
+           "predecessor_action": pred_action, "predecessor_key_hex": pred_key,
+           "proof_signature_hex": hex(&key.sign(&message(ROLE_SUCCESSOR)).to_bytes()),
+           "continuity_signature_hex": continuity})
+}
+
+fn receipt_v2(pkg: &Package, host_agent: &str, host: &SigningKey, action: &str) -> Vec<u8> {
+    let file_id = pkg.manifest.package_id().to_string();
+    let digest = pkg.manifest.digest().to_string();
+    let key_hex = hex(&host.verifying_key().to_bytes());
+    let count = pkg.objects.len().to_string();
+    let fields = [
+        "holochain-storage/replica-receipt/v2",
+        V21_DNA,
+        host_agent,
+        &key_hex,
+        "1",
+        action,
+        ALICE,
+        &file_id,
+        &digest,
+        &count,
+        "2026-11-13T12:00:00Z",
+        "replica-acceptance",
+    ];
+    let mut doc = serde_json::Map::new();
+    for (name, value) in RECEIPT_V2_SIGNED_FIELDS.iter().zip(fields) {
+        doc.insert((*name).into(), json!(value));
+    }
+    let signature = host.sign(&replica_receipt_v2_message(&fields));
+    doc.insert("signature_hex".into(), json!(hex(&signature.to_bytes())));
+    serde_json::to_vec(&Value::Object(doc)).unwrap()
+}
+
+/// Alice (inception at seq 5, commitment at `commit_seq`) and one v2.1 host
+/// per entry (inception at seq 5, claim at seq 8, v2 receipt).
+fn v21_world(hosts: &[(&str, u8, u16)], commit_seq: u32) -> World {
+    let mut w = world(hosts);
+    let file_id = w.pkg.manifest.package_id().to_string();
+    let digest = w.pkg.manifest.digest().to_string();
+    w.meta.lifecycle.insert(
+        ALICE.into(),
+        vec![seq_rec(
+            ALICE,
+            "uhCkkAliceG1",
+            5,
+            transition(ALICE, "owner-manifest", 1, &w.pkg.artist, None),
+        )],
+    );
+    w.meta
+        .positions
+        .insert(format!("uhCkk-{ALICE}"), commit_seq);
+    w.meta.claims.clear();
+    for (agent, seed, _) in hosts {
+        let host_key = SigningKey::from_bytes(&[*seed; 32]);
+        let action = format!("uhCkk{agent}G1");
+        w.meta.lifecycle.insert(
+            (*agent).into(),
+            vec![seq_rec(
+                agent,
+                &action,
+                5,
+                transition(agent, "host-receipt", 1, &host_key, None),
+            )],
+        );
+        let signed = receipt_v2(&w.pkg, agent, &host_key, &action);
+        let fields: Value = serde_json::from_slice(&signed).unwrap();
+        let message = replica_receipt_v2_message(
+            &RECEIPT_V2_SIGNED_FIELDS.map(|f| fields[f].as_str().unwrap()),
+        );
+        w.meta.claims.push(rec(
+            agent,
+            json!({"schema": REPLICA_CLAIM_V1, "node_agent": agent, "owner_agent": ALICE,
+                   "file_id": file_id, "manifest_sha256": digest,
+                   "receipt_sha256": hex(&Sha256::digest(&message))}),
+        ));
+        w.meta.positions.insert(format!("uhCkk-{agent}"), 8);
+        w.receipts.insert((*agent).to_string(), signed);
+    }
+    w
+}
+
+fn v21_policy() -> KeyBindingPolicy {
+    KeyBindingPolicy::KeyLifecycleV21 {
+        dna_hash: V21_DNA.into(),
+    }
+}
+
+fn v21_connector(w: &World, hosts: &[(&str, u16)]) -> Connector {
+    Connector(
+        hosts
+            .iter()
+            .map(|(agent, port)| {
+                let mut h = full_host(&w.pkg);
+                h.receipt = Some(w.receipts[*agent].clone());
+                (*port, h)
+            })
+            .collect(),
+    )
+}
+
+#[test]
+fn v21_policy_resolves_lifecycles_and_requires_host_attributed_receipts() {
+    let mut w = v21_world(&[(CAROL, 2, 4001)], 10);
+    let resolved = block_on(resolve_content_with(
+        &mut w.meta,
+        ALICE,
+        w.pkg.manifest.package_id(),
+        EndpointPolicy::LoopbackOnly,
+        &v21_policy(),
+    ))
+    .unwrap();
+    assert!(resolved.owner_lifecycle.is_some());
+    assert_eq!(resolved.commitment.action_seq(), Some(10));
+    assert_eq!(resolved.hosts[0].claim.action_seq(), Some(8));
+    let content = block_on(authenticate_content(
+        resolved,
+        &v21_connector(&w, &[(CAROL, 4001)]),
+    ))
+    .unwrap();
+    assert_eq!(
+        content.owned.owner_assurance(),
+        BindingAssurance::KeyLifecycleV21
+    );
+    assert_eq!(content.owned.owner_key_validity(), KeyValidity::Active);
+    let replica = &content.hosts[0].replica;
+    assert_eq!(replica.attribution(), ReceiptAttribution::HostAttributedV2);
+    assert_eq!(replica.receipt_v2().unwrap().host_agent(), CAROL);
+}
+
+#[test]
+fn v21_rotation_keeps_history_and_rejects_stale_new_content() {
+    let mut w = v21_world(&[(CAROL, 2, 4001)], 10);
+    let g2 = SigningKey::from_bytes(&[9; 32]);
+    let g2_body = transition(
+        ALICE,
+        "owner-manifest",
+        2,
+        &g2,
+        Some(("uhCkkAliceG1", &w.pkg.artist)),
+    );
+    w.meta
+        .lifecycle
+        .get_mut(ALICE)
+        .unwrap()
+        .push(seq_rec(ALICE, "uhCkkAliceG2", 20, g2_body));
+    let resolved = block_on(resolve_content_with(
+        &mut w.meta,
+        ALICE,
+        w.pkg.manifest.package_id(),
+        EndpointPolicy::LoopbackOnly,
+        &v21_policy(),
+    ))
+    .unwrap();
+    assert_eq!(resolved.owner_key.generation(), 2, "tip is generation 2");
+    let content = block_on(authenticate_content(
+        resolved,
+        &v21_connector(&w, &[(CAROL, 4001)]),
+    ))
+    .unwrap();
+    assert_eq!(content.owned.owner_key_generation(), 1);
+    assert_eq!(
+        content.owned.owner_key_validity(),
+        KeyValidity::HistoricalOnly
+    );
+    // The same gen-1 manifest committed after the rotation is refused.
+    w.meta.positions.insert(format!("uhCkk-{ALICE}"), 25);
+    let resolved = block_on(resolve_content_with(
+        &mut w.meta,
+        ALICE,
+        w.pkg.manifest.package_id(),
+        EndpointPolicy::LoopbackOnly,
+        &v21_policy(),
+    ))
+    .unwrap();
+    let Err(ResolveError::NoAuthenticatedHost(rejected)) = block_on(authenticate_content(
+        resolved,
+        &v21_connector(&w, &[(CAROL, 4001)]),
+    )) else {
+        panic!("stale-key manifest must not authenticate");
+    };
+    assert_eq!(
+        rejected[0].reason,
+        RejectReason::Binding(BindingError::KeyRotated)
+    );
+}
+
+#[test]
+fn v21_policy_fails_closed() {
+    // A legacy S1 receipt from a v2.1 host is not accepted.
+    let mut w = v21_world(&[(CAROL, 2, 4001)], 10);
+    let resolved = block_on(resolve_content_with(
+        &mut w.meta,
+        ALICE,
+        w.pkg.manifest.package_id(),
+        EndpointPolicy::LoopbackOnly,
+        &v21_policy(),
+    ))
+    .unwrap();
+    let mut legacy = full_host(&w.pkg);
+    legacy.receipt = Some(receipt(&w.pkg, &SigningKey::from_bytes(&[2; 32])));
+    let Err(ResolveError::NoAuthenticatedHost(rejected)) = block_on(authenticate_content(
+        resolved,
+        &Connector(HashMap::from([(4001, legacy)])),
+    )) else {
+        panic!("legacy receipt must not satisfy v2.1");
+    };
+    assert!(matches!(rejected[0].reason, RejectReason::Binding(_)));
+    // Competing successors make the owner unresolvable.
+    let mut w = v21_world(&[(CAROL, 2, 4001)], 10);
+    for (i, seed) in [(20u32, 9u8), (21, 10)] {
+        let k = SigningKey::from_bytes(&[seed; 32]);
+        let body = transition(
+            ALICE,
+            "owner-manifest",
+            2,
+            &k,
+            Some(("uhCkkAliceG1", &w.pkg.artist)),
+        );
+        w.meta.lifecycle.get_mut(ALICE).unwrap().push(seq_rec(
+            ALICE,
+            &format!("uhCkkFork{i}"),
+            i,
+            body,
+        ));
+    }
+    assert_eq!(
+        block_on(resolve_content_with(
+            &mut w.meta,
+            ALICE,
+            w.pkg.manifest.package_id(),
+            EndpointPolicy::LoopbackOnly,
+            &v21_policy(),
+        ))
+        .unwrap_err(),
+        ResolveError::Binding(BindingError::Ambiguous)
+    );
+    // A gap (successor without its predecessor) is propagation, not a denial.
+    let mut w = v21_world(&[(CAROL, 2, 4001)], 10);
+    let k = SigningKey::from_bytes(&[9; 32]);
+    let orphan = transition(
+        ALICE,
+        "owner-manifest",
+        2,
+        &k,
+        Some(("uhCkkMissing", &w.pkg.artist)),
+    );
+    w.meta
+        .lifecycle
+        .get_mut(ALICE)
+        .unwrap()
+        .push(seq_rec(ALICE, "uhCkkOrphan", 20, orphan));
+    assert_eq!(
+        block_on(resolve_content_with(
+            &mut w.meta,
+            ALICE,
+            w.pkg.manifest.package_id(),
+            EndpointPolicy::LoopbackOnly,
+            &v21_policy(),
+        ))
+        .unwrap_err(),
+        ResolveError::NotFound("owner-manifest key binding")
+    );
+    // A source without v2.1 support is unavailability; v1/v2 never consulted.
+    let w = v21_world(&[(CAROL, 2, 4001)], 10);
+    let id = w.pkg.manifest.package_id();
+    let mut old = NoV2(w.meta);
+    assert!(matches!(
+        block_on(resolve_content_with(
+            &mut old,
+            ALICE,
+            id,
+            EndpointPolicy::LoopbackOnly,
+            &v21_policy(),
+        )),
+        Err(ResolveError::Metadata(_))
+    ));
 }
