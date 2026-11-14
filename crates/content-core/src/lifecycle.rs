@@ -338,6 +338,13 @@ impl KeyLifecycle {
         }
     }
 
+    /// The generation introduced by this transition action, if any.
+    pub fn generation_by_action(&self, action_hash: &str) -> Option<&KeyGeneration> {
+        self.generations
+            .iter()
+            .find(|g| g.action_hash == action_hash)
+    }
+
     /// The generation with this exact transition action, generation and key.
     pub(crate) fn generation_at(
         &self,

@@ -6,19 +6,1094 @@
   "mallory": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000"
  },
  "content": {
-  "carol_receipt_text": "{\"chunk_count\":\"4\",\"context\":\"replica-acceptance\",\"dna_hash\":\"uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000\",\"file_id\":\"25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de\",\"host_agent\":\"uhCAkCarolHostAgentForS2TestsOnly0000000000000000000\",\"host_key_action\":\"uhCkkCarolHostG1\",\"host_key_generation\":\"1\",\"host_key_hex\":\"e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb\",\"manifest_sha256\":\"e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5\",\"owner_agent\":\"uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000\",\"received_at\":\"2026-11-13T12:00:00Z\",\"schema\":\"holochain-storage/replica-receipt/v2\",\"signature_hex\":\"6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007\"}",
-  "legacy_receipt_text": "{\"body\":{\"chunk_count\":4,\"file_id\":\"25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de\",\"manifest_sha256\":\"e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5\",\"received_at\":\"2026-11-13T22:51:35+00:00\",\"schema\":\"holochain-storage/replica-receipt/v1\"},\"signature\":\"at46SCByk2HHBprme58+tbPGiG6L56McroFYFPguIfv4bZieekD/QvNgAdxbb0dumH8WY2LnGYAfUVuIc9LBAg==\",\"signer\":\"4v4qObcyZkKCfW2C1JdiLNbCl/54Jw6qQ2sB8Ia288s=\"}",
-  "new_file_id": "0bac70be9e9e53275e4308b195fe37f6b2f7bd51f60ca6f69e5e9e8d0553ad2c",
-  "new_grant_text": "{\"body\":{\"ephemeral_key_hex\":\"607215299a55fadeafa709565f2a8bee3393d5962f8f9341f6f9d0a0368f2773\",\"expires_at\":1760001800,\"file_id\":\"0bac70be9e9e53275e4308b195fe37f6b2f7bd51f60ca6f69e5e9e8d0553ad2c\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForS2TestsOnly00000000000000000\",\"manifest_sha256\":\"3598ffc0931e7152ed4df233d2ca66be63a39a5ad1d3e225b8569152bd4740a9\",\"nonce_b64\":\"upNJEOFF3DDym1F3\",\"owner_agent\":\"uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000\",\"recipient_key_hex\":\"25be8242b3487c1e26cc637cc3bf123d9f6657806b28bd02a345a756b9096879\",\"salt_b64\":\"ohuXUJ+qr2EyFlvrlicINw==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"PA48bRxkZcCmiG/cOODpEsyYU5gyvkhDCL6iDnp6HYEWrH+Qatbkq6XChSMKp2T/\"},\"signature\":\"ZxQp12aAgJw/nTySI3dheNAfdWJsROFLYhrwbRLNY6R8g7FrlB08ATTw03sNlkBE6D3mg77fqw9nGHJTQINsCw==\",\"signer\":\"LfBBJfABWvtHzoU674dyCU/5SYwUyxueEpc8KSfaD6Y=\"}",
-  "new_manifest_sha256": "3598ffc0931e7152ed4df233d2ca66be63a39a5ad1d3e225b8569152bd4740a9",
-  "new_manifest_text": "{\"body\":{\"chunk_size\":48,\"chunks\":[{\"cipher_bytes\":64,\"index\":0,\"nonce\":\"hgfveS5JAK7o0zY3\",\"plain_bytes\":48,\"sha256\":\"4492cdd0d6cf72077b8df14a2b196341b50a45e34df9449a33934bf21936278e\"},{\"cipher_bytes\":64,\"index\":1,\"nonce\":\"2giQ76+wth4UFr0I\",\"plain_bytes\":48,\"sha256\":\"212c6460c90825bde54669ece28184f298cfa97332addc9dae281b1424189ef7\"},{\"cipher_bytes\":49,\"index\":2,\"nonce\":\"/EUL7Rn0MrbosO3x\",\"plain_bytes\":33,\"sha256\":\"3d014ab308bca00677627bee48c6d699a06f1b92904142e871909850d9c195e0\"}],\"cipher\":\"AES-256-GCM\",\"file_id\":\"0bac70be9e9e53275e4308b195fe37f6b2f7bd51f60ca6f69e5e9e8d0553ad2c\",\"schema\":\"holochain-storage/encrypted-package/v1\",\"total_plain_bytes\":129},\"signature\":\"NHsITBUSkpvEHwqJjgx6YnJTK1G0MocdV88VBMmRT89Vqeoai0AKmpwkElMomcGgt5XyX25I27qba7wcmzz9Cw==\",\"signer\":\"LfBBJfABWvtHzoU674dyCU/5SYwUyxueEpc8KSfaD6Y=\"}",
+  "carol_receipt_text": "{\"chunk_count\":\"4\",\"context\":\"replica-acceptance\",\"dna_hash\":\"uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000\",\"file_id\":\"885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86\",\"host_agent\":\"uhCAkCarolHostAgentForS2TestsOnly0000000000000000000\",\"host_key_action\":\"uhCkkCarolHostG1\",\"host_key_generation\":\"1\",\"host_key_hex\":\"e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb\",\"manifest_sha256\":\"5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c\",\"owner_agent\":\"uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000\",\"received_at\":\"2026-11-13T12:00:00Z\",\"schema\":\"holochain-storage/replica-receipt/v2\",\"signature_hex\":\"af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d\"}",
+  "legacy_receipt_text": "{\"body\":{\"chunk_count\":4,\"file_id\":\"885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86\",\"manifest_sha256\":\"5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c\",\"received_at\":\"2026-11-14T08:14:37+00:00\",\"schema\":\"holochain-storage/replica-receipt/v1\"},\"signature\":\"0kVgflOswFcJMr+ZMzCoV1k/nCTSBl2xty69KRXQThQ2ZIdEGsOP3Ph5ifo/lqW5ukdDoIcqw+ueGdpuKTyHCA==\",\"signer\":\"4v4qObcyZkKCfW2C1JdiLNbCl/54Jw6qQ2sB8Ia288s=\"}",
+  "new_file_id": "f31f5e9cd743b88140585f02d9eab0e124bb5b5cc5267dcf051634b37c6f4fb7",
+  "new_grant_text": "{\"body\":{\"ephemeral_key_hex\":\"f407217fe97552e6c036c123e4574268536882e344d8ef3e02e7a02b57d76a14\",\"expires_at\":1760001800,\"file_id\":\"f31f5e9cd743b88140585f02d9eab0e124bb5b5cc5267dcf051634b37c6f4fb7\",\"issued_at\":1760000000,\"listener_agent\":\"uhCAkBobListenerAgentForS2TestsOnly00000000000000000\",\"manifest_sha256\":\"7c19a3594af2a9f3e330eb7c83ae2b00003c29dfeb217dc817c5b7edeab2cf47\",\"nonce_b64\":\"kbSc8L6onrLjf5Zw\",\"owner_agent\":\"uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000\",\"recipient_key_hex\":\"25be8242b3487c1e26cc637cc3bf123d9f6657806b28bd02a345a756b9096879\",\"salt_b64\":\"G9BEfB9nZqMPbDyBxun19Q==\",\"schema\":\"holochain-music/content-grant/v1\",\"wrapped_key_b64\":\"36AXAr2H9oZ/jKYDGN5dfUV1puPs6ne5aw78OmWTIXJv5+eSHl/KLPZsAAPaa3+m\"},\"signature\":\"71rkX/dFoUM4WlB9XDkznzx7KiOcLt/briQuz8smzF/MW5a/2GPYqLu3PNzZoddkQg8E1Xum1nVik30y67v1AA==\",\"signer\":\"LfBBJfABWvtHzoU674dyCU/5SYwUyxueEpc8KSfaD6Y=\"}",
+  "new_manifest_sha256": "7c19a3594af2a9f3e330eb7c83ae2b00003c29dfeb217dc817c5b7edeab2cf47",
+  "new_manifest_text": "{\"body\":{\"chunk_size\":48,\"chunks\":[{\"cipher_bytes\":64,\"index\":0,\"nonce\":\"8sTxIKnMmdtBjL2d\",\"plain_bytes\":48,\"sha256\":\"499f61f347d64d750e8e882a837610f1fbcd346b5345310322c9a355c5cf81cc\"},{\"cipher_bytes\":64,\"index\":1,\"nonce\":\"S+xXeaR3OXYxVEwR\",\"plain_bytes\":48,\"sha256\":\"30cc61555d4b45f23a4d32206949baeb6bfe4522c1de83ad105417ed3147a037\"},{\"cipher_bytes\":49,\"index\":2,\"nonce\":\"a6nr8dOslkwr2J7f\",\"plain_bytes\":33,\"sha256\":\"44380863c1e56c8823202353fbf4972258f268ae1d7d82668953aba0f867a0a3\"}],\"cipher\":\"AES-256-GCM\",\"file_id\":\"f31f5e9cd743b88140585f02d9eab0e124bb5b5cc5267dcf051634b37c6f4fb7\",\"schema\":\"holochain-storage/encrypted-package/v1\",\"total_plain_bytes\":129},\"signature\":\"AmhaA8YSBbmPcq5+U6GU0CSOm6lYhA8hDHHFg5gOi7XHnfNyN8OQGUMWcgVGiTvnJxErvxjXTCf3qJKTPh++AA==\",\"signer\":\"LfBBJfABWvtHzoU674dyCU/5SYwUyxueEpc8KSfaD6Y=\"}",
   "now": 1760000010,
-  "old_file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
-  "old_licence_text": "{\"body\":{\"ephemeral_key_hex\":\"cb3c24d529d7642a34cb49462418eb60f21156d69810d32434574b08e915887b\",\"file_id\":\"25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de\",\"issued_at\":1760000000,\"licence_id\":\"2b0982a749b5f7905fea53e1eb44f7ca\",\"listener_agent\":\"uhCAkBobListenerAgentForS2TestsOnly00000000000000000\",\"manifest_sha256\":\"e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5\",\"nonce_b64\":\"ELW5KSGjlDdK47w3\",\"owner_agent\":\"uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000\",\"recipient_key_hex\":\"25be8242b3487c1e26cc637cc3bf123d9f6657806b28bd02a345a756b9096879\",\"salt_b64\":\"2cp9VbsfteG0UDRg3F+2EA==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"6JvLA8Dq+xTtqV0XLPw7IrzRZqm/5NCudVj7gURoM+QXJGHVeZTP0BRllwaQbdtY\"},\"signature\":\"6/tpQW0DZcgYP7osm1ElQRR3UkkGGqugqLVwAG47Vmd1E2UYWzD2PQ0gd2/HFndPJg0aSEWrMjWWMAK5ZTG/Bw==\",\"signer\":\"rwaj4ykXFOTzVsGcmxXNGVHsbmZiqne+B1R/KJODNB0=\"}",
-  "old_manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
-  "old_manifest_text": "{\"body\":{\"chunk_size\":48,\"chunks\":[{\"cipher_bytes\":64,\"index\":0,\"nonce\":\"bH46nLagv5JcNtQa\",\"plain_bytes\":48,\"sha256\":\"64b2c2bfa81f85b26848bc0d03900780f2d31e81afe512f2aa0d1abe846482a5\"},{\"cipher_bytes\":64,\"index\":1,\"nonce\":\"BP8EmH61dfjCjCK5\",\"plain_bytes\":48,\"sha256\":\"4efc269386da3dd29db5f052beb3efd9c59dae82b9692933bbbc7a9bfc3d4189\"},{\"cipher_bytes\":64,\"index\":2,\"nonce\":\"pk4L2brMHpBk1pvK\",\"plain_bytes\":48,\"sha256\":\"aa68a5570be13bf97513f7dee1d5bcc4cdd9408b91f16d6c28d7236a837c91e6\"},{\"cipher_bytes\":19,\"index\":3,\"nonce\":\"dzYj5LN6QjPQPvCa\",\"plain_bytes\":3,\"sha256\":\"3454a03fd67b05eead3365876865838d86b4e898a1f6c784bc3c71bcdad36a0e\"}],\"cipher\":\"AES-256-GCM\",\"file_id\":\"25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de\",\"schema\":\"holochain-storage/encrypted-package/v1\",\"total_plain_bytes\":147},\"signature\":\"LfLllSMS17nyT8t/zp8iyFCdI0MsLSJ67IYBmD7K+6eNFQf80OutsYmoqV2Wp1dH+87l3zt86o8q3VNPEv40AA==\",\"signer\":\"rwaj4ykXFOTzVsGcmxXNGVHsbmZiqne+B1R/KJODNB0=\"}"
+  "old_file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
+  "old_licence_text": "{\"body\":{\"ephemeral_key_hex\":\"50c07285c46964844180dca5e4011fc8a90300064b8907cf0ba427769985574e\",\"file_id\":\"885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86\",\"issued_at\":1760000000,\"licence_id\":\"2ef2b5adcf4c80586e7c5276c8509a9c\",\"listener_agent\":\"uhCAkBobListenerAgentForS2TestsOnly00000000000000000\",\"manifest_sha256\":\"5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c\",\"nonce_b64\":\"kyRHXRDh19pC880K\",\"owner_agent\":\"uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000\",\"recipient_key_hex\":\"25be8242b3487c1e26cc637cc3bf123d9f6657806b28bd02a345a756b9096879\",\"salt_b64\":\"RGxn1B1fRS4y54vZ0WyLbg==\",\"schema\":\"holochain-music/personal-licence/v1\",\"terms\":\"perpetual-personal-use\",\"wrapped_key_b64\":\"XgpcxIk2iIocD/V5Sc8/rjrMwJLR9MQ5YBpqmC9ox1TgpBzaWTCtvelzH31aiafg\"},\"signature\":\"/04iH4uCsAcUZNdLybf6HF/VbKGrEP00alxjrApichOn/OYQ3QizolWC0rlx3sFFE1ymlsliYlEtmmoeu9kmDQ==\",\"signer\":\"rwaj4ykXFOTzVsGcmxXNGVHsbmZiqne+B1R/KJODNB0=\"}",
+  "old_manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
+  "old_manifest_text": "{\"body\":{\"chunk_size\":48,\"chunks\":[{\"cipher_bytes\":64,\"index\":0,\"nonce\":\"2YBHZwFJYXa27PM6\",\"plain_bytes\":48,\"sha256\":\"e7bb182a427cd94c39f4121f7f2de3bd6d1a03b2c85ff25bd8681f97a57d079e\"},{\"cipher_bytes\":64,\"index\":1,\"nonce\":\"JVqwMy7PtQilJ3If\",\"plain_bytes\":48,\"sha256\":\"f19ae3ef5786305704b22ce905fdd7a9cd553e133042868f3f8985961cc480f0\"},{\"cipher_bytes\":64,\"index\":2,\"nonce\":\"BIuHWh1/Urehx33v\",\"plain_bytes\":48,\"sha256\":\"ad3c58b39f9d53efcf9543b3cfc138e9ecc288867edb3a6c1cc85637351266b9\"},{\"cipher_bytes\":19,\"index\":3,\"nonce\":\"D7taUFM5/MP0ZJan\",\"plain_bytes\":3,\"sha256\":\"97e028526b6fc4d057c422a56a07ed7ac085b0b9983f6946179863447869bbd7\"}],\"cipher\":\"AES-256-GCM\",\"file_id\":\"885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86\",\"schema\":\"holochain-storage/encrypted-package/v1\",\"total_plain_bytes\":147},\"signature\":\"pz18tukxAghNp6PyK8CAtoinQlNmb7/iBfXdNwqvoaZ2BMmWMQEZzhXXKRwChGA3Ng2Zr35mO7rzCvGZlgpABA==\",\"signer\":\"rwaj4ykXFOTzVsGcmxXNGVHsbmZiqne+B1R/KJODNB0=\"}"
  },
  "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+ "grant_anchors": [
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG2"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "current_key",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "generation": 2,
+    "verdict": "accepted"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor25",
+    "action_seq": 25,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG2",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG1"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "g1_before_rotation",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "generation": 1,
+    "verdict": "accepted"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor10",
+    "action_seq": 10,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG1",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG1"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "g1_after_rotation",
+   "note": "obsolete key cannot authorise a new grant after its authority ended",
+   "policy": "reject",
+   "python": {
+    "error": "issuer key was not valid at the anchor: Rotated",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor25",
+    "action_seq": 25,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG1",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG1"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceRevokeG1",
+     "action_seq": 30,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "authority": "holochain-agent",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-revocation/v2.1",
+      "scope": "new-operations",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "target_action": "uhCkkAliceOwnerG1"
+     }
+    }
+   ],
+   "name": "g1_after_revocation",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "error": "issuer key was not valid at the anchor: Revoked",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor35",
+    "action_seq": 35,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG1",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG2"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    },
+    {
+     "action_hash": "uhCkkRevokeG2Anchor",
+     "action_seq": 40,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "authority": "holochain-agent",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-revocation/v2.1",
+      "scope": "compromised",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6",
+      "target_action": "uhCkkAliceOwnerG2"
+     }
+    }
+   ],
+   "name": "g2_after_compromise",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "error": "issuer key was not valid at the anchor: Revoked",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor45",
+    "action_seq": 45,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG2",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG2"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    },
+    {
+     "action_hash": "uhCkkRevokeG2Anchor",
+     "action_seq": 40,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "authority": "holochain-agent",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-revocation/v2.1",
+      "scope": "compromised",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6",
+      "target_action": "uhCkkAliceOwnerG2"
+     }
+    }
+   ],
+   "name": "g2_before_compromise",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "generation": 2,
+    "verdict": "accepted"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor30",
+    "action_seq": 30,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG2",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG2"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "mallory_authored",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "error": "grant anchor not authored by the content owner",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor25",
+    "action_seq": 25,
+    "author": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG2",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG2"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "other_dna",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "error": "grant anchor is for a different DNA",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor25",
+    "action_seq": 25,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kADifferentStorageDnaForS2V21TestsOnly00000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG2",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG2"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "extra_field",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "error": "invalid grant anchor",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor25",
+    "action_seq": 25,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG2",
+     "note": "x",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d21",
+    "issuer_key_action": "uhCkkAliceOwnerG2"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "wrong_commitment",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "error": "grant anchor does not match this grant",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor25",
+    "action_seq": 25,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG2",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG2"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "wrong_grant_id",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "error": "grant anchor does not match this grant",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor25",
+    "action_seq": 25,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG2",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG1"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "claim_names_other_generation",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "error": "grant anchor does not match this grant",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor25",
+    "action_seq": 25,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG2",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkAliceOwnerG2"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "precedes_issuer_key",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "error": "grant anchor precedes its issuer key",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor15",
+    "action_seq": 15,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkAliceOwnerG2",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkNowhere"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkAliceOwnerG2",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "8253cfc53ea365ffaf8486a04cddb6a16c46ccf28cbd5156f7d00ab9f4cc8ca074d964117e4553bf7d4c7d0022b62e7224c626be6d3dfbb90ad43fb75819a100",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "rotation",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "6315ada97b56cd68b96b8889042292753e383ba65effb7d4d033924e72bf70aa70663b1f90bceaa83ea8ca3eb92ea7d5bcef06ba631642949bcc9da3b49f260f",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "action_not_in_lifecycle",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "error": "issuer key action is not in the owner's lifecycle",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor25",
+    "action_seq": 25,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkNowhere",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkRecover"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkRecover",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "recovery",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "b3a73bb7ec600da8f2711ca67b9d28a6fd792940d8dbfd04ca9cea8d0fe9007fc3d3eba7b26aabe9829d30462ec2bf940563cf30bb1c4f2e5c7b029b03349d09",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "recovered_issuer_default",
+   "note": "",
+   "policy": "reject",
+   "python": {
+    "error": "issuer key was recovered without continuity; refused by policy",
+    "verdict": "rejected"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor25",
+    "action_seq": 25,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkRecover",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  },
+  {
+   "claim": {
+    "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+    "grant_message_hex": "686f6c6f636861696e2d6d757369632f6163636573732d6772616e742f7632007b73796e746865746963206772616e7420626f647920666f7220616e63686f7220766563746f72737d",
+    "issuer_key_action": "uhCkkRecover"
+   },
+   "lifecycle": [
+    {
+     "action_hash": "uhCkkAliceOwnerG1",
+     "action_seq": 5,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "1",
+      "kind": "inception",
+      "predecessor_action": "",
+      "predecessor_key_hex": "",
+      "proof_signature_hex": "4d776709a6304f0f9265a485b864497199e4c622fa65c3d9192ecffb3d3bf31293fe282186ebd524bf790f67dce9708b4291d9b6de0be1fe6be74779acbdea06",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d"
+     }
+    },
+    {
+     "action_hash": "uhCkkRecover",
+     "action_seq": 20,
+     "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+     "body": {
+      "agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+      "continuity_signature_hex": "",
+      "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+      "generation": "2",
+      "kind": "recovery",
+      "predecessor_action": "uhCkkAliceOwnerG1",
+      "predecessor_key_hex": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
+      "proof_signature_hex": "b3a73bb7ec600da8f2711ca67b9d28a6fd792940d8dbfd04ca9cea8d0fe9007fc3d3eba7b26aabe9829d30462ec2bf940563cf30bb1c4f2e5c7b029b03349d09",
+      "purpose": "owner-manifest",
+      "schema": "holochain-storage/key-lifecycle/v2.1",
+      "signing_key_hex": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6"
+     }
+    }
+   ],
+   "name": "recovered_issuer_accept_policy",
+   "note": "",
+   "policy": "accept",
+   "python": {
+    "generation": 2,
+    "verdict": "accepted"
+   },
+   "record": {
+    "action_hash": "uhCkkAnchor25",
+    "action_seq": 25,
+    "author": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
+    "body": {
+     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
+     "grant_commitment": "596e3c28cd5dc03dec30934b751953769d1dfbe406eb33e6422dc01eb6c56ec4",
+     "grant_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+     "issuer_key_action": "uhCkkRecover",
+     "schema": "holochain-storage/grant-anchor/v2"
+    }
+   }
+  }
+ ],
  "keys": {
   "alice_g1": "af06a3e3291714e4f356c19c9b15cd1951ec6e6662aa77be07547f289383341d",
   "alice_g2": "2df04125f0015afb47ce853aef8772094ff9498c14cb1b9e12973c2927da0fa6",
@@ -135,12 +1210,12 @@
   }
  },
  "messages": {
-  "receipt_v2_digest": "8c443c8f077f689ea4b544c5e102847c566b3e2e0e4f03bcaf4b5b5e51d6192e",
-  "receipt_v2_hex": "686f6c6f636861696e2d73746f726167652f7265706c6963612d726563656970742f76320000000024686f6c6f636861696e2d73746f726167652f7265706c6963612d726563656970742f763200000032756843306b53746f72616765563231446e61466f7253324c6966656379636c6554657374734f6e6c7930303030303030303000000034756843416b4361726f6c486f73744167656e74466f72533254657374734f6e6c793030303030303030303030303030303030303000000040653266653261333962373332363634323832376436643832643439373632326364366332393766653738323730656161343336623031663038366236663363620000000131000000107568436b6b4361726f6c486f7374473100000034756843416b416c6963654f776e65724167656e74466f72533254657374734f6e6c7930303030303030303030303030303030303000000040323563336437663764623462343663316562373861663262333130343964613561636266396437326633613965626334333065383939616466303836363564650000004065353839666635353131383938623263343931303933623639376261343130356165343661336364333235393161633164393564623362376266303639656235000000013400000014323032362d31312d31335431323a30303a30305a000000127265706c6963612d616363657074616e6365",
+  "receipt_v2_digest": "51119a0e18747b208e0f0dca48439bdd28ef262882170aa89b631f315a23e20b",
+  "receipt_v2_hex": "686f6c6f636861696e2d73746f726167652f7265706c6963612d726563656970742f76320000000024686f6c6f636861696e2d73746f726167652f7265706c6963612d726563656970742f763200000032756843306b53746f72616765563231446e61466f7253324c6966656379636c6554657374734f6e6c7930303030303030303000000034756843416b4361726f6c486f73744167656e74466f72533254657374734f6e6c793030303030303030303030303030303030303000000040653266653261333962373332363634323832376436643832643439373632326364366332393766653738323730656161343336623031663038366236663363620000000131000000107568436b6b4361726f6c486f7374473100000034756843416b416c6963654f776e65724167656e74466f72533254657374734f6e6c7930303030303030303030303030303030303000000040383835643765396661353763383362636338633363393465663333626163376366623235396139633136376532373736306633303738333338376330346138360000004035653365663436343361336438316561323234306438666236376639363265653434656635633165363430313161383635623736616136633465663164323963000000013400000014323032362d31312d31335431323a30303a30305a000000127265706c6963612d616363657074616e6365",
   "rotation_predecessor_hex": "686f6c6f636861696e2d73746f726167652f6b65792d6c6966656379636c652f76322e3100000000167072656465636573736f722d636f6e74696e7569747900000024686f6c6f636861696e2d73746f726167652f6b65792d6c6966656379636c652f76322e3100000032756843306b53746f72616765563231446e61466f7253324c6966656379636c6554657374734f6e6c7930303030303030303000000034756843416b416c6963654f776e65724167656e74466f72533254657374734f6e6c793030303030303030303030303030303030300000000e6f776e65722d6d616e6966657374000000013200000008726f746174696f6e0000004032646630343132356630303135616662343763653835336165663837373230393466663934393863313463623162396531323937336332393237646130666136000000117568436b6b416c6963654f776e657247310000004061663036613365333239313731346534663335366331396339623135636431393531656336653636363261613737626530373534376632383933383333343164",
   "rotation_successor_hex": "686f6c6f636861696e2d73746f726167652f6b65792d6c6966656379636c652f76322e310000000014737563636573736f722d706f7373657373696f6e00000024686f6c6f636861696e2d73746f726167652f6b65792d6c6966656379636c652f76322e3100000032756843306b53746f72616765563231446e61466f7253324c6966656379636c6554657374734f6e6c7930303030303030303000000034756843416b416c6963654f776e65724167656e74466f72533254657374734f6e6c793030303030303030303030303030303030300000000e6f776e65722d6d616e6966657374000000013200000008726f746174696f6e0000004032646630343132356630303135616662343763653835336165663837373230393466663934393863313463623162396531323937336332393237646130666136000000117568436b6b416c6963654f776e657247310000004061663036613365333239313731346534663335366331396339623135636431393531656336653636363261613737626530373534376632383933383333343164"
  },
- "music_commit": "cfd48073dec341c6b89339c91026799218644c0a",
+ "music_commit": "64f57d416f42c37d3e3aca1a2170142c0a4cf206",
  "other_dna_hash": "uhC0kADifferentStorageDnaForS2V21TestsOnly00000000",
  "receipts": [
   {
@@ -169,23 +1244,23 @@
    "name": "valid_host_attributed",
    "note": "",
    "python": {
-    "digest": "8c443c8f077f689ea4b544c5e102847c566b3e2e0e4f03bcaf4b5b5e51d6192e",
+    "digest": "51119a0e18747b208e0f0dca48439bdd28ef262882170aa89b631f315a23e20b",
     "verdict": "accepted"
    },
    "receipt": {
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -233,23 +1308,23 @@
    "name": "valid_after_host_rotation_historical",
    "note": "",
    "python": {
-    "digest": "8c443c8f077f689ea4b544c5e102847c566b3e2e0e4f03bcaf4b5b5e51d6192e",
+    "digest": "51119a0e18747b208e0f0dca48439bdd28ef262882170aa89b631f315a23e20b",
     "verdict": "accepted"
    },
    "receipt": {
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -304,16 +1379,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "new-operation"
   },
@@ -371,16 +1446,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -431,23 +1506,23 @@
    "name": "claim_anchored_before_rotation",
    "note": "",
    "python": {
-    "digest": "8c443c8f077f689ea4b544c5e102847c566b3e2e0e4f03bcaf4b5b5e51d6192e",
+    "digest": "51119a0e18747b208e0f0dca48439bdd28ef262882170aa89b631f315a23e20b",
     "verdict": "accepted"
    },
    "receipt": {
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -484,16 +1559,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "0d5a6ce4a5f961b965eb3411e9b0ec8cde6798dc6a5469bea834b59eaab0a057cbe52d2a6691c4bf60d1a9deac7ed66ff139a0d684f86986755d0d56c9fb2801"
+    "signature_hex": "845ae3a54de38ea805e2ef0d581f9cdb47cb1dc6c45cac00b250840c60ae583263568adb9d913146cdc688d711b7e7c2526b2be30472e87910d1aa8e997b9102"
    },
    "use": "historical"
   },
@@ -530,16 +1605,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "ba42458e83ba7926ba8b8f3e9ab9caaf0f1c4918dda8c551084f7aeb1065b74b",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "444e81db90f0b684eac6602897bd81408753476efd16029abccb1308cea9a78a31182ffa912e1e6460b2bfdcaaa52abe5cc752894ebe7675082b131e3a4a1208"
+    "signature_hex": "ca07fa08d50e8cc0bd3b90118ccd0ef3c3fbce4bdd7a4a5ef339f4053f3e86fcf09dbd58bca5af2e7ae15c952a730da8e087f53f078b787881225327125dfa0c"
    },
    "use": "historical"
   },
@@ -576,16 +1651,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -622,16 +1697,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkMalloryAgentForS2TestsOnly000000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -668,16 +1743,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkBobListenerAgentForS2TestsOnly00000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -714,16 +1789,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kADifferentStorageDnaForS2V21TestsOnly00000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -760,16 +1835,16 @@
     "chunk_count": "1",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -806,16 +1881,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "2",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -852,16 +1927,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkOther",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -898,16 +1973,16 @@
     "chunk_count": "4",
     "context": "other",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -944,16 +2019,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00+00:00",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -990,16 +2065,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-13-40T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -1041,11 +2116,11 @@
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -1082,16 +2157,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v1",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -1128,17 +2203,17 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "note": "x",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -1174,12 +2249,12 @@
    "receipt": {
     "body": {
      "chunk_count": 4,
-     "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
-     "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
-     "received_at": "2026-11-13T22:51:35+00:00",
+     "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
+     "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
+     "received_at": "2026-11-14T08:14:37+00:00",
      "schema": "holochain-storage/replica-receipt/v1"
     },
-    "signature": "at46SCByk2HHBprme58+tbPGiG6L56McroFYFPguIfv4bZieekD/QvNgAdxbb0dumH8WY2LnGYAfUVuIc9LBAg==",
+    "signature": "0kVgflOswFcJMr+ZMzCoV1k/nCTSBl2xty69KRXQThQ2ZIdEGsOP3Ph5ifo/lqW5ukdDoIcqw+ueGdpuKTyHCA==",
     "signer": "4v4qObcyZkKCfW2C1JdiLNbCl/54Jw6qQ2sB8Ia288s="
    },
    "use": "historical"
@@ -1251,16 +2326,16 @@
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   },
@@ -1327,23 +2402,23 @@
    "name": "compromised_host_key_anchored_before",
    "note": "",
    "python": {
-    "digest": "8c443c8f077f689ea4b544c5e102847c566b3e2e0e4f03bcaf4b5b5e51d6192e",
+    "digest": "51119a0e18747b208e0f0dca48439bdd28ef262882170aa89b631f315a23e20b",
     "verdict": "accepted"
    },
    "receipt": {
     "chunk_count": "4",
     "context": "replica-acceptance",
     "dna_hash": "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000",
-    "file_id": "25c3d7f7db4b46c1eb78af2b31049da5acbf9d72f3a9ebc430e899adf08665de",
+    "file_id": "885d7e9fa57c83bcc8c3c94ef33bac7cfb259a9c167e27760f30783387c04a86",
     "host_agent": "uhCAkCarolHostAgentForS2TestsOnly0000000000000000000",
     "host_key_action": "uhCkkCarolHostG1",
     "host_key_generation": "1",
     "host_key_hex": "e2fe2a39b7326642827d6d82d497622cd6c297fe78270eaa436b01f086b6f3cb",
-    "manifest_sha256": "e589ff5511898b2c491093b697ba4105ae46a3cd32591ac1d95db3b7bf069eb5",
+    "manifest_sha256": "5e3ef4643a3d81ea2240d8fb67f962ee44ef5c1e64011a865b76aa6c4ef1d29c",
     "owner_agent": "uhCAkAliceOwnerAgentForS2TestsOnly000000000000000000",
     "received_at": "2026-11-13T12:00:00Z",
     "schema": "holochain-storage/replica-receipt/v2",
-    "signature_hex": "6031c4061d1020df7d50d3e89c22f6be66f41ebd997e7068db1b74a98ca9e21eea80779ee20d979822c2ad083e6fcb5f2c6ce433215aa2697041a05b53081007"
+    "signature_hex": "af84e6b21d21a8e4664b0f3bee50cce44e0ca78506c1f018ed6f7eff95536ffb0f53b64b19157ff42cbaee65dbc2ff319185ba1abf2fa5bb758e7cceafdae60d"
    },
    "use": "historical"
   }
