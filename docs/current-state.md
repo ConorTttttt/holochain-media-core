@@ -1,5 +1,8 @@
 # Audit baseline and completion status
 
+> **Audit update (17 November 2026):** Earlier sections below are dated historical evidence; assertions that Media Core hosted GitHub Actions remain blocked by billing are **superseded** by successful 14–15 November runs ([43577300233](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43577300233), [43577314159](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43577314159), [43736181347](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43736181347)). All implementation described below is **development-branch only**; `main` remains README-only `0e0a629`. The missing scoped review points now exist as draft PRs #8 (CORE-004), #9 (CORE-005), #10 (S2 key-binding v2). Their exact-head CI is a separate gate. See [integration plan](INTEGRATION-PLAN-2026-11-17.md). No user-data migration or release approved.
+
+
 ## Grant anchors on the v2.1 DNA (14 November 2026, latest)
 
 Branches: Music `feat/grant-anchor-v21` (code `64f57d4`, docs `b4173fc`) on
