@@ -253,6 +253,12 @@ pub fn verify_access_grant_v2(
     if grant_json.len() > MAX_GRANT_INPUT_BYTES {
         return Err(V2Error::Malformed("TooLarge"));
     }
+    // A v1 grant/licence must not accidentally enter this protocol.
+    let top: Value = serde_json::from_slice(grant_json)
+        .map_err(|_| V2Error::Malformed("Json"))?;
+    if top.get("signer").is_some() || top.get("signature").is_some() {
+        return Err(V2Error::Unsupported("WrongVersion"));
+    }
     let e: EnvelopeV2 = serde_json::from_slice(grant_json).map_err(|err| {
         if err.is_data() { V2Error::Malformed("Structure") } else { V2Error::Malformed("Json") }
     })?;
@@ -347,7 +353,9 @@ pub fn verify_access_grant_v2(
         expires_at,
         licence_id: Some(b.grant_id.clone()),
         key: wrapped,
-        owner_assurance: content.owner_assurance(),
+        // Assurance describes the CURRENT signed issuer, not the historical
+        // manifest signer. Content authenticity was verified separately.
+        owner_assurance: issuer.assurance(),
     };
     Ok(VerifiedAccessGrantV2 { entitlement, issuer, anchor: verified, grant_id: b.grant_id.clone() })
 }
