@@ -54,6 +54,14 @@ fn records(value: &Value) -> Vec<ConductorRecord> {
 fn media_core_agrees_with_independent_music_grant_vectors() {
     let path = std::env::var("MUSIC_ACCESS_GRANT_V2_VECTORS")
         .expect("grant-v2-interop-tests requires MUSIC_ACCESS_GRANT_V2_VECTORS");
+    let path = std::path::PathBuf::from(path);
+    let path = if path.is_absolute() {
+        path
+    } else {
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../..")
+            .join(path)
+    };
     let document = std::fs::read_to_string(path).expect("read Python vector file");
     let vectors: Value = serde_json::from_str(&document).expect("parse Python vectors");
     assert_eq!(
@@ -62,13 +70,16 @@ fn media_core_agrees_with_independent_music_grant_vectors() {
     );
     let dna = str_at(&vectors, "dna_hash");
     let owner = str_at(&vectors, "owner_agent");
-    let manifest = str_at(&vectors, "manifest_text").as_bytes();
     let now = UNIX_EPOCH + Duration::from_secs(1_800_000_120);
     let cases = vectors["cases"].as_array().expect("cases");
     assert!(cases.len() >= 12, "missing negative v2 security cases");
     let mut positive = 0;
     for case in cases {
         let name = str_at(case, "name");
+        let manifest = case["manifest_text"]
+            .as_str()
+            .unwrap_or_else(|| str_at(&vectors, "manifest_text"))
+            .as_bytes();
         let lifecycle = resolve_key_lifecycle(
             &records(&case["lifecycle_records"]),
             owner,
@@ -131,7 +142,10 @@ fn media_core_agrees_with_independent_music_grant_vectors() {
                     == 48
             );
             let recovered = name == "recovered-issuer-accepted";
-            assert_eq!(verified.issuer().generation(), if recovered { 3 } else { 2 });
+            assert_eq!(
+                verified.issuer().generation(),
+                if recovered { 3 } else { 2 }
+            );
             if recovered {
                 assert_ne!(
                     verified.entitlement().owner_assurance(),
@@ -144,8 +158,7 @@ fn media_core_agrees_with_independent_music_grant_vectors() {
                 );
             }
             let grant_json: Value = serde_json::from_str(str_at(case, "grant_text")).unwrap();
-            let body: GrantBodyV2 =
-                serde_json::from_value(grant_json["body"].clone()).unwrap();
+            let body: GrantBodyV2 = serde_json::from_value(grant_json["body"].clone()).unwrap();
             let msg = grant_message(&body).unwrap();
             let commitment_hex = hex(&grant_anchor_commitment(&msg));
             assert_eq!(

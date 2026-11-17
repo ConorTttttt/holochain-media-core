@@ -25,7 +25,7 @@ def main() -> None:
     sys.path[:0] = [str(repo), str(repo / "tests"), str(repo / "scripts")]
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
     from holochain_storage import key_lifecycle as kl
-    from holochain_storage.package import public_key_bytes
+    from holochain_storage.package import canonical, public_key_bytes
     from music_catalogue.access_grant_v2 import grant_message, grant_wrap_context
     from generate_music_access_grant_v2_vectors import case
     from test_access_grant_v2 import (
@@ -81,18 +81,21 @@ def main() -> None:
         b"holochain-storage/grant-anchor-commitment/v2\0" + message
     ).hexdigest()
     assert anchor_body["grant_commitment"] == accepted["anchor_commitment_hex"]
-    vectors["cases"].extend([denied, accepted])
-
     extra_field = copy.deepcopy(grant)
     extra_field["body"]["unexpected_signed_field"] = "no"
-    vectors["cases"].append(
-        case("malformed-extra-body-field", world, extra_field, anchor, rows=rows)
-    )
     wrong_schema = copy.deepcopy(grant)
     wrong_schema["body"]["schema"] = "holochain-music/access-grant/v3"
-    vectors["cases"].append(
-        case("unsupported-schema-version", world, wrong_schema, anchor, rows=rows)
-    )
+    recovery_cases = [
+        denied,
+        accepted,
+        case("malformed-extra-body-field", world, extra_field, anchor, rows=rows),
+        case("unsupported-schema-version", world, wrong_schema, anchor, rows=rows),
+    ]
+    # make_world creates a fresh signed package. These cases must refer to it,
+    # rather than to the package from the separately generated base vectors.
+    for recovery_case in recovery_cases:
+        recovery_case["manifest_text"] = canonical(world["manifest"]).decode("utf-8")
+    vectors["cases"].extend(recovery_cases)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
         json.dumps(vectors, ensure_ascii=False, separators=(",", ":")) + "\n",
