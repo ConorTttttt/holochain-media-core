@@ -846,7 +846,9 @@ fn verify_licence(
     let key = key_envelope(&common, ephemeral, context)?;
     Ok(VerifiedEntitlement {
         scheme: EntitlementScheme::MusicPersonalLicenceV1,
-        granted_rights: Rights::STREAM.union(Rights::MANAGED_OFFLINE).union(Rights::EXPORT),
+        granted_rights: Rights::STREAM
+            .union(Rights::MANAGED_OFFLINE)
+            .union(Rights::EXPORT),
         owner_agent: content.owner_agent().to_owned(),
         listener_agent: subject.listener_agent().to_owned(),
         recipient_key: *subject.recipient_key(),
@@ -886,7 +888,9 @@ pub fn verify_entitlement(
         EntitlementScheme::MusicPersonalLicenceV1 => {
             verify_licence(entitlement, content, subject, now)
         }
-        EntitlementScheme::MusicAccessGrantV2 => Err(AccessError::Unsupported(Unsupported::RequiresLifecycle)),
+        EntitlementScheme::MusicAccessGrantV2 => {
+            Err(AccessError::Unsupported(Unsupported::RequiresLifecycle))
+        }
     }
 }
 

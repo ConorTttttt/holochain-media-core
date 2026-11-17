@@ -4,44 +4,82 @@ on:
   pull_request:
     paths:
       - "crates/content-core/**"
+      - "scripts/extend_music_access_grant_v2_vectors.py"
       - ".github/workflows/access-grant-v2.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   rust-python-v2:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - name: Check out Media Core
         uses: actions/checkout@v4
-      - name: Check out companion Music v2 branch
+      - name: Check out pinned independent Music S1 reference
         uses: actions/checkout@v4
         with:
           repository: ConorTttttt/holochain-music
-          ref: feat/access-grant-v2-agent6
+          ref: bd7aabc3e9ea1fef1e8e8f674301e1b5ffecb637
+          path: target/music-reference
+          persist-credentials: false
+      - name: Check out pinned Music grant-v2 and frozen-verdict correction
+        uses: actions/checkout@v4
+        with:
+          repository: ConorTttttt/holochain-music
+          ref: b4d7c00ff190487f74f59ae521e85312ce6b0d0d
           path: music
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
-      - name: Install Music cryptography and test dependencies
-        run: python -m pip install -e ./music
+      - name: Install pinned reference crypto and Music test dependencies
+        run: |
+          python -m pip install "cryptography==46.0.4"
+          python -m pip install -e ./music
       - name: Run independent Python grant security tests
-        run: PYTHONPATH=./music python -m unittest discover -s music/tests -p test_access_grant_v2.py -v
-      - name: Generate fresh independent cross-language vectors
+        env:
+          PYTHONPATH: ./music
+        run: python -m unittest discover -s music/tests -p test_access_grant_v2.py -v
+      - name: Generate independent Music S1 and CORE-005 fixtures
         run: |
-          PYTHONPATH=./music python music/scripts/generate_music_access_grant_v2_vectors.py > "$GITHUB_WORKSPACE/music-access-grant-v2-vectors.json"
-          python -m json.tool "$GITHUB_WORKSPACE/music-access-grant-v2-vectors.json" > /dev/null
-      - name: Run Media Core Rust suite against independent Python vectors
+          python scripts/generate_music_vectors.py --music-repo target/music-reference --output target/music-golden-vectors.json
+          python scripts/generate_music_entitlement_vectors.py --music-repo target/music-reference --output target/music-entitlement-vectors.json
+      - name: Generate independent Music v2 grant and recovery fixtures
+        env:
+          PYTHONPATH: ./music
         run: |
-          export MUSIC_ACCESS_GRANT_V2_VECTORS="$GITHUB_WORKSPACE/music-access-grant-v2-vectors.json"
-          cargo test -p holochain-content-core --all-features
+          python music/scripts/generate_music_access_grant_v2_vectors.py > target/music-grant-v2-base.json
+          python scripts/extend_music_access_grant_v2_vectors.py --music-repo music --input target/music-grant-v2-base.json --output target/music-access-grant-v2-vectors.json
+          python -m json.tool target/music-access-grant-v2-vectors.json > target/music-access-grant-v2-vectors.pretty.json
+      - name: Run ALL required Rust vectors (default serde_json)
+        env:
+          MUSIC_VECTORS: target/music-golden-vectors.json
+          MUSIC_ENTITLEMENT_VECTORS: target/music-entitlement-vectors.json
+          MUSIC_ACCESS_GRANT_V2_VECTORS: target/music-access-grant-v2-vectors.json
+        run: cargo test -p holochain-content-core --all-features --all-targets
+      - name: Run ALL required Rust vectors (feature-unified serde_json)
+        env:
+          MUSIC_VECTORS: target/music-golden-vectors.json
+          MUSIC_ENTITLEMENT_VECTORS: target/music-entitlement-vectors.json
+          MUSIC_ACCESS_GRANT_V2_VECTORS: target/music-access-grant-v2-vectors.json
+        run: cargo test -p holochain-content-core --all-features --features serde_json/preserve_order --all-targets
       - name: Preserve independently generated vectors
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: music-access-grant-v2-vectors
-          path: music-access-grant-v2-vectors.json
-          if-no-files-found: ignore
+          name: music-grant-v2-vectors-${{ matrix.os }}
+          path: |
+            target/music-golden-vectors.json
+            target/music-entitlement-vectors.json
+            target/music-access-grant-v2-vectors.json
+          if-no-files-found: warn
