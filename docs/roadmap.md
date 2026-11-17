@@ -1,5 +1,19 @@
 # Development milestones
 
+> **Status clarification (17 November 2026):** The milestones below describe development-branch accomplishments, **not features merged to `main` or production-approved**. `main` remains the initial README-only commit `0e0a629`. New draft review boundaries are CORE-004 [#8](https://github.com/ConorTttttt/holochain-media-core/pull/8), CORE-005 [#9](https://github.com/ConorTttttt/holochain-media-core/pull/9) and S2 key-binding v2 [#10](https://github.com/ConorTttttt/holochain-media-core/pull/10). S2 v2.1 is #4, grant specification #5, grant anchor #6, async-delivery design #7. Successful newer hosted CI supersedes outdated “Windows CI pending” and billing-blocked status in historical sections; see [dated integration plan](INTEGRATION-PLAN-2026-11-17.md). No reviewed migration or production release exists.
+
+### Review-stage status (not merged)
+
+| Development stage | Draft PR | On development branch | In `main` |
+| --- | --- | --- | --- |
+| CORE-001 / CORE-002 / CORE-003 | #1 / #2 / #3 | Implemented, stage-specific CI green | No |
+| CORE-004 / CORE-005 / S2 PoP v2 | #8 / #9 / #10 | Implemented; stage-specific new PR CI must be verified | No |
+| S2 lifecycle v2.1 | #4 | Implemented, four hosted jobs green 14 Nov | No |
+| access-grant/v2 specification | #5 | Specification-only; four hosted jobs green 14 Nov | No |
+| grant-anchor/v2 verifier | #6 | Implemented, four hosted jobs green 14 Nov | No |
+| asynchronous private delivery | #7 | Design-only, deferred; four hosted jobs green 15 Nov | No |
+
+
 The full plan is maintained alongside project discussions. These tasks are the repository implementation order, with no claims of completion beyond verified CI/PR evidence.
 
 | ID | Deliverable | Done when |
