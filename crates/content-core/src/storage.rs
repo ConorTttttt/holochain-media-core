@@ -11,9 +11,9 @@
 
 use crate::compat::{verify_music_ciphertext, VerifiedManifest};
 use std::fs::{self, File};
-use std::io::{self, Read, Write};
 #[cfg(test)]
 use std::io::Seek;
+use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 use tempfile::NamedTempFile;
 

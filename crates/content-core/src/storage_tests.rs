@@ -213,12 +213,8 @@ fn platform_store_deterministic_midwrite_kill_remains_unpublished_and_restartabl
     for _ in 0..500 {
         if let Ok(witness) = std::fs::read_to_string(&marker) {
             let mut lines = witness.lines();
-            if let (Some(name), Some(length), None) =
-                (lines.next(), lines.next(), lines.next())
-            {
-                if !name.is_empty()
-                    && length.parse::<usize>().ok() == Some(objects[0].len() / 2)
-                {
+            if let (Some(name), Some(length), None) = (lines.next(), lines.next(), lines.next()) {
+                if !name.is_empty() && length.parse::<usize>().ok() == Some(objects[0].len() / 2) {
                     observed_name = Some(name.to_owned());
                     break;
                 }
@@ -241,22 +237,17 @@ fn platform_store_deterministic_midwrite_kill_remains_unpublished_and_restartabl
     // On Windows querying an *open* NamedTempFile's metadata through a
     // second handle can fail with a sharing violation. Check the precise
     // directory entry and rely on the child's same-handle read-back witness.
-    let partial_temp_exists = observed_name
-        .as_ref()
-        .map(|name| {
-            std::fs::read_dir(&folder)
-                .unwrap()
-                .filter_map(Result::ok)
-                .any(|entry| {
-                    entry.file_name() == std::ffi::OsString::from(name)
-                        && entry.path() != published
-                })
+    let partial_temp_exists = observed_name.as_deref().is_some_and(|name| {
+        std::fs::read_dir(&folder).is_ok_and(|entries| {
+            entries.filter_map(Result::ok).any(|entry| {
+                entry.file_name() == std::ffi::OsStr::new(name) && entry.path() != published
+            })
         })
-        .unwrap_or(false);
+    });
 
     // Kill the parked writer *before* inspecting or repairing its store.
-    let _ = child.kill();
-    let _ = child.wait();
+    let killed = child.kill();
+    let status = child.wait().expect("wait for CAS writer subprocess");
     assert!(
         observed_name.is_some(),
         "subprocess did not witness a genuine partial CAS write"
@@ -269,6 +260,8 @@ fn platform_store_deterministic_midwrite_kill_remains_unpublished_and_restartabl
         partial_temp_exists,
         "named half-written CAS temp file was not visible before kill"
     );
+    killed.expect("kill the paused CAS writer subprocess");
+    assert!(!status.success(), "CAS writer must terminate abnormally");
 
     let restarted = VerifiedCas::new(&root).unwrap();
     let initial = restarted.audit(&manifest).unwrap();
