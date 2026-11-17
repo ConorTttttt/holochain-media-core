@@ -1,0 +1,13 @@
+/target/
+**/target/
+*.swp
+*.swo
+.DS_Store
+.env
+.env.*
+!.env.example
+.local/
+*.pem
+*.key
+*.happ
+*.dna

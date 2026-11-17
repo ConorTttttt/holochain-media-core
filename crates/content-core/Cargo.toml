@@ -1,0 +1,12 @@
+[package]
+name = "holochain-content-core"
+description = "Typed identifiers and contracts for Holochain media sharing"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+name = "holochain_content_core"
+path = "src/lib.rs"
