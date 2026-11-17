@@ -237,6 +237,19 @@ impl VerifiedCas {
 
     fn synced_temp(dir: &Path, bytes: &[u8]) -> Result<NamedTempFile, StoreError> {
         let mut temp = NamedTempFile::new_in(dir)?;
+        // Test-build-only fault hook: a child test process parks after a
+        // genuinely partial write to the real CAS temporary file. The parent
+        // observes the marker and kills it before the atomic publish path.
+        // This hook is absent from production (non-cfg(test)) binaries.
+        #[cfg(test)]
+        if let Some(marker) = std::env::var_os("HOLOCHAIN_CORE_TEST_PAUSE_PARTIAL_WRITE") {
+            temp.write_all(&bytes[..bytes.len() / 2])?;
+            temp.flush()?;
+            std::fs::write(marker, b"partial-temp-written")?;
+            loop {
+                std::thread::park();
+            }
+        }
         temp.write_all(bytes)?;
         temp.flush()?;
         temp.as_file().sync_all()?;
