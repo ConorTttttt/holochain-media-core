@@ -281,6 +281,8 @@ impl VerifiedAccessGrantV2 {
 /// cannot substitute a legacy-v1 OwnedManifest to bypass historical checks.
 /// For absent anchors, return AnchorNotFound; never accept without one.
 /// A valid grant is returned only after all tests, in §5 B ordering.
+// Keep the authenticated inputs and policy explicit at the public call site.
+#[allow(clippy::too_many_arguments)]
 pub fn verify_access_grant_v2(
     manifest_json: &[u8],
     commitment: &ConductorRecord,
@@ -444,6 +446,8 @@ fn hex_string(value: &[u8]) -> String {
 }
 
 /// Authorisation-only convenience; never unwraps a content key.
+// Takes the same verification inputs plus the requested right.
+#[allow(clippy::too_many_arguments)]
 pub fn check_content_access_v2(
     manifest_json: &[u8],
     commitment: &ConductorRecord,
