@@ -6,7 +6,9 @@
 //! signature, scope, anchor commitment and chain ordering. An anchor alone is
 //! never authority. Content keys are not available to this crate.
 
-use crate::binding::{BindingError, ConductorRecord, KeyPurpose, OwnedManifest, VerifiedKeyBinding};
+use crate::binding::{
+    verify_owned_manifest_lifecycle, BindingError, ConductorRecord, KeyPurpose, VerifiedKeyBinding,
+};
 use crate::compat::canonical_json;
 use crate::entitlements::{
     AccessDecision, AccessError, AuthenticatedSubject, EntitlementScheme, VerifiedEntitlement,
@@ -236,13 +238,15 @@ impl VerifiedAccessGrantV2 {
     }
 }
 
-/// The caller must supply an OwnedManifest from
-/// verify_owned_manifest_lifecycle using the *historical* commitment, and a
-/// validated conductor lifecycle + grant anchor for the same owner/DNA.
+/// The caller must supply raw S1 bytes and the original file commitment,
+/// plus a validated owner lifecycle and grant anchor from the SAME DNA.
+/// This function itself invokes verify_owned_manifest_lifecycle: a caller
+/// cannot substitute a legacy-v1 OwnedManifest to bypass historical checks.
 /// For absent anchors, return AnchorNotFound; never accept without one.
 /// A valid grant is returned only after all tests, in §5 B ordering.
 pub fn verify_access_grant_v2(
-    content: &OwnedManifest,
+    manifest_json: &[u8],
+    commitment: &ConductorRecord,
     subject: &AuthenticatedSubject,
     grant_json: &[u8],
     owner: &KeyLifecycle,
@@ -250,6 +254,14 @@ pub fn verify_access_grant_v2(
     now: SystemTime,
     recovered_policy: RecoveredIssuerPolicy,
 ) -> Result<VerifiedAccessGrantV2, V2Error> {
+    // Content authenticity uses its historical signer at the ORIGINAL
+    // on-chain commitment. Grant authority is verified separately below.
+    let content = verify_owned_manifest_lifecycle(manifest_json, owner, commitment)
+        .map_err(|err| match err {
+            BindingError::CommitmentMismatch => V2Error::Denied("ManifestMismatch"),
+            BindingError::MissingRecord => V2Error::Unavailable("CommitmentNotFound"),
+            _ => V2Error::Unauthenticated("InvalidHistoricalKey"),
+        })?;
     if grant_json.len() > MAX_GRANT_INPUT_BYTES {
         return Err(V2Error::Malformed("TooLarge"));
     }
@@ -366,7 +378,8 @@ fn hex_string(value: &[u8]) -> String {
 
 /// Authorisation-only convenience; never unwraps a content key.
 pub fn check_content_access_v2(
-    content: &OwnedManifest,
+    manifest_json: &[u8],
+    commitment: &ConductorRecord,
     subject: &AuthenticatedSubject,
     grant_json: &[u8],
     owner: &KeyLifecycle,
@@ -375,7 +388,7 @@ pub fn check_content_access_v2(
     now: SystemTime,
     recovered_policy: RecoveredIssuerPolicy,
 ) -> Result<AccessDecision, V2Error> {
-    verify_access_grant_v2(content, subject, grant_json, owner, anchor, now, recovered_policy)?
+    verify_access_grant_v2(manifest_json, commitment, subject, grant_json, owner, anchor, now, recovered_policy)?
         .authorize(requested)
         .map_err(|_| V2Error::Denied("RightNotGranted"))
 }
