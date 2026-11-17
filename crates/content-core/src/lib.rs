@@ -263,3 +263,9 @@ mod tests {
         assert_eq!(Rights::from_bits(0b111).unwrap().bits(), 0b111);
     }
 }
+
+/// Read-only compatibility with the existing Python Music S1 signed format.
+pub mod compat;
+
+#[cfg(all(test, feature = "music-interop-tests"))]
+mod compat_tests;

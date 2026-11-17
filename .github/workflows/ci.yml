@@ -22,6 +22,43 @@ jobs:
       - name: Format
         run: cargo fmt --all -- --check
       - name: Lint
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo clippy --locked --workspace --all-targets -- -D warnings
       - name: Test
-        run: cargo test --workspace --all-targets
+        run: cargo test --locked --workspace --all-targets
+      - name: Test with serde_json preserve_order
+        run: cargo test --locked --workspace --all-targets --features preserve-order-tests
+
+  music-python-interop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout Core
+        uses: actions/checkout@v4
+      - name: Checkout exact Music S1 reference
+        uses: actions/checkout@v4
+        with:
+          repository: ConorTttttt/holochain-music
+          ref: bd7aabc3e9ea1fef1e8e8f674301e1b5ffecb637
+          path: target/music-reference
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install reference package crypto dependency
+        run: python -m pip install 'cryptography==46.0.4'
+      - name: Generate independent signed S1 reference vectors
+        run: |
+          python scripts/generate_music_vectors.py \
+            --music-repo target/music-reference \
+            --output target/music-golden-vectors.json
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Rust cross-language signature, digest and negative tests
+        env:
+          MUSIC_VECTORS: target/music-golden-vectors.json
+        run: cargo test --locked --workspace --features music-interop-tests --all-targets
+      - name: Music interoperability under serde_json preserve_order
+        env:
+          MUSIC_VECTORS: target/music-golden-vectors.json
+        run: cargo test --locked -p holochain-content-core --features music-interop-tests,preserve-order-tests --all-targets
