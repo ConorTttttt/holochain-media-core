@@ -206,12 +206,23 @@ fn platform_store_deterministic_midwrite_kill_remains_unpublished_and_restartabl
         .spawn()
         .unwrap();
 
-    // Synchronize on the actual temp-file half-write, not a timing-based kill.
-    let mut paused = false;
+    // The witness is written only after the child verifies the length AND
+    // contents through the real writer handle. Poll for complete content,
+    // not just marker-file existence (which can precede the final write).
+    let mut observed_name = None;
     for _ in 0..500 {
-        if marker.is_file() {
-            paused = true;
-            break;
+        if let Ok(witness) = std::fs::read_to_string(&marker) {
+            let mut lines = witness.lines();
+            if let (Some(name), Some(length), None) =
+                (lines.next(), lines.next(), lines.next())
+            {
+                if !name.is_empty()
+                    && length.parse::<usize>().ok() == Some(objects[0].len() / 2)
+                {
+                    observed_name = Some(name.to_owned());
+                    break;
+                }
+            }
         }
         if child.try_wait().unwrap().is_some() {
             break;
@@ -227,35 +238,55 @@ fn platform_store_deterministic_midwrite_kill_remains_unpublished_and_restartabl
     let folder = root.join("objects").join("sha256").join(&digest[..2]);
     let published = folder.join(&digest);
     let still_unpublished = !published.exists();
-    let partial_temp_exists = paused
-        && std::fs::read_dir(&folder)
-            .unwrap()
-            .filter_map(Result::ok)
-            .any(|entry| {
-                entry.path() != published
-                    && entry
-                        .metadata()
-                        .map(|meta| meta.is_file() && meta.len() == (objects[0].len() / 2) as u64)
-                        .unwrap_or(false)
-            });
+    // On Windows querying an *open* NamedTempFile's metadata through a
+    // second handle can fail with a sharing violation. Check the precise
+    // directory entry and rely on the child's same-handle read-back witness.
+    let partial_temp_exists = observed_name
+        .as_ref()
+        .map(|name| {
+            std::fs::read_dir(&folder)
+                .unwrap()
+                .filter_map(Result::ok)
+                .any(|entry| {
+                    entry.file_name() == std::ffi::OsString::from(name)
+                        && entry.path() != published
+                })
+        })
+        .unwrap_or(false);
 
     // Kill the parked writer *before* inspecting or repairing its store.
     let _ = child.kill();
     let _ = child.wait();
-    assert!(paused, "subprocess did not reach the real partial-write hook");
-    assert!(still_unpublished, "partial ciphertext was published as an object");
-    assert!(partial_temp_exists, "no half-written CAS temp file was observed");
+    assert!(
+        observed_name.is_some(),
+        "subprocess did not witness a genuine partial CAS write"
+    );
+    assert!(
+        still_unpublished,
+        "partial ciphertext was published as an object"
+    );
+    assert!(
+        partial_temp_exists,
+        "named half-written CAS temp file was not visible before kill"
+    );
 
     let restarted = VerifiedCas::new(&root).unwrap();
     let initial = restarted.audit(&manifest).unwrap();
-    assert_eq!((initial.verified, initial.missing, initial.corrupt), (0, 3, 0));
+    assert_eq!(
+        (initial.verified, initial.missing, initial.corrupt),
+        (0, 3, 0)
+    );
     assert_eq!(
         restarted.put_chunk(&manifest, 0, &objects[0]).unwrap(),
         WriteOutcome::Created
     );
     let final_audit = restarted.audit(&manifest).unwrap();
     assert_eq!(
-        (final_audit.verified, final_audit.missing, final_audit.corrupt),
+        (
+            final_audit.verified,
+            final_audit.missing,
+            final_audit.corrupt
+        ),
         (1, 2, 0)
     );
     assert_eq!(restarted.read_chunk(&manifest, 0).unwrap(), objects[0]);

@@ -12,6 +12,8 @@
 use crate::compat::{verify_music_ciphertext, VerifiedManifest};
 use std::fs::{self, File};
 use std::io::{self, Read, Write};
+#[cfg(test)]
+use std::io::Seek;
 use std::path::{Path, PathBuf};
 use tempfile::NamedTempFile;
 
@@ -243,9 +245,36 @@ impl VerifiedCas {
         // This hook is absent from production (non-cfg(test)) binaries.
         #[cfg(test)]
         if let Some(marker) = std::env::var_os("HOLOCHAIN_CORE_TEST_PAUSE_PARTIAL_WRITE") {
-            temp.write_all(&bytes[..bytes.len() / 2])?;
+            let halfway = bytes.len() / 2;
+            temp.write_all(&bytes[..halfway])?;
             temp.flush()?;
-            std::fs::write(PathBuf::from(marker), b"partial-temp-written")?;
+
+            // Read back from the writer's own handle. Windows may refuse
+            // metadata/read access through a *second* handle while it is open.
+            let observed_len = temp.as_file().metadata()?.len();
+            if observed_len != halfway as u64 {
+                return Err(StoreError::Io(io::Error::other(
+                    "test hook did not create a half-length temporary object",
+                )));
+            }
+            temp.as_file_mut().rewind()?;
+            let mut observed = vec![0; halfway];
+            temp.as_file_mut().read_exact(&mut observed)?;
+            if observed.as_slice() != &bytes[..halfway] {
+                return Err(StoreError::Io(io::Error::other(
+                    "test hook read-back did not match the partial ciphertext",
+                )));
+            }
+
+            // The witness names the genuine CAS temp file and its length;
+            // the parent checks that name in the directory before killing us.
+            let filename = temp
+                .path()
+                .file_name()
+                .ok_or(StoreError::UnsafePath)?
+                .to_string_lossy();
+            let witness = format!("{filename}\n{observed_len}\n");
+            std::fs::write(PathBuf::from(marker), witness.as_bytes())?;
             loop {
                 std::thread::park();
             }
