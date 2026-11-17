@@ -75,7 +75,7 @@ fn media_core_agrees_with_independent_music_grant_vectors() {
         let subject = AuthenticatedSubject::from_trusted_context(listener, recipient).unwrap();
         let anchor = if case["anchor"].is_null() { None } else { Some(record(&case["anchor"])) };
         let res = verify_access_grant_v2(
-            &content, &subject, str_at(case, "grant_text").as_bytes(),
+            manifest, &commitment, &subject, str_at(case, "grant_text").as_bytes(),
             &lifecycle, anchor.as_ref(), now, RecoveredIssuerPolicy::Reject,
         );
         let expected_cat = str_at(&case["expected"], "category");
