@@ -55,6 +55,8 @@ use std::time::{SystemTime, UNIX_EPOCH};
 pub const MUSIC_CONTENT_GRANT_V1: &str = "holochain-music/content-grant/v1";
 /// Music permanent personal-use licence.
 pub const MUSIC_PERSONAL_LICENCE_V1: &str = "holochain-music/personal-licence/v1";
+/// Opt-in lifecycle-anchored grant. Never parsed by v1 entry points.
+pub const MUSIC_ACCESS_GRANT_V2: &str = "holochain-music/access-grant/v2";
 /// Earlier S1-prototype perpetual grant (`holochain_storage/grant.py`).
 /// Recognised only to reject it explicitly; see [`Unsupported::LegacyPerpetualGrant`].
 pub const MUSIC_LEGACY_PERPETUAL_GRANT_V1: &str = "holochain-music/personal-perpetual-grant/v1";
@@ -102,6 +104,8 @@ pub enum EntitlementScheme {
     /// `holochain-music/personal-licence/v1` with terms
     /// `perpetual-personal-use`: owner-issued, listener-specific, non-expiring.
     MusicPersonalLicenceV1,
+    /// Lifecycle-anchored grants: verify only with access_grant_v2::verify_access_grant_v2.
+    MusicAccessGrantV2,
 }
 
 impl EntitlementScheme {
@@ -110,6 +114,7 @@ impl EntitlementScheme {
         match self {
             Self::MusicContentGrantV1 => MUSIC_CONTENT_GRANT_V1,
             Self::MusicPersonalLicenceV1 => MUSIC_PERSONAL_LICENCE_V1,
+            Self::MusicAccessGrantV2 => MUSIC_ACCESS_GRANT_V2,
         }
     }
 
@@ -126,6 +131,8 @@ impl EntitlementScheme {
             Self::MusicPersonalLicenceV1 => Rights::STREAM
                 .union(Rights::MANAGED_OFFLINE)
                 .union(Rights::EXPORT),
+            // v2 rights vary per *signed grant*; never infer rights from the schema.
+            Self::MusicAccessGrantV2 => Rights::NONE,
         }
     }
 
@@ -139,6 +146,8 @@ impl EntitlementScheme {
         match schema {
             MUSIC_CONTENT_GRANT_V1 => Ok(Self::MusicContentGrantV1),
             MUSIC_PERSONAL_LICENCE_V1 => Ok(Self::MusicPersonalLicenceV1),
+            // A v2 grant without authenticated lifecycle AND anchor is never access.
+            MUSIC_ACCESS_GRANT_V2 => Err(Unsupported::RequiresLifecycle),
             MUSIC_LEGACY_PERPETUAL_GRANT_V1 => Err(Unsupported::LegacyPerpetualGrant),
             _ => Err(Unsupported::UnknownSchema),
         }
@@ -270,6 +279,8 @@ pub enum Unsupported {
     /// `holochain-music/personal-perpetual-grant/v1`: not bound to owner or
     /// listener agents; needs its own compatibility increment.
     LegacyPerpetualGrant,
+    /// access-grant/v2 requires an explicit trusted lifecycle and anchor.
+    RequiresLifecycle,
     /// Authentic licence with terms other than `perpetual-personal-use`.
     LicenceTerms,
 }
@@ -387,11 +398,11 @@ impl std::error::Error for AccessError {}
 /// `content_key = AES-256-GCM-Decrypt(kek, nonce, wrapped_key, aad = context)`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WrappedContentKey {
-    ephemeral_public: [u8; 32],
-    salt: [u8; 16],
-    nonce: [u8; 12],
-    wrapped_key: [u8; 48],
-    context: Vec<u8>,
+    pub(crate) ephemeral_public: [u8; 32],
+    pub(crate) salt: [u8; 16],
+    pub(crate) nonce: [u8; 12],
+    pub(crate) wrapped_key: [u8; 48],
+    pub(crate) context: Vec<u8>,
 }
 
 impl WrappedContentKey {
@@ -425,17 +436,18 @@ impl WrappedContentKey {
 /// it does and does not certify.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedEntitlement {
-    scheme: EntitlementScheme,
-    owner_agent: String,
-    listener_agent: String,
-    recipient_key: [u8; 32],
-    package_id: PackageId,
-    manifest_digest: ManifestDigest,
-    issued_at: i64,
-    expires_at: Option<i64>,
-    licence_id: Option<String>,
-    key: WrappedContentKey,
-    owner_assurance: BindingAssurance,
+    pub(crate) scheme: EntitlementScheme,
+    pub(crate) granted_rights: Rights,
+    pub(crate) owner_agent: String,
+    pub(crate) listener_agent: String,
+    pub(crate) recipient_key: [u8; 32],
+    pub(crate) package_id: PackageId,
+    pub(crate) manifest_digest: ManifestDigest,
+    pub(crate) issued_at: i64,
+    pub(crate) expires_at: Option<i64>,
+    pub(crate) licence_id: Option<String>,
+    pub(crate) key: WrappedContentKey,
+    pub(crate) owner_assurance: BindingAssurance,
 }
 
 impl VerifiedEntitlement {
@@ -450,7 +462,7 @@ impl VerifiedEntitlement {
     }
     /// Rights the verified terms confer.
     pub fn rights(&self) -> Rights {
-        self.scheme.rights()
+        self.granted_rights
     }
     /// Authenticated owner agent (from the Holochain binding).
     pub fn owner_agent(&self) -> &str {
@@ -776,6 +788,7 @@ fn verify_stream(
     let key = key_envelope(&common, ephemeral, context)?;
     Ok(VerifiedEntitlement {
         scheme: EntitlementScheme::MusicContentGrantV1,
+        granted_rights: Rights::STREAM,
         owner_agent: content.owner_agent().to_owned(),
         listener_agent: subject.listener_agent().to_owned(),
         recipient_key: *subject.recipient_key(),
@@ -833,6 +846,7 @@ fn verify_licence(
     let key = key_envelope(&common, ephemeral, context)?;
     Ok(VerifiedEntitlement {
         scheme: EntitlementScheme::MusicPersonalLicenceV1,
+        granted_rights: Rights::STREAM.union(Rights::MANAGED_OFFLINE).union(Rights::EXPORT),
         owner_agent: content.owner_agent().to_owned(),
         listener_agent: subject.listener_agent().to_owned(),
         recipient_key: *subject.recipient_key(),
@@ -872,6 +886,7 @@ pub fn verify_entitlement(
         EntitlementScheme::MusicPersonalLicenceV1 => {
             verify_licence(entitlement, content, subject, now)
         }
+        EntitlementScheme::MusicAccessGrantV2 => Err(AccessError::Unsupported(Unsupported::RequiresLifecycle)),
     }
 }
 

@@ -297,6 +297,8 @@ mod storage_tests;
 /// Music S2 Holochain identity bindings (CORE-004 Task A).
 pub mod binding;
 pub mod grant_anchor;
+/// Opt-in lifecycle-anchored access-grant/v2 (never used by v1 dispatch).
+pub mod access_grant_v2;
 pub mod lifecycle;
 pub mod receipt_v2;
 
@@ -314,3 +316,6 @@ mod binding_v2_tests;
 
 #[cfg(test)]
 mod lifecycle_v21_tests;
+
+#[cfg(test)]
+mod access_grant_v2_vectors_tests;
