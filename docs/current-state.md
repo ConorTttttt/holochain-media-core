@@ -1,5 +1,30 @@
 # Audit baseline and completion status
 
+## S2 key-binding v2 update (13 November 2026, latest)
+
+Branches (local, not pushed): Media Core `feat/s2-key-binding-v2` from
+`claude/core-005-entitlements-i7zm0e` @ 5f7adf5 (pushed CORE-005); Music
+`feat/s2-key-binding-v2` from `claude/core-005-entitlements-i7zm0e` @ 4bd3db4,
+code at f091d5a (key-binding vectors pinned there), docs 17a6276.
+
+| Check | Result |
+|---|---|
+| Media Core fmt; clippy `-D warnings` (also with `preserve_order`) | pass |
+| `cargo test --workspace --all-targets` (also `preserve_order`) | **63 pass** (core 40, retrieval 12, cli 7, release 4) |
+| Interop with fresh S1 + entitlement + key-binding vectors (also `preserve_order`) | core **61 pass** |
+| `generate_music_key_binding_vectors.py` (Music @ f091d5a) | 26 cases, Python self-check passes |
+| `integration` fmt + clippy `-D warnings` | pass |
+| v1 storage DNA rebuilt from unchanged `dna/` | wasm `cf75c4bd…`, DNA `uhC0kkLUOg2uytGWLz_sTeVtfJBqa0criBmAYAPwAIUhoDp_9G4RV` (identical) |
+| v2 storage DNA `dna-v2/` | DNA `uhC0k_-f-D4bF9w53gD2jXkA4RqYQ_bf0dRdF8rMkJG_tS8WGRamb`; integrity unit tests 6 pass |
+| `s2_key_binding_v2` (4 real conductors, v1 + v2 DNAs) | **pass 231.3 s**: 23 forged writes refused by integrity rules (B, C, D, E, F, G×13, I, J×2), 2 refused at entry decoding, discovery + Media Core verification, legacy v1, duplicate/conflict policy |
+| `core004_acceptance` with `CORE_S2_KEY_BINDING=v2` (v2 DNA, 5 conductors, MoQ, CORE-005, Music unwrap) | **pass 186.6 s** |
+| `core004_acceptance` v1 regression (Music @ bd7aabc) | **pass 185.2 s** |
+| Music `unittest discover`, adapter enabled, S2 branch | **445 OK / 34 skipped / 0 fail** (479 run) |
+| Music app bridge `cargo check` with v2 routes | pass |
+
+Not run: Windows CI; Music `music-e2e` Sweettests (they target the v1 DNA,
+which is unchanged); physical network.
+
 ## CORE-005 update (13 November 2026, later session)
 
 Branches: Media Core `claude/core-005-entitlements-i7zm0e` on top of

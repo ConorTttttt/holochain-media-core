@@ -19,7 +19,15 @@ The full plan is maintained alongside project discussions. These tasks are the r
 - **v0.2 multi-app preview:** verified Video approved-release flow and media adapters; public access remains gated on reviewed authority.
 - **Production candidate:** audited security, clear pricing/settlement semantics, robust internet delivery, key recovery, platform/hardware testing, licensing and migration/rollback.
 
-## Next: S2 key-binding v2 (proof of possession), then CORE-006
+## S2 key-binding v2 — implemented on `feat/s2-key-binding-v2` (13 Nov 2026)
+
+Proof-of-possession bindings in a separate opt-in v2 storage DNA (v1 DNA hash
+unchanged), Media Core assurance levels and policy, real-conductor adversarial
+suite and v2 end-to-end acceptance (docs/S2-KEY-BINDING-V2.md). Outstanding,
+explicitly: rotation/revocation (`v2.1`), `replica-receipt/v2`, switching the
+Music app to the v2 DNA, migration execution.
+
+## Previously next: S2 key-binding v2 (proof of possession), then CORE-006
 
 CORE-005 delivered `check_content_access` for Music `content-grant/v1` and
 `personal-licence/v1` (verification only) with Python-generated vectors. The

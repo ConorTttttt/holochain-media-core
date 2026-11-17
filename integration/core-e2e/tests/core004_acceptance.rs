@@ -26,18 +26,20 @@ mod common;
 use common::*;
 use holo_hash::ActionHash;
 use holochain::sweettest::*;
+use holochain_content_core::binding::{BindingAssurance, KeyBindingPolicy};
 use holochain_content_core::binding::{BindingError, EndpointPolicy};
 use holochain_content_core::compat::VerifyError;
 use holochain_content_core::entitlements::{
-    check_content_access, AccessError, AuthenticatedSubject, Denied, Unauthenticated, Validity,
+    check_content_access, check_content_access_requiring, AccessError, AuthenticatedSubject,
+    Denied, Unauthenticated, Validity,
 };
 use holochain_content_core::storage::VerifiedCas;
 use holochain_content_core::{PackageId, Right};
-use holochain_content_holochain::{ConductorResolver, ConductorTarget, READ_FUNCTIONS};
+use holochain_content_holochain::{read_functions, ConductorResolver, ConductorTarget};
 use holochain_content_moq::MoqHostTransport;
 use holochain_content_moq::{MoqConnector, Timeouts};
 use holochain_content_retrieval::{
-    authenticate_content, fetch_verified_content, resolve_content, AuthenticatedContent,
+    authenticate_content, fetch_verified_content, resolve_content_with, AuthenticatedContent,
     FetchError, FetchOptions, HostSource, RejectReason, ResolveError, TransportFailure,
 };
 use serde::Serialize;
@@ -138,6 +140,8 @@ fn endpoint(node: &str, owner: &str, pkg: &Value, url: &str, fp: &str) -> MoqEnd
 struct Net {
     conductors: SweetConductorBatch,
     cells: Vec<SweetCell>,
+    /// S2 key-binding v2 mode (`CORE_S2_KEY_BINDING=v2`, v2 storage DNA).
+    v2: bool,
 }
 
 impl Net {
@@ -160,6 +164,61 @@ impl Net {
             "{f} was refused, but not by the authorship validation rule: {error}"
         );
     }
+    /// A write the integrity zome must reject for the stated reason.
+    async fn forbidden_because<P: Serialize + std::fmt::Debug>(
+        &self,
+        i: usize,
+        f: &str,
+        payload: &P,
+        needle: &str,
+    ) {
+        let result: Result<ActionHash, _> = self.conductors[i]
+            .call_fallible(&self.cells[i].zome(ZOME), f, payload)
+            .await;
+        let error = format!("{:?}", result.expect_err("forged write was accepted"));
+        assert!(
+            error.contains(needle),
+            "{f} was refused, but not by the expected validation rule ({needle}): {error}"
+        );
+    }
+    /// Register a signing key: v1 entry, or (v2 mode) a v2 entry signed by
+    /// Music's own Python code with the key held in the fixture root.
+    async fn bind_key(
+        &self,
+        paths: &Paths,
+        root: &str,
+        i: usize,
+        purpose: &str,
+        key_name: &str,
+        public_hex: &str,
+    ) -> Value {
+        let agent = self.agent(i);
+        if !self.v2 {
+            self.call(i, "register_signing_key", &key(&agent, purpose, public_hex))
+                .await;
+            return Value::Null;
+        }
+        let dna = self.cells[i].cell_id().dna_hash().to_string();
+        let out = paths
+            .python_ok(args(&[
+                "bind-v2",
+                "--root",
+                root,
+                "--key",
+                key_name,
+                "--agent",
+                &agent,
+                "--purpose",
+                purpose,
+                "--dna-hash",
+                &dna,
+            ]))
+            .await;
+        let entry = out["entry"].clone();
+        assert_eq!(s(&entry, "signing_key_hex"), public_hex);
+        self.call(i, "register_signing_key_v2", &entry).await;
+        entry
+    }
     async fn settle(&self) {
         await_consistency_s(120, self.cells.iter())
             .await
@@ -176,6 +235,7 @@ impl Net {
             // Sweettest names roles after the DNA hash.
             storage_role: dna.clone(),
             expected_storage_dna: dna,
+            key_binding_v2: self.v2,
         })
         .await
         .expect("Bob's authenticated conductor resolver")
@@ -201,11 +261,21 @@ async fn authenticate(
     pkg: &Value,
     c: &MoqConnector,
 ) -> Result<AuthenticatedContent<MoqHostTransport>, ResolveError> {
-    let resolved = resolve_content(
+    // The policy follows how the resolver was connected; it is never chosen
+    // per record, so v2 cannot silently fall back to v1.
+    let policy = if resolver.key_binding_v2() {
+        KeyBindingPolicy::ProofOfPossessionV2 {
+            dna_hash: resolver.dna_hash().to_owned(),
+        }
+    } else {
+        KeyBindingPolicy::LegacyV1
+    };
+    let resolved = resolve_content_with(
         resolver,
         owner,
         package_id(pkg),
         EndpointPolicy::LoopbackOnly,
+        &policy,
     )
     .await?;
     authenticate_content(resolved, c).await
@@ -343,7 +413,17 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
         .map(|a| a.into_cells().into_iter().next().unwrap())
         .collect();
     conductors.exchange_peer_info().await;
-    let net = Net { conductors, cells };
+    let v2 = std::env::var("CORE_S2_KEY_BINDING").as_deref() == Ok("v2");
+    let net = Net {
+        conductors,
+        cells,
+        v2,
+    };
+    eprintln!(
+        "[core004] storage DNA {} (key binding {})",
+        net.cells[ALICE].cell_id().dna_hash(),
+        if v2 { "v2" } else { "v1" }
+    );
     let (alice, bob, carol, mallory, eve) = (
         net.agent(ALICE),
         net.agent(BOB),
@@ -354,12 +434,9 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     let artist_hex = s(&p1, "artist_public_hex");
 
     // Alice: owner key, commitments, and her own host role for P1.
-    net.call(
-        ALICE,
-        "register_signing_key",
-        &key(&alice, "owner-manifest", &artist_hex),
-    )
-    .await;
+    let alice_binding = net
+        .bind_key(&paths, &r, ALICE, "owner-manifest", "artist", &artist_hex)
+        .await;
     net.call(ALICE, "publish_file_commitment", &commitment(&alice, &p1))
         .await;
     net.call(ALICE, "publish_file_commitment", &commitment(&alice, &p2))
@@ -375,10 +452,14 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
             .find(|(k, _)| k.starts_with(&format!("{name}/")))
             .unwrap()
             .1;
-        net.call(
+        assert_eq!(&net.agent(i), agent);
+        net.bind_key(
+            &paths,
+            &r,
             i,
-            "register_signing_key",
-            &key(agent, "host-receipt", &s(any, "node_public_hex")),
+            "host-receipt",
+            &format!("host:{name}"),
+            &s(any, "node_public_hex"),
         )
         .await;
     }
@@ -399,12 +480,40 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     }
 
     // Mallory's forgeries are refused by the Music integrity zome itself.
-    net.forbidden(
-        MALLORY,
-        "register_signing_key",
-        &key(&alice, "owner-manifest", &"ab".repeat(32)),
-    )
-    .await;
+    if net.v2 {
+        // Authoring Alice's genuine v2 binding as Mallory: authorship rule.
+        net.forbidden(MALLORY, "register_signing_key_v2", &alice_binding)
+            .await;
+        // Alice's proof copied into a binding of Alice's key to Mallory:
+        // proof-of-possession rule (the CORE-004 finding, now refused).
+        let mut stolen = alice_binding.clone();
+        stolen["agent"] = Value::String(mallory.clone());
+        net.forbidden_because(
+            MALLORY,
+            "register_signing_key_v2",
+            &stolen,
+            "proof of possession does not verify",
+        )
+        .await;
+        // v1 bindings are not accepted on the v2 network at all.
+        net.forbidden_because(
+            MALLORY,
+            "register_signing_key",
+            &key(&mallory, "owner-manifest", &artist_hex),
+            "key-binding/v1 is not accepted",
+        )
+        .await;
+        eprintln!(
+            "[s2] Mallory cannot bind Alice's key on the v2 DNA (authorship, proof, v1 refused)"
+        );
+    } else {
+        net.forbidden(
+            MALLORY,
+            "register_signing_key",
+            &key(&alice, "owner-manifest", &"ab".repeat(32)),
+        )
+        .await;
+    }
     net.forbidden(MALLORY, "publish_file_commitment", &commitment(&alice, &p1))
         .await;
     net.forbidden(
@@ -531,14 +640,13 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     )
     .await;
     // Mallory claims Alice's P1 as her own content, with her own owner key.
-    net.call(
+    net.bind_key(
+        &paths,
+        &r,
         MALLORY,
-        "register_signing_key",
-        &key(
-            &mallory,
-            "owner-manifest",
-            &s(&hosts["mallory/p1"], "node_public_hex"),
-        ),
+        "owner-manifest",
+        "host:mallory",
+        &s(&hosts["mallory/p1"], "node_public_hex"),
     )
     .await;
     net.call(
@@ -612,7 +720,7 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
         vacuous.0.iter().all(|(_, g)| g.is_empty()),
         "upstream include_revoked:false listing behaviour changed; revisit"
     );
-    let read_only: std::collections::HashSet<(String, String)> = READ_FUNCTIONS
+    let read_only: std::collections::HashSet<(String, String)> = read_functions(net.v2)
         .iter()
         .map(|f| (ZOME.to_string(), f.to_string()))
         .collect();
@@ -647,6 +755,15 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
         s(&p1, "manifest_sha256")
     );
     assert_eq!(hex(content.owned.manifest().signer()), artist_hex);
+    let expected_assurance = if net.v2 {
+        BindingAssurance::ProofOfPossessionV2
+    } else {
+        BindingAssurance::LegacyAuthoredV1
+    };
+    assert_eq!(content.owned.owner_assurance(), expected_assurance);
+    for h in &content.hosts {
+        assert_eq!(h.replica.node_assurance(), expected_assurance);
+    }
     // TLS certificate mismatch: rejected by the pin, not reported as denial.
     assert!(
         matches!(
@@ -853,6 +970,26 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
             "CORE-005 {name}"
         );
     }
+    // S2: the entitlement result reports, and can require, owner assurance.
+    let strict = check_content_access_requiring(
+        &content.owned,
+        &bob_subject,
+        &grant_bytes("bob_licence"),
+        Right::Export,
+        now,
+        BindingAssurance::ProofOfPossessionV2,
+    );
+    if net.v2 {
+        assert_eq!(
+            strict.unwrap().entitlement().owner_assurance(),
+            BindingAssurance::ProofOfPossessionV2
+        );
+    } else {
+        assert_eq!(
+            strict.unwrap_err(),
+            AccessError::Unauthenticated(Unauthenticated::InsufficientOwnerAssurance)
+        );
+    }
     eprintln!("[core005] Rust entitlement checks on Holochain-authenticated content agree with Music's boundaries");
 
     let out = temp.0.join("bob-plain.bin");
@@ -980,6 +1117,7 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
         app_id: APP.into(),
         storage_role: "x".into(),
         expected_storage_dna: "x".into(),
+        key_binding_v2: false,
     })
     .await;
     assert!(missing.is_err());

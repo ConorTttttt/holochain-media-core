@@ -204,6 +204,26 @@ def unlock(a) -> int:
     return 0
 
 
+def bind_v2(a) -> None:
+    """S2 key-binding v2 entry signed LOCALLY with Music's own
+    make_key_binding_v2 (needs a Music checkout that has it). Prints only the
+    public entry; the private key never leaves this process."""
+    from holochain_storage.holochain_identity import key_for_agent_v2, make_key_binding_v2, AuthoredRecord
+    root = Path(a.root)
+    if a.key == "artist":
+        path = root / "artist.ed25519"
+    elif a.key.startswith("host:") and a.key[5:].isalnum():
+        path = root / "hosts" / a.key[5:] / "host.ed25519"
+    else:
+        raise SystemExit("--key must be artist or host:<name>")
+    if not path.is_file():
+        raise SystemExit(f"no such key: {a.key}")
+    entry = make_key_binding_v2(_ed25519(path), dna_hash=a.dna_hash, agent=a.agent, purpose=a.purpose)
+    # Self-check with Music's verifier before handing it to the conductor.
+    key_for_agent_v2(AuthoredRecord(a.agent, "local", entry), a.agent, a.purpose, a.dna_hash)
+    _out({"entry": entry})
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -232,10 +252,14 @@ def main() -> int:
                  "--listener-agent", "--owner-agent", "--trusted-artist-hex", "--out"):
         s.add_argument(name, required=True)
     s.add_argument("--wait-expiry", action="store_true")
+    s = sub.add_parser("bind-v2")
+    for name in ("--root", "--key", "--agent", "--purpose", "--dna-hash"):
+        s.add_argument(name, required=True)
     a = p.parse_args()
     if a.cmd == "unlock":
         return unlock(a)
-    {"prepare": prepare, "host": host, "served-list": served_list, "grants": grants}[a.cmd](a)
+    {"prepare": prepare, "host": host, "served-list": served_list, "grants": grants,
+     "bind-v2": bind_v2}[a.cmd](a)
     return 0
 
 

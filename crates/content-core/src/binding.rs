@@ -22,6 +22,7 @@ use crate::compat::{
     verify_music_manifest, verify_music_receipt, VerifiedManifest, VerifiedReceipt, VerifyError,
 };
 use crate::{ManifestDigest, PackageId};
+use ed25519_dalek::{Signature, VerifyingKey};
 use serde_json::{Map, Value};
 use std::fmt;
 use std::net::Ipv4Addr;
@@ -34,6 +35,23 @@ pub const FILE_COMMITMENT_V1: &str = "holochain-storage/file-commitment/v1";
 pub const REPLICA_CLAIM_V1: &str = "holochain-storage/replica-claim/v1";
 /// Music S9 host-authored MoQ endpoint entry schema.
 pub const MOQ_ENDPOINT_V1: &str = "holochain-storage/moq-endpoint/v1";
+/// S2 key binding with proof of possession (Music `dna-v2/`).
+pub const KEY_BINDING_V2: &str = "holochain-storage/key-binding/v2";
+/// Domain of the v2 proof-of-possession signature (NUL-terminated).
+pub const KEY_BINDING_POP_DOMAIN_V2: &[u8] = b"holochain-storage/key-binding-pop/v2\0";
+/// The only key generation defined by key-binding v2.0.
+pub const KEY_GENERATION_V2: &str = "1";
+const KEY_BINDING_V2_FIELDS: [&str; 7] = [
+    "schema",
+    "dna_hash",
+    "agent",
+    "purpose",
+    "signing_key_hex",
+    "generation",
+    "proof_signature_hex",
+];
+/// Cap on DNA hash text (`uhC0k…` is 53 bytes).
+const MAX_DNA_HASH_BYTES: usize = 160;
 
 /// Holochain agent identifiers are carried as their canonical string form
 /// (`uhCAk…`). The DNA caps them at 160 bytes; so do we.
@@ -69,6 +87,15 @@ pub enum BindingError {
     Manifest(VerifyError),
     /// The S1 receipt failed verification against the bound host key.
     Receipt(VerifyError),
+    /// A v2 binding's proof of possession is malformed or does not verify:
+    /// the author has not shown control of the bound key for this agent,
+    /// purpose and DNA.
+    InvalidProof,
+    /// A v2 binding was made for a different DNA (network/application scope).
+    WrongDna,
+    /// The binding's assurance level is below what the operation requires
+    /// (for example a legacy v1 binding where proof of possession is needed).
+    InsufficientAssurance,
 }
 
 impl fmt::Display for BindingError {
@@ -89,6 +116,11 @@ impl fmt::Display for BindingError {
             Self::EndpointNotAllowed => f.write_str("MoQ endpoint URL is not allowed"),
             Self::Manifest(e) => write!(f, "signed manifest rejected: {e:?}"),
             Self::Receipt(e) => write!(f, "signed receipt rejected: {e:?}"),
+            Self::InvalidProof => f.write_str("key binding proof of possession does not verify"),
+            Self::WrongDna => f.write_str("key binding is for a different DNA"),
+            Self::InsufficientAssurance => {
+                f.write_str("key binding assurance is below the required level")
+            }
         }
     }
 }
@@ -270,9 +302,18 @@ pub fn is_key_binding(record: &ConductorRecord, agent: &str, purpose: KeyPurpose
 pub struct OwnedManifest {
     owner_agent: String,
     manifest: VerifiedManifest,
+    owner_assurance: BindingAssurance,
 }
 
 impl OwnedManifest {
+    /// How strongly the owner's signing key is bound to `owner_agent`.
+    /// [`verify_owned_manifest`] always yields
+    /// [`BindingAssurance::LegacyAuthoredV1`]; only
+    /// [`verify_owned_manifest_with_key`] with a verified v2 binding yields
+    /// [`BindingAssurance::ProofOfPossessionV2`].
+    pub fn owner_assurance(&self) -> BindingAssurance {
+        self.owner_assurance
+    }
     /// Holochain agent that authored both the key binding and commitment.
     pub fn owner_agent(&self) -> &str {
         &self.owner_agent
@@ -323,16 +364,31 @@ pub fn verify_owned_manifest(
     key_binding: &ConductorRecord,
     commitment: &ConductorRecord,
 ) -> Result<OwnedManifest, BindingError> {
+    let owner_key = verify_key_binding_v1(key_binding, owner_agent, KeyPurpose::OwnerManifest)?;
+    verify_owned_manifest_with_key(manifest_json, owner_agent, &owner_key, commitment)
+}
+
+/// [`verify_owned_manifest`] with an already verified owner key binding (v1
+/// or v2). The resulting [`OwnedManifest`] carries that binding's assurance.
+pub fn verify_owned_manifest_with_key(
+    manifest_json: &[u8],
+    owner_agent: &str,
+    owner_key: &VerifiedKeyBinding,
+    commitment: &ConductorRecord,
+) -> Result<OwnedManifest, BindingError> {
+    if owner_key.agent != owner_agent || owner_key.purpose != KeyPurpose::OwnerManifest {
+        return Err(BindingError::KeyNotBound);
+    }
     let pin = commitment_pin(commitment, owner_agent)?;
-    let owner_key = key_for_agent(key_binding, owner_agent, KeyPurpose::OwnerManifest)?;
     let manifest =
-        verify_music_manifest(manifest_json, &owner_key).map_err(BindingError::Manifest)?;
+        verify_music_manifest(manifest_json, &owner_key.key).map_err(BindingError::Manifest)?;
     if manifest.package_id() != pin.package_id || manifest.digest() != pin.manifest_digest {
         return Err(BindingError::CommitmentMismatch);
     }
     Ok(OwnedManifest {
         owner_agent: owner_agent.to_owned(),
         manifest,
+        owner_assurance: owner_key.assurance,
     })
 }
 
@@ -344,9 +400,16 @@ pub struct AuthenticatedReplica {
     node_agent: String,
     node_key: [u8; 32],
     receipt: VerifiedReceipt,
+    node_assurance: BindingAssurance,
 }
 
 impl AuthenticatedReplica {
+    /// How strongly the host's receipt key is bound to `node_agent`. Even at
+    /// v2, a Music S1 receipt does not name the host agent; see
+    /// docs/S2-KEY-BINDING-V2.md (receipt attribution).
+    pub fn node_assurance(&self) -> BindingAssurance {
+        self.node_assurance
+    }
     /// Holochain agent of the storage host.
     pub fn node_agent(&self) -> &str {
         &self.node_agent
@@ -370,7 +433,23 @@ pub fn verify_replica_claim(
     node_key_binding: &ConductorRecord,
     node_claim: &ConductorRecord,
 ) -> Result<AuthenticatedReplica, BindingError> {
-    let node_key = key_for_agent(node_key_binding, node_agent, KeyPurpose::HostReceipt)?;
+    let node_key = verify_key_binding_v1(node_key_binding, node_agent, KeyPurpose::HostReceipt)?;
+    verify_replica_claim_with_key(receipt_json, owned, node_agent, &node_key, node_claim)
+}
+
+/// [`verify_replica_claim`] with an already verified host key binding.
+pub fn verify_replica_claim_with_key(
+    receipt_json: &[u8],
+    owned: &OwnedManifest,
+    node_agent: &str,
+    node_key: &VerifiedKeyBinding,
+    node_claim: &ConductorRecord,
+) -> Result<AuthenticatedReplica, BindingError> {
+    if node_key.agent != node_agent || node_key.purpose != KeyPurpose::HostReceipt {
+        return Err(BindingError::KeyNotBound);
+    }
+    let node_assurance = node_key.assurance;
+    let node_key = node_key.key;
     let receipt = verify_music_receipt(receipt_json, &owned.manifest, &node_key)
         .map_err(BindingError::Receipt)?;
     let claim = verified_claim(
@@ -398,7 +477,222 @@ pub fn verify_replica_claim(
         node_agent: node_agent.to_owned(),
         node_key,
         receipt,
+        node_assurance,
     })
+}
+
+// ---------------------------------------------------------------------------
+// S2 key-binding v2: proof of possession and explicit assurance
+// ---------------------------------------------------------------------------
+
+/// How a signing key is bound to a Holochain agent. Ordered: v2 is stronger.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum BindingAssurance {
+    /// `key-binding/v1`: the agent *authored* a claim about a public key. It
+    /// does not show the agent controls that key (anyone can bind anyone's
+    /// public key). Acceptable for historical reads under an explicit policy.
+    LegacyAuthoredV1,
+    /// `key-binding/v2`: authored by the agent AND carrying a verified
+    /// Ed25519 proof of possession for this agent, purpose and DNA.
+    ProofOfPossessionV2,
+}
+
+/// Which bindings a resolution may use. There is deliberately no "try v2,
+/// fall back to v1" policy.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum KeyBindingPolicy {
+    /// Read `key-binding/v1` records only (the existing v1 network). Results
+    /// are labelled [`BindingAssurance::LegacyAuthoredV1`].
+    LegacyV1,
+    /// Read `key-binding/v2` records only, verified for this DNA hash (the
+    /// reader's own storage cell, from its trusted conductor).
+    ProofOfPossessionV2 {
+        /// `uhC0k…` hash of the v2 storage DNA the records were read from.
+        dna_hash: String,
+    },
+}
+
+/// A signing key bound to an agent for one purpose, with its assurance level.
+///
+/// Only the verifiers in this module construct it; the assurance cannot be
+/// raised by a caller.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct VerifiedKeyBinding {
+    agent: String,
+    purpose: KeyPurpose,
+    key: [u8; 32],
+    assurance: BindingAssurance,
+    action_hash: String,
+}
+
+impl VerifiedKeyBinding {
+    /// The Holochain agent the key is bound to.
+    pub fn agent(&self) -> &str {
+        &self.agent
+    }
+    /// The bound purpose.
+    pub fn purpose(&self) -> KeyPurpose {
+        self.purpose
+    }
+    /// The Ed25519 public key.
+    pub fn key(&self) -> &[u8; 32] {
+        &self.key
+    }
+    /// v1 (authored claim) or v2 (proof of possession).
+    pub fn assurance(&self) -> BindingAssurance {
+        self.assurance
+    }
+    /// The binding record's action hash (audit trail).
+    pub fn action_hash(&self) -> &str {
+        &self.action_hash
+    }
+}
+
+/// Fail unless `binding` has proof of possession. Use before any new
+/// security-sensitive operation; historical reads may skip it explicitly.
+pub fn require_proof_of_possession(
+    binding: &VerifiedKeyBinding,
+) -> Result<&VerifiedKeyBinding, BindingError> {
+    if binding.assurance == BindingAssurance::ProofOfPossessionV2 {
+        Ok(binding)
+    } else {
+        Err(BindingError::InsufficientAssurance)
+    }
+}
+
+/// The exact bytes signed by a v2 proof of possession:
+/// `KEY_BINDING_POP_DOMAIN_V2 || for f in [schema, dna_hash, agent, purpose,
+/// signing_key_hex, generation]: u32_be(len(f)) || f` (UTF-8). Identical to
+/// Music's `key_binding_v2_message` and the v2 integrity zome.
+pub fn key_binding_v2_message(
+    dna_hash: &str,
+    agent: &str,
+    purpose: &str,
+    signing_key_hex: &str,
+    generation: &str,
+) -> Vec<u8> {
+    let mut out = KEY_BINDING_POP_DOMAIN_V2.to_vec();
+    for field in [
+        KEY_BINDING_V2,
+        dna_hash,
+        agent,
+        purpose,
+        signing_key_hex,
+        generation,
+    ] {
+        // Fields are bounded strings (≤ a few hundred bytes); never > u32.
+        out.extend_from_slice(&(field.len() as u32).to_be_bytes());
+        out.extend_from_slice(field.as_bytes());
+    }
+    out
+}
+
+/// Verify a legacy `key-binding/v1` record (same rules as [`key_for_agent`]).
+pub fn verify_key_binding_v1(
+    record: &ConductorRecord,
+    agent: &str,
+    purpose: KeyPurpose,
+) -> Result<VerifiedKeyBinding, BindingError> {
+    let key = key_for_agent(record, agent, purpose)?;
+    Ok(VerifiedKeyBinding {
+        agent: agent.to_owned(),
+        purpose,
+        key,
+        assurance: BindingAssurance::LegacyAuthoredV1,
+        action_hash: record.action_hash.clone(),
+    })
+}
+
+/// Verify a `key-binding/v2` record: authored by `agent`, exact fields, for
+/// `purpose` on `dna_hash`, generation `"1"`, and an Ed25519 (strict) proof
+/// of possession by the bound key over [`key_binding_v2_message`].
+pub fn verify_key_binding_v2(
+    record: &ConductorRecord,
+    agent: &str,
+    purpose: KeyPurpose,
+    dna_hash: &str,
+) -> Result<VerifiedKeyBinding, BindingError> {
+    if dna_hash.is_empty() || dna_hash.len() > MAX_DNA_HASH_BYTES {
+        return Err(BindingError::MissingRecord);
+    }
+    let body = verified_claim(record, agent, KEY_BINDING_V2, &KEY_BINDING_V2_FIELDS)?;
+    if body.text("agent")? != agent || body.text("purpose")? != purpose.as_str() {
+        return Err(BindingError::KeyNotBound);
+    }
+    if body.text("dna_hash")? != dna_hash {
+        return Err(BindingError::WrongDna);
+    }
+    if body.text("generation")? != KEY_GENERATION_V2 {
+        return Err(BindingError::InvalidRecord);
+    }
+    let key_hex = body.text("signing_key_hex")?;
+    let key = hex32(key_hex)?;
+    let proof = body.text("proof_signature_hex")?;
+    if proof.len() != 128 {
+        return Err(BindingError::InvalidProof);
+    }
+    let (hi, lo) = proof.split_at(64);
+    let mut signature = [0u8; 64];
+    signature[..32].copy_from_slice(&hex32(hi).map_err(|_| BindingError::InvalidProof)?);
+    signature[32..].copy_from_slice(&hex32(lo).map_err(|_| BindingError::InvalidProof)?);
+    let message = key_binding_v2_message(
+        dna_hash,
+        agent,
+        purpose.as_str(),
+        key_hex,
+        KEY_GENERATION_V2,
+    );
+    VerifyingKey::from_bytes(&key)
+        .map_err(|_| BindingError::InvalidProof)?
+        .verify_strict(&message, &Signature::from_bytes(&signature))
+        .map_err(|_| BindingError::InvalidProof)?;
+    Ok(VerifiedKeyBinding {
+        agent: agent.to_owned(),
+        purpose,
+        key,
+        assurance: BindingAssurance::ProofOfPossessionV2,
+        action_hash: record.action_hash.clone(),
+    })
+}
+
+/// Resolve the one signing key `agent` bound for `purpose` under `policy`.
+///
+/// Only records of the policy's schema are considered. Every such record for
+/// this agent and purpose must verify (a bad one is an error, never skipped,
+/// and never a reason to try a weaker schema). Several records naming the
+/// *same* key resolve to it (the first record is returned for audit); records
+/// naming *different* keys are [`BindingError::Ambiguous`] — no first-match,
+/// latest-match or timestamp rule is applied. None is
+/// [`BindingError::MissingRecord`].
+pub fn resolve_signing_key(
+    records: &[ConductorRecord],
+    agent: &str,
+    purpose: KeyPurpose,
+    policy: &KeyBindingPolicy,
+) -> Result<VerifiedKeyBinding, BindingError> {
+    let schema = match policy {
+        KeyBindingPolicy::LegacyV1 => KEY_BINDING_V1,
+        KeyBindingPolicy::ProofOfPossessionV2 { .. } => KEY_BINDING_V2,
+    };
+    let mut found: Option<VerifiedKeyBinding> = None;
+    for record in records.iter().filter(|r| {
+        r.schema() == Some(schema)
+            && r.body.get("agent").and_then(Value::as_str) == Some(agent)
+            && r.body.get("purpose").and_then(Value::as_str) == Some(purpose.as_str())
+    }) {
+        let verified = match policy {
+            KeyBindingPolicy::LegacyV1 => verify_key_binding_v1(record, agent, purpose)?,
+            KeyBindingPolicy::ProofOfPossessionV2 { dna_hash } => {
+                verify_key_binding_v2(record, agent, purpose, dna_hash)?
+            }
+        };
+        match &found {
+            None => found = Some(verified),
+            Some(first) if first.key == verified.key => {}
+            Some(_) => return Err(BindingError::Ambiguous),
+        }
+    }
+    found.ok_or(BindingError::MissingRecord)
 }
 
 /// Which endpoint addresses a caller is willing to dial.

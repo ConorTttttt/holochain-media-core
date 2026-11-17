@@ -10,10 +10,10 @@
 
 use crate::transport::{DocumentKind, HostConnector, ObjectTransport, TransportFailure};
 use holochain_content_core::binding::{
-    commitment_pin, is_endpoint_for, is_key_binding, select_unique, verify_moq_endpoint,
-    verify_owned_manifest, verify_replica_claim, AuthenticatedReplica, BindingError, CommitmentPin,
-    ConductorRecord, EndpointPolicy, KeyPurpose, OwnedManifest, PinnedEndpoint, FILE_COMMITMENT_V1,
-    REPLICA_CLAIM_V1,
+    commitment_pin, is_endpoint_for, resolve_signing_key, select_unique, verify_moq_endpoint,
+    verify_owned_manifest_with_key, verify_replica_claim_with_key, AuthenticatedReplica,
+    BindingError, CommitmentPin, ConductorRecord, EndpointPolicy, KeyBindingPolicy, KeyPurpose,
+    OwnedManifest, PinnedEndpoint, VerifiedKeyBinding, FILE_COMMITMENT_V1, REPLICA_CLAIM_V1,
 };
 use holochain_content_core::PackageId;
 use serde_json::Value;
@@ -58,6 +58,38 @@ pub trait MetadataSource {
         &mut self,
         host: &str,
     ) -> impl Future<Output = Result<Vec<ConductorRecord>, MetadataError>> + Send;
+    /// `get_signing_keys_v2(agent)` on the v2 storage DNA. Sources that cannot
+    /// read v2 records report that as unavailability, never as "no key".
+    fn signing_keys_v2(
+        &mut self,
+        agent: &str,
+    ) -> impl Future<Output = Result<Vec<ConductorRecord>, MetadataError>> + Send {
+        let _ = agent;
+        async {
+            Err(MetadataError(
+                "this metadata source does not provide key-binding/v2 records".into(),
+            ))
+        }
+    }
+}
+
+async fn signing_keys_for<M: MetadataSource>(
+    meta: &mut M,
+    agent: &str,
+    policy: &KeyBindingPolicy,
+) -> Result<Vec<ConductorRecord>, MetadataError> {
+    match policy {
+        KeyBindingPolicy::LegacyV1 => meta.signing_keys(agent).await,
+        KeyBindingPolicy::ProofOfPossessionV2 { .. } => meta.signing_keys_v2(agent).await,
+    }
+}
+
+fn record_for(records: &[ConductorRecord], key: &VerifiedKeyBinding) -> ConductorRecord {
+    records
+        .iter()
+        .find(|r| r.action_hash() == key.action_hash())
+        .cloned()
+        .expect("resolved key comes from these records")
 }
 
 /// Why a host was excluded.
@@ -93,6 +125,8 @@ pub struct HostPins {
     pub node_agent: String,
     /// The host's `host-receipt` key binding record.
     pub key_binding: ConductorRecord,
+    /// The verified host key and its assurance (v1 authored or v2 PoP).
+    pub host_key: VerifiedKeyBinding,
     /// The host's replica claim for this package.
     pub claim: ConductorRecord,
     /// The host-authored certificate-pinned endpoint.
@@ -108,6 +142,8 @@ pub struct ResolvedContent {
     pub pin: CommitmentPin,
     /// The owner's `owner-manifest` key binding record.
     pub owner_key_binding: ConductorRecord,
+    /// The verified owner key and its assurance (v1 authored or v2 PoP).
+    pub owner_key: VerifiedKeyBinding,
     /// The owner's file commitment record.
     pub commitment: ConductorRecord,
     /// Hosts whose Holochain records are complete and consistent.
@@ -180,17 +216,17 @@ async fn host_pins<M: MetadataSource>(
     owner_agent: &str,
     pin: &CommitmentPin,
     policy: EndpointPolicy,
+    key_policy: &KeyBindingPolicy,
 ) -> Result<HostPins, RejectReason> {
     let claim = select_unique(claims, |r| claim_node(r) == Some(node))
         .map_err(host_select("replica claim"))?
         .clone();
-    let keys = meta
-        .signing_keys(node)
+    let keys = signing_keys_for(meta, node, key_policy)
         .await
         .map_err(RejectReason::Metadata)?;
-    let key_binding = select_unique(&keys, |r| is_key_binding(r, node, KeyPurpose::HostReceipt))
-        .map_err(host_select("host-receipt key binding"))?
-        .clone();
+    let host_key = resolve_signing_key(&keys, node, KeyPurpose::HostReceipt, key_policy)
+        .map_err(host_select("host-receipt key binding"))?;
+    let key_binding = record_for(&keys, &host_key);
     let endpoints = meta
         .moq_endpoints(node)
         .await
@@ -202,6 +238,7 @@ async fn host_pins<M: MetadataSource>(
     Ok(HostPins {
         node_agent: node.to_owned(),
         key_binding,
+        host_key,
         claim,
         endpoint,
     })
@@ -219,6 +256,27 @@ pub async fn resolve_content<M: MetadataSource>(
     package: PackageId,
     policy: EndpointPolicy,
 ) -> Result<ResolvedContent, ResolveError> {
+    resolve_content_with(
+        meta,
+        owner_agent,
+        package,
+        policy,
+        &KeyBindingPolicy::LegacyV1,
+    )
+    .await
+}
+
+/// [`resolve_content`] with an explicit S2 key-binding policy. With
+/// [`KeyBindingPolicy::ProofOfPossessionV2`] only verified v2 bindings (for
+/// the reader's v2 DNA) are used for the owner and every host; v1 records are
+/// never consulted, so a failed or missing v2 binding cannot downgrade.
+pub async fn resolve_content_with<M: MetadataSource>(
+    meta: &mut M,
+    owner_agent: &str,
+    package: PackageId,
+    policy: EndpointPolicy,
+    key_policy: &KeyBindingPolicy,
+) -> Result<ResolvedContent, ResolveError> {
     let commitments = meta
         .file_commitments(owner_agent)
         .await
@@ -227,15 +285,17 @@ pub async fn resolve_content<M: MetadataSource>(
         .map_err(owner_select("owner file commitment"))?
         .clone();
     let pin = commitment_pin(&commitment, owner_agent).map_err(ResolveError::Binding)?;
-    let owner_keys = meta
-        .signing_keys(owner_agent)
+    let owner_keys = signing_keys_for(meta, owner_agent, key_policy)
         .await
         .map_err(ResolveError::Metadata)?;
-    let owner_key_binding = select_unique(&owner_keys, |r| {
-        is_key_binding(r, owner_agent, KeyPurpose::OwnerManifest)
-    })
-    .map_err(owner_select("owner-manifest key binding"))?
-    .clone();
+    let owner_key = resolve_signing_key(
+        &owner_keys,
+        owner_agent,
+        KeyPurpose::OwnerManifest,
+        key_policy,
+    )
+    .map_err(owner_select("owner-manifest key binding"))?;
+    let owner_key_binding = record_for(&owner_keys, &owner_key);
 
     let claims = meta
         .replica_claims(owner_agent, package)
@@ -252,7 +312,7 @@ pub async fn resolve_content<M: MetadataSource>(
     let mut hosts = Vec::new();
     let mut rejected = Vec::new();
     for node in nodes {
-        match host_pins(meta, node, &claims, owner_agent, &pin, policy).await {
+        match host_pins(meta, node, &claims, owner_agent, &pin, policy, key_policy).await {
             Ok(pins) => hosts.push(pins),
             Err(reason) => rejected.push(HostRejection {
                 node_agent: node.to_owned(),
@@ -267,6 +327,7 @@ pub async fn resolve_content<M: MetadataSource>(
         owner_agent: owner_agent.to_owned(),
         pin,
         owner_key_binding,
+        owner_key,
         commitment,
         hosts,
         rejected,
@@ -318,7 +379,8 @@ pub async fn authenticate_content<C: HostConnector>(
     let ResolvedContent {
         owner_agent,
         pin,
-        owner_key_binding,
+        owner_key,
+        owner_key_binding: _,
         commitment,
         hosts,
         mut rejected,
@@ -341,7 +403,8 @@ pub async fn authenticate_content<C: HostConnector>(
             .await
         {
             Ok(bytes) => {
-                match verify_owned_manifest(&bytes, &owner_agent, &owner_key_binding, &commitment) {
+                match verify_owned_manifest_with_key(&bytes, &owner_agent, &owner_key, &commitment)
+                {
                     Ok(manifest) => {
                         owned = Some(manifest);
                         break;
@@ -398,11 +461,11 @@ pub async fn authenticate_content<C: HostConnector>(
                 continue;
             }
         };
-        match verify_replica_claim(
+        match verify_replica_claim_with_key(
             &receipt,
             &owned,
             &pins.node_agent,
-            &pins.key_binding,
+            &pins.host_key,
             &pins.claim,
         ) {
             Ok(replica) => authenticated.push(AuthenticatedHost {

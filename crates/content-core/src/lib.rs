@@ -305,3 +305,6 @@ pub mod entitlements;
 
 #[cfg(test)]
 mod entitlement_tests;
+
+#[cfg(test)]
+mod binding_v2_tests;

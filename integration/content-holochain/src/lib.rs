@@ -11,7 +11,8 @@
 //! * every record's `author` is the coordinator zome's
 //!   `record.action().author()` for a validated record, not a body field;
 //! * signing credentials are restricted to the four read functions in
-//!   [`READ_FUNCTIONS`] (`GrantedFunctions::Listed`), so the resolver cannot
+//!   [`READ_FUNCTIONS`] (or [`READ_FUNCTIONS_V2`] for the opt-in S2
+//!   key-binding v2 DNA) (`GrantedFunctions::Listed`), so the resolver cannot
 //!   author entries, links or private-inbox messages as the reader; no artist,
 //!   host or content key is involved;
 //! * an existing app interface for this app and origin is reused rather than
@@ -50,6 +51,15 @@ pub const READ_FUNCTIONS: [&str; 4] = [
     "get_moq_endpoints",
 ];
 
+/// Read functions for the opt-in S2 key-binding v2 storage DNA
+/// (`music_storage_v2`): v1 key bindings are never read on that network.
+pub const READ_FUNCTIONS_V2: [&str; 4] = [
+    "get_signing_keys_v2",
+    "get_file_commitments",
+    "get_replica_claims",
+    "get_moq_endpoints",
+];
+
 /// Upper bound on records accepted from one zome call.
 pub const MAX_RECORDS_PER_CALL: usize = 1024;
 
@@ -64,6 +74,15 @@ struct WireRecord {
 struct FileLookup {
     owner_agent: String,
     file_id: String,
+}
+
+/// The least-privilege read set for a storage DNA version.
+pub fn read_functions(key_binding_v2: bool) -> [&'static str; 4] {
+    if key_binding_v2 {
+        READ_FUNCTIONS_V2
+    } else {
+        READ_FUNCTIONS
+    }
 }
 
 fn unavailable(context: &str, error: impl std::fmt::Display) -> MetadataError {
@@ -85,6 +104,9 @@ pub struct ConductorTarget {
     pub storage_role: String,
     /// Expected storage DNA hash (`uhC0k…`), pinned independently.
     pub expected_storage_dna: String,
+    /// Read S2 key-binding v2 records (the `music_storage_v2` DNA) instead of
+    /// v1. Explicit: the resolver never switches between them by itself.
+    pub key_binding_v2: bool,
 }
 
 /// An authenticated, read-only connection to the storage cell.
@@ -92,6 +114,8 @@ pub struct ConductorResolver {
     app: AppWebsocket,
     role: String,
     reader_agent: String,
+    dna_hash: String,
+    key_binding_v2: bool,
 }
 
 impl ConductorResolver {
@@ -138,7 +162,7 @@ impl ConductorResolver {
                 // Least privilege: never `None` (which means *all* functions,
                 // including writes and the private inbox senders).
                 functions: Some(GrantedFunctions::Listed(
-                    READ_FUNCTIONS
+                    read_functions(target.key_binding_v2)
                         .iter()
                         .map(|f| (STORAGE_ZOME.into(), (*f).into()))
                         .collect(),
@@ -186,9 +210,22 @@ impl ConductorResolver {
         }
         Ok(Self {
             reader_agent: cell.agent_pubkey().to_string(),
+            dna_hash: cell.dna_hash().to_string(),
             app,
             role: target.storage_role.clone(),
+            key_binding_v2: target.key_binding_v2,
         })
+    }
+
+    /// Whether this resolver reads S2 key-binding v2 records.
+    pub fn key_binding_v2(&self) -> bool {
+        self.key_binding_v2
+    }
+
+    /// DNA hash of the storage cell (checked against the caller's pin). Use
+    /// it for `KeyBindingPolicy::ProofOfPossessionV2`.
+    pub fn dna_hash(&self) -> &str {
+        &self.dna_hash
     }
 
     /// The reader's own Holochain agent (from the conductor, not the caller).
@@ -276,5 +313,18 @@ impl MetadataSource for ConductorResolver {
     async fn moq_endpoints(&mut self, host: &str) -> Result<Vec<ConductorRecord>, MetadataError> {
         let key = agent(host)?;
         self.records("get_moq_endpoints", &key).await
+    }
+
+    async fn signing_keys_v2(
+        &mut self,
+        agent_id: &str,
+    ) -> Result<Vec<ConductorRecord>, MetadataError> {
+        if !self.key_binding_v2 {
+            return Err(MetadataError(
+                "resolver was connected for key-binding v1; v2 records not readable".into(),
+            ));
+        }
+        let key = agent(agent_id)?;
+        self.records("get_signing_keys_v2", &key).await
     }
 }

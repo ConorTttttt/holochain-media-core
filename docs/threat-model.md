@@ -74,6 +74,22 @@ CORE-004 no-proof-of-possession finding (mitigated: Alice's grants cannot be
 re-attributed to Mallory); no revocation or rotation; offline expiry trusts
 the device clock; a licence is not proof of payment.
 
+## S2 key-binding v2 controls and limits
+
+Implemented (docs/S2-KEY-BINDING-V2.md): on the opt-in v2 storage DNA, a key
+binding requires an Ed25519 signature by the bound key over a
+domain-separated, length-prefixed statement of DNA hash, agent, purpose, key
+and generation, verified in integrity validation and again by Media Core.
+Attacker capability 2 ("valid but unbound signing key") is closed on that
+network: Mallory can no longer bind Alice's owner key or Carol's host key
+(real-conductor tests B, C, J). Readers distinguish `LegacyAuthoredV1` from
+`ProofOfPossessionV2`, never fall back from v2 to v1, refuse conflicting keys,
+and CORE-005 can require v2 owner assurance.
+
+Limits: the v1 network keeps the weakness; a stolen key can still be bound by
+its thief (no revocation); no rotation; S1 receipts still lack the host agent;
+the Music app is not yet switched to the v2 DNA.
+
 ## Security review gate
 
 Before public use, add independent review of format/parser consensus, signed network inputs, resource bounds, local key custody, metadata leakage, private message abuse, host identity pinning and migration/key-rotation flows. Keep attack tests in CI.
