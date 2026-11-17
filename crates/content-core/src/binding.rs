@@ -112,6 +112,15 @@ pub enum BindingError {
     /// v2.1: the operation requires a host-attributed `replica-receipt/v2`
     /// and was given a legacy, unattributed receipt.
     InsufficientReceiptAttribution,
+    /// A grant anchor does not match the grant (id, commitment or issuer
+    /// transition), names another DNA, or is malformed.
+    GrantAnchorMismatch,
+    /// The grant anchor precedes the issuer key it names (impossible on an
+    /// honest chain; fail closed).
+    GrantAnchorOutOfOrder,
+    /// The issuer generation was reached through a recovery without
+    /// continuity and the verifier's policy refuses such issuers.
+    RecoveredIssuerRefused,
 }
 
 impl fmt::Display for BindingError {
@@ -147,6 +156,11 @@ impl fmt::Display for BindingError {
             Self::ReceiptHostMismatch => f.write_str("replica receipt names a different host"),
             Self::InsufficientReceiptAttribution => {
                 f.write_str("a host-attributed replica receipt is required")
+            }
+            Self::GrantAnchorMismatch => f.write_str("grant anchor does not match this grant"),
+            Self::GrantAnchorOutOfOrder => f.write_str("grant anchor precedes its issuer key"),
+            Self::RecoveredIssuerRefused => {
+                f.write_str("issuer key was recovered without continuity; refused by policy")
             }
         }
     }

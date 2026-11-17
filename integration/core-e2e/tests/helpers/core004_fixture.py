@@ -293,6 +293,31 @@ def v21_resolve(a) -> None:
     _out({"verdict": verdict})
 
 
+def v21_anchor(a) -> None:
+    """A grant-anchor/v2 entry made by Music's make_grant_anchor."""
+    kl = _kl()
+    _out({"entry": kl.make_grant_anchor(dna_hash=a.dna_hash, grant_id=a.grant_id,
+                                        grant_message=bytes.fromhex(a.grant_message_hex),
+                                        issuer_key_action=a.issuer_key_action)})
+
+
+def v21_verify_anchor(a) -> None:
+    """Music's own verdict on a real conductor's anchor and lifecycle rows."""
+    kl = _kl()
+    rows = json.loads(Path(a.records).read_text())
+    lc = kl.resolve_key_lifecycle(
+        [kl.SequencedRecord(r["author"], r["action_hash"], r["action_seq"], r["body"]) for r in rows],
+        a.agent, "owner-manifest", a.dna_hash)
+    r = json.loads(Path(a.anchor).read_text())
+    try:
+        g = kl.verify_grant_anchor(kl.SequencedRecord(r["author"], r["action_hash"], r["action_seq"], r["body"]),
+                                   lc, grant_id=a.grant_id, grant_message=bytes.fromhex(a.grant_message_hex),
+                                   issuer_key_action=a.issuer_key_action, recovered_policy=a.policy)
+        _out({"verdict": "accepted", "generation": g.generation})
+    except StorageError as exc:
+        _out({"verdict": "rejected", "error": str(exc)})
+
+
 def host_v2(a) -> None:
     """Replicate and sign a host-attributed replica-receipt/v2 with Music's code."""
     kl = _kl()
@@ -363,6 +388,13 @@ def main() -> int:
     for name in ("--records", "--agent", "--purpose", "--dna-hash", "--key-hex", "--use"):
         s.add_argument(name, required=True)
     s.add_argument("--anchor-seq", default="")
+    s = sub.add_parser("v21-anchor")
+    for name in ("--dna-hash", "--grant-id", "--grant-message-hex", "--issuer-key-action"):
+        s.add_argument(name, required=True)
+    s = sub.add_parser("v21-verify-anchor")
+    for name in ("--records", "--anchor", "--agent", "--dna-hash", "--grant-id", "--grant-message-hex",
+                 "--issuer-key-action", "--policy"):
+        s.add_argument(name, required=True)
     s = sub.add_parser("host-v2")
     for name in ("--root", "--package", "--host", "--host-key", "--dna-hash", "--host-agent",
                  "--host-key-generation", "--host-key-action", "--owner-agent"):
@@ -374,7 +406,7 @@ def main() -> int:
     {"prepare": prepare, "host": host, "served-list": served_list, "grants": grants,
      "bind-v2": bind_v2, "v21-incept": v21_incept, "v21-rotate": v21_rotate,
      "v21-recover": v21_recover, "v21-revoke": v21_revoke, "v21-resolve": v21_resolve,
-     "host-v2": host_v2}[a.cmd](a)
+     "host-v2": host_v2, "v21-anchor": v21_anchor, "v21-verify-anchor": v21_verify_anchor}[a.cmd](a)
     return 0
 
 

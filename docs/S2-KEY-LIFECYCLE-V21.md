@@ -266,7 +266,7 @@ Measured (Holochain 0.7.0 `hc-dna`, Rust 1.97, wasm32):
 |---|---|---|
 | v1 `music_storage` (rebuilt, unchanged) | `cf75c4bda7100b62…` | `uhC0kkLUOg2uytGWLz_sTeVtfJBqa0criBmAYAPwAIUhoDp_9G4RV` |
 | v2 `music_storage_v2` (rebuilt, unchanged) | `22e74d3d6a53ba8a…` | `uhC0k_-f-D4bF9w53gD2jXkA4RqYQ_bf0dRdF8rMkJG_tS8WGRamb` |
-| v2.1 `music_storage_v21` (Music `cfd4807`) | `a88f871a2d0296cc…` | `uhC0kiNH8oLxWdMyNxpTP-cxCnB6M04rVfcdPkcFmY2cUbVm8Brti` |
+| v2.1 `music_storage_v21` (Music `cfd4807`; **superseded** by the grant-anchor revision, §16) | `a88f871a2d0296cc…` | `uhC0kiNH8oLxWdMyNxpTP-cxCnB6M04rVfcdPkcFmY2cUbVm8Brti` |
 
 **Records do not move between networks.** Nothing on v1 or v2 appears on
 v2.1.
@@ -493,3 +493,29 @@ The S1 and CORE-005 CI references (`bd7aabc`) are unchanged.
    * a two-device run;
    * a decision on (1);
    * a migration rehearsal on a disposable network.
+
+## 16. Revision: grant anchors (pre-release DNA change)
+
+By reviewer decision (docs/ACCESS-GRANT-V2.md §4, option A) the v2.1 storage
+DNA gains `GrantAnchorV2` and `AgentToGrantAnchorV2`, appended after the
+lifecycle types. This is a deliberate, security-sensitive change to an
+already-tested, undeployed DNA. It is made as follow-up commits; the
+reviewed v2.1 history is not rewritten.
+
+| DNA | Integrity wasm SHA-256 | DNA hash |
+|---|---|---|
+| v1 `music_storage` (unchanged; rebuilt) | `cf75c4bda7100b62…` | `uhC0kkLUOg2uytGWLz_sTeVtfJBqa0criBmAYAPwAIUhoDp_9G4RV` |
+| v2 `music_storage_v2` (unchanged; rebuilt) | `22e74d3d6a53ba8a…` | `uhC0k_-f-D4bF9w53gD2jXkA4RqYQ_bf0dRdF8rMkJG_tS8WGRamb` |
+| v2.1 `music_storage_v21` before (Music `cfd4807`) | `a88f871a2d0296cc…` | `uhC0kiNH8oLxWdMyNxpTP-cxCnB6M04rVfcdPkcFmY2cUbVm8Brti` (superseded) |
+| **v2.1 `music_storage_v21` with grant anchors (Music `64f57d4`)** | `ae3f068d54cca6e3…` | **`uhC0kF7I2QWYZf2K5-cziQFYZev-7WwNrNQFSSeOtwcLpN5Y98mlf`** |
+
+The lifecycle rules of §5 are unchanged. The chain walk now also collects
+the author's earlier anchors (one pass). The anchor rules and the split
+between conductor and verifier responsibilities are in
+docs/ACCESS-GRANT-V2.md §4. The Media Core verifier is
+`grant_anchor::verify_grant_anchor_v2`.
+
+Every result in §14 was measured on the superseded DNA. The re-runs on the
+revised DNA are recorded in docs/current-state.md and in the
+grant-anchor PRs; none of the earlier figures are carried over without a
+re-run.

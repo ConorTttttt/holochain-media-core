@@ -1,6 +1,28 @@
 # Audit baseline and completion status
 
-## S2 key lifecycle v2.1 update (13 November 2026, latest)
+## Grant anchors on the v2.1 DNA (14 November 2026, latest)
+
+Branches: Music `feat/grant-anchor-v21` (code `64f57d4`, docs `b4173fc`) on
+`feat/s2-v21-key-lifecycle`; Media Core `feat/grant-anchor-v21` on
+`feat/access-grant-v2-spec`. **v2.1 DNA hash is now
+`uhC0kF7I2QWYZf2K5-cziQFYZev-7WwNrNQFSSeOtwcLpN5Y98mlf`** (was
+`uhC0kiNH8o…`); v1 and v2 rebuilt unchanged. Every row below was re-run on the
+new DNA; nothing is carried over from the earlier DNA.
+
+| Check | Result |
+|---|---|
+| v2.1 integrity unit tests / v2 | 16 pass (12 lifecycle + 4 anchor) / 6 pass |
+| Media Core workspace (also `preserve_order`), fmt, clippy | **75 pass** (core 49, retrieval 15, cli 7, release 4); clean |
+| Interop, fresh vectors from Music `bd7aabc` / `f091d5a` / `64f57d4` (also `preserve_order`) | core **70 pass**; 154/154 lifecycle queries, 23/23 receipt cases and **16/16 grant-anchor cases** match Music |
+| `grant_anchor_v21` (3 real conductors) | **pass 99.1 s**: 8 anchors refused by named integrity rules, 1 refused at decoding; Bob's least-privilege reader and Media Core verify; Music's verifier agrees (5/5) |
+| `s2_key_lifecycle_v21` (4 conductors, real MoQ, CORE-005, Music decrypt) | **pass 142.4 s, 21 integrity refusals reproduced** |
+| `s2_key_binding_v2` / `core004_acceptance` v1 (Music pinned `bd7aabc`) / v2 | **pass** 247.6 s (23 refusals) / 189.1 s / 193.7 s |
+| Music `unittest discover -s tests`; bridge `cargo check` | **513 run: 465 OK / 48 skipped / 0 fail**; pass |
+
+Hosted Media Core CI is still blocked by account billing; nothing above is a
+hosted result.
+
+## S2 key lifecycle v2.1 update (13 November 2026)
 
 Branches (local, not pushed): Media Core `feat/s2-v21-key-lifecycle` from
 `feat/s2-key-binding-v2` @ d42b20f; Music `feat/s2-v21-key-lifecycle` from

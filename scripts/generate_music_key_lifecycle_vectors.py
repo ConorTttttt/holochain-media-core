@@ -22,7 +22,7 @@ import tempfile
 from pathlib import Path
 from unittest import mock
 
-PINNED_MUSIC_COMMIT = "cfd4807"
+PINNED_MUSIC_COMMIT = "64f57d4"
 VECTOR_SCHEMA = "holochain-media-core/music-key-lifecycle-v21-vectors/v1"
 T0 = 1_760_000_000
 DNA = "uhC0kStorageV21DnaForS2LifecycleTestsOnly000000000"
@@ -295,6 +295,57 @@ def main() -> None:
                  [h1, h2, rec(CAROL, revoke(h1, kl.SCOPE_COMPROMISED, CAROL, H), "uhCkkCarolCompromise", 50)],
                  anchor=(CAROL, 30))
 
+    # ---- grant anchors (access-grant/v2 issuance authority) -----------------
+    grant_message = b"holochain-music/access-grant/v2\x00{synthetic grant body for anchor vectors}"
+    gid = "a5" * 16
+    anchor_cases = []
+
+    def anchor_case(name, lifecycle_records, record, *, grant_id=gid, message=grant_message,
+                    action=None, policy="reject", note=""):
+        action = action or record["body"].get("issuer_key_action", "")
+        lc = kl.resolve_key_lifecycle([srec(r) for r in lifecycle_records], ALICE, O, DNA)
+        try:
+            g = kl.verify_grant_anchor(srec(record), lc, grant_id=grant_id, grant_message=message,
+                                       issuer_key_action=action, recovered_policy=policy)
+            python = {"verdict": "accepted", "generation": g.generation}
+        except music.StorageError as exc:
+            python = {"verdict": "rejected", "error": str(exc)}
+        anchor_cases.append({"name": name, "note": note, "lifecycle": lifecycle_records, "record": record,
+                             "claim": {"grant_id": grant_id, "grant_message_hex": message.hex(),
+                                       "issuer_key_action": action},
+                             "policy": policy, "python": python})
+
+    def anchor(action, seq, author=ALICE, **changes):
+        body = kl.make_grant_anchor(dna_hash=DNA, grant_id=gid, grant_message=grant_message,
+                                    issuer_key_action=action)
+        body.update(changes)
+        return rec(author, body, f"uhCkkAnchor{seq}", seq)
+
+    anchor_case("current_key", [g1, g2], anchor(g2["action_hash"], 25))
+    anchor_case("g1_before_rotation", [g1, g2], anchor(g1["action_hash"], 10))
+    anchor_case("g1_after_rotation", [g1, g2], anchor(g1["action_hash"], 25),
+                note="obsolete key cannot authorise a new grant after its authority ended")
+    anchor_case("g1_after_revocation", [g1, g2, rv1], anchor(g1["action_hash"], 35))
+    tip_rev = rec(ALICE, revoke(g2, kl.SCOPE_COMPROMISED), "uhCkkRevokeG2Anchor", 40)
+    anchor_case("g2_after_compromise", [g1, g2, tip_rev], anchor(g2["action_hash"], 45))
+    anchor_case("g2_before_compromise", [g1, g2, tip_rev], anchor(g2["action_hash"], 30))
+    anchor_case("mallory_authored", [g1, g2], anchor(g2["action_hash"], 25, author=MALLORY))
+    anchor_case("other_dna", [g1, g2], anchor(g2["action_hash"], 25, dna_hash=OTHER_DNA))
+    anchor_case("extra_field", [g1, g2], anchor(g2["action_hash"], 25, note="x"))
+    anchor_case("wrong_commitment", [g1, g2], anchor(g2["action_hash"], 25), message=grant_message + b"!")
+    anchor_case("wrong_grant_id", [g1, g2], anchor(g2["action_hash"], 25), grant_id="b6" * 16)
+    anchor_case("claim_names_other_generation", [g1, g2], anchor(g2["action_hash"], 25),
+                action=g1["action_hash"])
+    anchor_case("precedes_issuer_key", [g1, g2], anchor(g2["action_hash"], 15))
+    anchor_case("action_not_in_lifecycle", [g1, g2], anchor("uhCkkNowhere", 25))
+    anchor_case("recovered_issuer_default", [g1, rec_g2], anchor(rec_g2["action_hash"], 25))
+    anchor_case("recovered_issuer_accept_policy", [g1, rec_g2], anchor(rec_g2["action_hash"], 25),
+                policy="accept")
+    expected_anchor_accept = {"current_key", "g1_before_rotation", "g2_before_compromise",
+                              "recovered_issuer_accept_policy"}
+    for c in anchor_cases:
+        assert (c["python"]["verdict"] == "accepted") == (c["name"] in expected_anchor_accept), (c["name"], c["python"])
+
     for s in scenarios:
         for q in s["queries"]:
             assert q["python"] in (kl.ACTIVE, kl.ROTATED, kl.REVOKED, kl.HISTORICAL_ONLY, kl.AMBIGUOUS,
@@ -322,6 +373,7 @@ def main() -> None:
                       "alice_revoke_g1_compromised": rc1, "carol_g1": h1, "carol_g2": h2},
         "scenarios": scenarios,
         "receipts": receipt_cases,
+        "grant_anchors": anchor_cases,
         "content": {
             "old_manifest_text": music.canonical(old_manifest).decode(),
             "old_manifest_sha256": music.manifest_digest(old_manifest),
@@ -340,7 +392,7 @@ def main() -> None:
     args.output.write_text(json.dumps(vectors, sort_keys=True, indent=1) + "\n", encoding="utf-8")
     queries = sum(len(s["queries"]) for s in scenarios)
     print(f"Created {len(scenarios)} lifecycle scenarios ({queries} queries) and "
-          f"{len(receipt_cases)} receipt cases from {commit}")
+          f"{len(receipt_cases)} receipt cases and {len(anchor_cases)} grant-anchor cases from {commit}")
 
 
 if __name__ == "__main__":

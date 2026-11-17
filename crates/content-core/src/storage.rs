@@ -11,6 +11,8 @@
 
 use crate::compat::{verify_music_ciphertext, VerifiedManifest};
 use std::fs::{self, File};
+#[cfg(test)]
+use std::io::Seek;
 use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 use tempfile::NamedTempFile;
@@ -237,6 +239,46 @@ impl VerifiedCas {
 
     fn synced_temp(dir: &Path, bytes: &[u8]) -> Result<NamedTempFile, StoreError> {
         let mut temp = NamedTempFile::new_in(dir)?;
+        // Test-build-only fault hook: a child test process parks after a
+        // genuinely partial write to the real CAS temporary file. The parent
+        // observes the marker and kills it before the atomic publish path.
+        // This hook is absent from production (non-cfg(test)) binaries.
+        #[cfg(test)]
+        if let Some(marker) = std::env::var_os("HOLOCHAIN_CORE_TEST_PAUSE_PARTIAL_WRITE") {
+            let halfway = bytes.len() / 2;
+            temp.write_all(&bytes[..halfway])?;
+            temp.flush()?;
+
+            // Read back from the writer's own handle. Windows may refuse
+            // metadata/read access through a *second* handle while it is open.
+            let observed_len = temp.as_file().metadata()?.len();
+            if observed_len != halfway as u64 {
+                return Err(StoreError::Io(io::Error::other(
+                    "test hook did not create a half-length temporary object",
+                )));
+            }
+            temp.as_file_mut().rewind()?;
+            let mut observed = vec![0; halfway];
+            temp.as_file_mut().read_exact(&mut observed)?;
+            if observed.as_slice() != &bytes[..halfway] {
+                return Err(StoreError::Io(io::Error::other(
+                    "test hook read-back did not match the partial ciphertext",
+                )));
+            }
+
+            // The witness names the genuine CAS temp file and its length;
+            // the parent checks that name in the directory before killing us.
+            let filename = temp
+                .path()
+                .file_name()
+                .ok_or(StoreError::UnsafePath)?
+                .to_string_lossy();
+            let witness = format!("{filename}\n{observed_len}\n");
+            std::fs::write(PathBuf::from(marker), witness.as_bytes())?;
+            loop {
+                std::thread::park();
+            }
+        }
         temp.write_all(bytes)?;
         temp.flush()?;
         temp.as_file().sync_all()?;

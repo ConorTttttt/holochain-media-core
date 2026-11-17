@@ -606,3 +606,61 @@ fn host_attributed_replica_claims() {
         BindingAssurance::LegacyAuthoredV1
     );
 }
+
+#[test]
+fn every_grant_anchor_verdict_matches_music() {
+    use crate::grant_anchor::*;
+    let v = vectors();
+    let alice = s(&v["agents"], "alice");
+    let dna = s(&v, "dna_hash");
+    let cases = v["grant_anchors"].as_array().unwrap();
+    assert!(cases.len() >= 16);
+    let mut accepted = 0;
+    for case in cases {
+        let name = s(case, "name");
+        let owner = resolve_key_lifecycle(
+            &records(&case["lifecycle"]),
+            alice,
+            KeyPurpose::OwnerManifest,
+            dna,
+        )
+        .unwrap_or_else(|e| panic!("{name}: {e:?}"));
+        let anchor = record(&case["record"]).unwrap();
+        let message: Vec<u8> = (0..s(&case["claim"], "grant_message_hex").len())
+            .step_by(2)
+            .map(|i| {
+                u8::from_str_radix(&s(&case["claim"], "grant_message_hex")[i..i + 2], 16).unwrap()
+            })
+            .collect();
+        let claim = GrantAnchorClaim {
+            grant_id: s(&case["claim"], "grant_id"),
+            grant_message: &message,
+            issuer_key_action: s(&case["claim"], "issuer_key_action"),
+        };
+        let policy = match s(case, "policy") {
+            "reject" => RecoveredIssuerPolicy::Reject,
+            "accept" => RecoveredIssuerPolicy::Accept,
+            other => panic!("{other}"),
+        };
+        let result = verify_grant_anchor_v2(&anchor, &owner, &claim, policy);
+        match s(&case["python"], "verdict") {
+            "accepted" => {
+                let a = result.unwrap_or_else(|e| panic!("{name}: Rust refused: {e:?}"));
+                assert_eq!(
+                    u64::from(a.issuer().generation()),
+                    case["python"]["generation"].as_u64().unwrap(),
+                    "{name}"
+                );
+                accepted += 1;
+            }
+            "rejected" => assert!(result.is_err(), "{name}: Rust accepted, Music refused"),
+            other => panic!("{other}"),
+        }
+    }
+    assert_eq!(accepted, 4);
+    // The default policy is fail-closed.
+    assert_eq!(
+        RecoveredIssuerPolicy::default(),
+        RecoveredIssuerPolicy::Reject
+    );
+}
