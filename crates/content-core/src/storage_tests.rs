@@ -177,7 +177,6 @@ fn platform_store_rejects_symlinked_object_directories() {
     ));
 }
 
-
 /// Executed only in the child test process spawned by the parent below.
 /// The actual production CAS write routine runs up to the test-only pause,
 /// with a partially written named temporary file and no published object.
@@ -229,13 +228,16 @@ fn platform_store_deterministic_midwrite_kill_remains_unpublished_and_restartabl
     let published = folder.join(&digest);
     let still_unpublished = !published.exists();
     let partial_temp_exists = paused
-        && std::fs::read_dir(&folder).unwrap().filter_map(Result::ok).any(|entry| {
-            entry.path() != published
-                && entry
-                    .metadata()
-                    .map(|meta| meta.is_file() && meta.len() == (objects[0].len() / 2) as u64)
-                    .unwrap_or(false)
-        });
+        && std::fs::read_dir(&folder)
+            .unwrap()
+            .filter_map(Result::ok)
+            .any(|entry| {
+                entry.path() != published
+                    && entry
+                        .metadata()
+                        .map(|meta| meta.is_file() && meta.len() == (objects[0].len() / 2) as u64)
+                        .unwrap_or(false)
+            });
 
     // Kill the parked writer *before* inspecting or repairing its store.
     let _ = child.kill();
