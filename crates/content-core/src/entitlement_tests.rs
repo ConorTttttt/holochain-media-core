@@ -364,9 +364,10 @@ fn time_policy_boundaries_use_the_injected_clock() {
     )
     .is_ok());
     // Licences never expire, and do not depend on the clock beyond "not
-    // issued in the future".
+    // issued in the future". Use a far-future instant (9999-12-31T23:59:59Z)
+    // representable on Windows as well as Unix.
     let l = case(&v, "licence_valid_for_export");
-    for now in [issued, issued + 86_400 * 365 * 500, 1_i64 << 40] {
+    for now in [issued, issued + 86_400 * 365 * 500, 253_402_300_799] {
         assert!(check_content_access(
             &owned(&v, "p"),
             &subject(l),
