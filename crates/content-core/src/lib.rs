@@ -316,3 +316,6 @@ mod binding_v2_tests;
 
 #[cfg(test)]
 mod lifecycle_v21_tests;
+
+#[cfg(test)]
+mod access_grant_v2_vectors_tests;
