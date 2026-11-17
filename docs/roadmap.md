@@ -12,6 +12,7 @@ The full plan is maintained alongside project discussions. These tasks are the r
 | CORE-006 | Reviewed publication lifecycle | Quarantine, independent finding, authorised release/withdrawal are distinct and tamper-resistant |
 | CORE-007 | Music and Video adapters | Music regression suite passes unchanged, then Video uses shared contracts without granting unreviewed playback |
 | CORE-008 | Advanced offerings and production readiness | Rental/subscription policy, verified settlement provider, key rotation, NAT/relay, operational hardening, audits and legal review |
+| CORE-009 (proposed; after Music RC1) | Asynchronous encrypted private control-message delivery | [Design note](ASYNCHRONOUS-PRIVATE-DELIVERY.md): direct-first / recipient-encrypted DHT fallback for *small* access requests and grants, authenticated receipts, deduplication, privacy/threat review and 3-conductor offline acceptance. No media bytes on DHT; no change to RC1. |
 
 ## Release sequence
 
