@@ -16,10 +16,10 @@ Every SHA below is the observed branch head on 17 November 2026. Each branch is 
 | Stage | PR | Head branch | Exact head | Commits over previous | Target / prerequisite |
 | --- | --- | --- | --- | ---: | --- |
 | CORE-001 bootstrap | #1 | `feat/core-001-bootstrap` | `84b775729ef56b8b9c3d8718000a908b85e76966` | 2 | `main` |
-| CORE-002 Music S1 | #2 | `feat/core-002-music-interop` | `9277b621cbec6a67f31a41aa9b5927585fe771c6` | 5 | #1 |
+| CORE-002 Music S1 | #2 (fix draft #13) | `feat/core-002-music-interop` | `9277b621cbec6a67f31a41aa9b5927585fe771c6` | 5 | #1 |
 | CORE-003 verified CAS | #3 | `feat/core-003-verified-cas` | `5420d57479fc1453424cac0ffc1c978615798302` | 4 | #2 |
 | CORE-004 Holochain/MoQ | **#8 (new draft)** | `ccr-53e220c1-45x2cc` | `4989ee400cec7f60abee91985cea95f494a28a0c` | 13 | #3 |
-| CORE-005 entitlements | **#9 (new draft)** | `claude/core-005-entitlements-i7zm0e` | `5f7adf5ff2e3bc7f10836fc1f739114a8a703ff9` | 5 | #8 |
+| CORE-005 entitlements | **#9 (new draft; fix draft #12)** | `claude/core-005-entitlements-i7zm0e` | `5f7adf5ff2e3bc7f10836fc1f739114a8a703ff9` | 5 | #8 |
 | S2 key binding v2 | **#10 (new draft)** | `feat/s2-key-binding-v2` | `d42b20fc94af491f71d9595fbc3ee01e187ddb57` | 4 | #9 |
 | S2 key lifecycle v2.1 | #4 | `feat/s2-v21-key-lifecycle` | `6c1a452306c38818315c1f974a6eb6fe9f33dae8` | 5 | #10 |
 | access-grant/v2 specification | #5 | `feat/access-grant-v2-spec` | `09d8e8c80f780e7a83b974d2df7a9c2a485e3013` | 3 | #4 |
@@ -34,10 +34,10 @@ Links: [PRs #1–#10](https://github.com/ConorTttttt/holochain-media-core/pulls)
 | Stage | GitHub Actions run | Evidence |
 | --- | --- | --- |
 | CORE-001 `84b7757` | [42495525394](https://github.com/ConorTttttt/holochain-media-core/actions/runs/42495525394) | Linux rust fmt, Clippy, test: green |
-| CORE-002 `9277b62` | [42524069558](https://github.com/ConorTttttt/holochain-media-core/actions/runs/42524069558) | Linux rust, pinned Music-Python S1 interop: green |
+| CORE-002 `9277b62` | [42524069558](https://github.com/ConorTttttt/holochain-media-core/actions/runs/42524069558) | Linux rust and pinned Music-Python S1 interop green, **but not feature-unification safe**; isolate fix + preserve_order gate in draft [#13](https://github.com/ConorTttttt/holochain-media-core/pull/13). |
 | CORE-003 `5420d57` | [42531817223](https://github.com/ConorTttttt/holochain-media-core/actions/runs/42531817223) | Rust, Music-Python and Windows: green |
 | CORE-004 `4989ee4` | [44070154615](https://github.com/ConorTttttt/holochain-media-core/actions/runs/44070154615) | **Green**: Rust fmt/Clippy/tests, Music interop, Windows (three jobs) |
-| CORE-005 `5f7adf5` | [44070167413](https://github.com/ConorTttttt/holochain-media-core/actions/runs/44070167413) | **Red**: Rust and Music interop green; Windows overflow in `entitlement_tests::time_policy_boundaries_use_the_injected_clock`. Isolated test-only correction: draft PR #12. |
+| CORE-005 `5f7adf5` | [44070167413](https://github.com/ConorTttttt/holochain-media-core/actions/runs/44070167413) | **Red**: Rust and Music interop green, Windows time overflow; isolated [draft #12](https://github.com/ConorTttttt/holochain-media-core/pull/12) **green in all three jobs** at [44070826318](https://github.com/ConorTttttt/holochain-media-core/actions/runs/44070826318). Still requires review/integration and stage rerun. |
 | S2 v2 `d42b20f` | [44070181258](https://github.com/ConorTttttt/holochain-media-core/actions/runs/44070181258) | **Red**: same inherited Windows `SystemTime` overflow. Rust and Music interop green; rerun after reviewing and integrating portable-clock fix #12. |
 | S2 v2.1 `6c1a452` | [43577300233](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43577300233) | Rust (incl. preserve_order), Windows, S1 and S2 Music interoperability: four green jobs |
 | grant specification `09d8e8c` | [43577313135](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43577313135) | Four green jobs |
@@ -59,6 +59,8 @@ Never change a pin, rebase a referenced branch, or mix the new v2.1 DNA with old
 
 ## Sequential integration gates
 
+**Pre-merge repair order:** review/verify [#13](https://github.com/ConorTttttt/holochain-media-core/pull/13) on CORE-002 before accepting #2; review/verify [#12](https://github.com/ConorTttttt/holochain-media-core/pull/12) on CORE-005 before accepting #9. Both are append-only children of the original stage heads. Preserve the original commits, merge approved fixes without rewriting, then retest each affected stage and check downstream conflicts (especially the same canonicalisation code already present in CORE-004 and the same clock fix already present in S2 v2.1).
+
 1. At each stage inspect its PR against the preceding stage head, verify changed-file scope, request a domain review and resolve findings. **No bulk stack merge.**
 2. Ensure required hosted checks on that exact PR head: `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace --all-targets`, `cargo test --workspace --all-targets --features serde_json/preserve_order` where present, Windows `cargo test --workspace --all-targets`, and the pinned Music interop jobs actually defined for that stage. For integration workspace changes, also run independent integration workspace fmt/Clippy/test.
 3. Where milestone touches conductor/MoQ/S2/grants, rerun the named real-conductor acceptance suite, preserve the Music SHA, DNA hash, logs, invocation and result. Recheck v1 compatibility and user-data migration non-event.
@@ -69,7 +71,7 @@ Never change a pin, rebase a referenced branch, or mix the new v2.1 DNA with old
 ## Review findings and remaining work
 
 - **CORE-001:** green Linux bootstrap; architecture and project licence decision still require owner approval before public distribution.
-- **CORE-002:** green S1 interoperability at a pinned Python implementation; expected key input must already be trusted by a caller. This is not a Holochain identity binding.
+- **CORE-002:** green S1 interoperability at a pinned Python implementation, but the old `serde_json::Value` canonicaliser is invalid when Holochain enables `serde_json/preserve_order` through feature unification. Draft [PR #13](https://github.com/ConorTttttt/holochain-media-core/pull/13) isolates the later-stack fix and adds fresh pinned Music vector tests under both feature modes; approval is blocked until it passes and is reviewed. Expected key input must already be trusted by a caller; this is not a Holochain identity binding.
 - **CORE-003:** green Windows/CAS tests; risk remains if the CAS root is maliciously mutated concurrently. Disk-full/power-loss/large-file stress, quota and garbage collection are open.
 - **CORE-004:** review the 13-commit, ~40-file scope including inherited CORE-002 canonical JSON fix and synthetic Video release work; least-privilege conductor credentials, MoQ TLS host pinning and blocking I/O. Real-conductor and actual two-device network evidence are different.
 - **CORE-005:** typed Rust policy evaluation (not key unwrap), independently issued Music v1 grant/licence vectors; do not infer public/paid entitlements or revocation. Exact milestone Windows CI currently **fails** on a test fixture `SystemTime` overflow; isolated follow-up [PR #12](https://github.com/ConorTttttt/holochain-media-core/pull/12) reproduces the already-applied downstream fix without rewriting any historical SHA. #9 cannot be approved until the fix is reviewed, and #10 cannot be approved until it is included in its integration base.
