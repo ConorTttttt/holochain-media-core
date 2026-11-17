@@ -78,7 +78,7 @@ def main() -> None:
     accepted["signed_message_hex"] = message.hex()
     accepted["wrap_context_hex"] = grant_wrap_context(body).hex()
     accepted["anchor_commitment_hex"] = hashlib.sha256(
-        b"holochain-storage/grant-anchor-commitment/v2\\0" + message
+        b"holochain-storage/grant-anchor-commitment/v2\0" + message
     ).hexdigest()
     assert anchor_body["grant_commitment"] == accepted["anchor_commitment_hex"]
     vectors["cases"].extend([denied, accepted])
