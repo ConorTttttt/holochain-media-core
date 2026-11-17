@@ -82,6 +82,9 @@ fn media_core_agrees_with_independent_music_grant_vectors() {
         let expected_reason = str_at(&case["expected"], "reason");
         if expected_cat == "ok" {
             let verified = res.unwrap_or_else(|e| panic!("{name}: unexpected denial {e}"));
+            // The content's historical signer and grant's current issuer have
+            // separate assurance claims. This accessor must describe content.
+            assert_eq!(verified.entitlement().owner_assurance(), content.owner_assurance());
             assert!(verified.entitlement().rights().contains(Right::Stream));
             assert!(verified.entitlement().wrapped_content_key().wrapped_key().len() == 48);
             assert_eq!(verified.issuer().generation(), 2);
