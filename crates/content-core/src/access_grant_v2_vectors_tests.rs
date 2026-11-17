@@ -5,7 +5,8 @@
 //! cross-language CI supplies this variable and exercises every case.
 
 use crate::access_grant_v2::{grant_message, grant_wrap_context, verify_access_grant_v2, GrantBodyV2};
-use crate::binding::{verify_owned_manifest_lifecycle, AuthenticatedSubject, ConductorRecord};
+use crate::binding::{verify_owned_manifest_lifecycle, ConductorRecord};
+use crate::entitlements::AuthenticatedSubject;
 use crate::grant_anchor::RecoveredIssuerPolicy;
 use crate::lifecycle::resolve_key_lifecycle;
 use crate::binding::KeyPurpose;
