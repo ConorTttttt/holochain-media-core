@@ -28,8 +28,11 @@ use holo_hash::ActionHash;
 use holochain::sweettest::*;
 use holochain_content_core::binding::{BindingError, EndpointPolicy};
 use holochain_content_core::compat::VerifyError;
+use holochain_content_core::entitlements::{
+    check_content_access, AccessError, AuthenticatedSubject, Denied, Unauthenticated, Validity,
+};
 use holochain_content_core::storage::VerifiedCas;
-use holochain_content_core::PackageId;
+use holochain_content_core::{PackageId, Right};
 use holochain_content_holochain::{ConductorResolver, ConductorTarget, READ_FUNCTIONS};
 use holochain_content_moq::MoqHostTransport;
 use holochain_content_moq::{MoqConnector, Timeouts};
@@ -43,7 +46,7 @@ use std::{
     net::SocketAddr,
     path::Path,
     sync::{atomic::AtomicUsize, Arc},
-    time::Duration,
+    time::{Duration, SystemTime},
 };
 
 const APP: &str = "core004-acceptance";
@@ -754,7 +757,7 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
     // The trusted artist key handed to Music's grant/decrypt code is the one
     // Bob's Holochain path authenticated, not a fixture value.
     let trusted = hex(manifest.signer());
-    paths
+    let issued = paths
         .python_ok(args(&[
             "grants",
             "--root",
@@ -769,6 +772,89 @@ async fn alice_publishes_bob_discovers_retrieves_and_verifies_mallory_is_rejecte
             &mallory,
         ]))
         .await;
+
+    // ------------------------------------------------------------ CORE-005
+    // Rust entitlement verification of the Music-issued grants against the
+    // Holochain-authenticated content (owner key from Alice's conductor
+    // records) and listener agents from the real conductors, BEFORE Music's
+    // own key unwrap. No transport, no Holochain call, injected clock.
+    let x25519 = |who: &str| -> [u8; 32] {
+        let id: PackageId = s(&issued["recipients"], who).parse().unwrap();
+        *id.as_bytes()
+    };
+    let grant_bytes =
+        |name: &str| std::fs::read(root.join("p1/grants").join(format!("{name}.json"))).unwrap();
+    let subject = |agent: &str, key: &str| {
+        AuthenticatedSubject::from_trusted_context(agent, x25519(key)).unwrap()
+    };
+    let now = SystemTime::now();
+    let check = |name: &str, who: &AuthenticatedSubject, right: Right, at: SystemTime| {
+        check_content_access(&content.owned, who, &grant_bytes(name), right, at)
+    };
+    let bob_subject = subject(&bob, "bob");
+    for (name, right) in [
+        ("bob_licence", Right::Export),
+        ("bob_licence", Right::ManagedOffline),
+        ("bob_licence", Right::Stream),
+        ("bob_stream", Right::Stream),
+    ] {
+        let decision = check(name, &bob_subject, right, now)
+            .unwrap_or_else(|e| panic!("CORE-005 {name}/{right:?}: {e}"));
+        assert_eq!(decision.entitlement().owner_agent(), alice);
+        assert_eq!(decision.entitlement().package_id(), manifest.package_id());
+    }
+    for (name, who, right, at, expected) in [
+        (
+            "bob_stream",
+            subject(&bob, "bob"),
+            Right::Export,
+            now,
+            AccessError::Denied(Denied::RightNotGranted),
+        ),
+        (
+            "bob_licence",
+            subject(&mallory, "mallory"),
+            Right::Stream,
+            now,
+            AccessError::Denied(Denied::ListenerMismatch),
+        ),
+        (
+            "mallory_licence",
+            subject(&bob, "bob"),
+            Right::Stream,
+            now,
+            AccessError::Denied(Denied::ListenerMismatch),
+        ),
+        (
+            "mallory_licence",
+            subject(&mallory, "bob"),
+            Right::Stream,
+            now,
+            AccessError::Denied(Denied::RecipientKeyMismatch),
+        ),
+        (
+            "forged_licence",
+            subject(&bob, "bob"),
+            Right::Stream,
+            now,
+            AccessError::Unauthenticated(Unauthenticated::WrongIssuer),
+        ),
+        (
+            "bob_short",
+            subject(&bob, "bob"),
+            Right::Stream,
+            now + Duration::from_secs(5),
+            AccessError::Validity(Validity::Expired),
+        ),
+    ] {
+        assert_eq!(
+            check(name, &who, right, at).unwrap_err(),
+            expected,
+            "CORE-005 {name}"
+        );
+    }
+    eprintln!("[core005] Rust entitlement checks on Holochain-authenticated content agree with Music's boundaries");
+
     let out = temp.0.join("bob-plain.bin");
     for grant in ["bob_licence", "bob_stream"] {
         let (code, v) = paths

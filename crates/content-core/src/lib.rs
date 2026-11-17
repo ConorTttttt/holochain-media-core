@@ -299,3 +299,9 @@ pub mod binding;
 
 #[cfg(test)]
 mod binding_tests;
+
+/// Shared entitlement (grant/licence) verification (CORE-005).
+pub mod entitlements;
+
+#[cfg(test)]
+mod entitlement_tests;

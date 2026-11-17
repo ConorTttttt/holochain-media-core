@@ -54,15 +54,22 @@ jobs:
           python scripts/generate_music_vectors.py \
             --music-repo target/music-reference \
             --output target/music-golden-vectors.json
+      - name: Generate fresh CORE-005 grant/licence vectors with Music's own issuer
+        run: |
+          python scripts/generate_music_entitlement_vectors.py \
+            --music-repo target/music-reference \
+            --output target/music-entitlement-vectors.json
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Rust cross-language signature, digest and negative tests
         env:
           MUSIC_VECTORS: target/music-golden-vectors.json
+          MUSIC_ENTITLEMENT_VECTORS: target/music-entitlement-vectors.json
         run: cargo test --workspace --features holochain-content-core/music-interop-tests --all-targets
       - name: Cross-language tests with serde_json preserve_order
         env:
           MUSIC_VECTORS: target/music-golden-vectors.json
+          MUSIC_ENTITLEMENT_VECTORS: target/music-entitlement-vectors.json
         run: cargo test -p holochain-content-core --features music-interop-tests,serde_json/preserve_order --all-targets
 
   windows:

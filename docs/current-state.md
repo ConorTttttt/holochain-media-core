@@ -1,5 +1,39 @@
 # Audit baseline and completion status
 
+## CORE-005 update (13 November 2026, later session)
+
+Branches: Media Core `claude/core-005-entitlements-i7zm0e` on top of
+`ccr-53e220c1-45x2cc` @ 4989ee4 (history unchanged); Music
+`claude/core-005-entitlements-i7zm0e` on top of `ccr-53e220c1-45x2cc` @
+5d37b76. Vectors and the acceptance suite use Music `bd7aabc` (its
+`content_grants.py` is identical on 5d37b76). Same container/toolchain as
+below (Rust 1.97.0, Python 3.13, cryptography 46.0.4, no IPv6 → shim).
+
+| Command | Before CORE-005 | After CORE-005 |
+|---|---|---|
+| `cargo fmt --all -- --check`; `cargo clippy --workspace --all-targets -- -D warnings` | pass | pass |
+| `cargo test --workspace --all-targets` | 38 pass (core 20, retrieval 10, cli 4, release 4) | **54 pass** (core 33, retrieval 10, cli 7, release 4) |
+| same with `--features serde_json/preserve_order` | 38 pass | **54 pass** |
+| S1 + entitlement Python interop (`music-interop-tests`, fresh vectors from both generators) | core 41 | **core 54** (+ cli 7, retrieval 10, release 4); also with `preserve_order`: core 54 |
+| `scripts/generate_music_entitlement_vectors.py` (pinned Music) | — | 81 cases; Python self-check passes; Rust tests pass on the committed run and on a fresh run |
+| `integration` fmt, `clippy -D warnings`, content-moq unit tests | pass, 2 | pass, 2 |
+| `core004_acceptance` (5 conductors, real MoQ hosts, IPv6 shim) | pass 191.0 s (CORE-005 code present, before new e2e checks) | **pass 197.8 s** with `[core005]` Rust entitlement checks |
+| Music `unittest discover -s tests`, adapter enabled (short `TMPDIR`) | 453 OK / 34 skipped (CORE-004 record) | **428 OK / 34 skipped / 0 fail** (462 run; +9 CORE-005 tests) |
+| Music full suite, adapter disabled | — | 414 OK / 48 skipped / 0 fail |
+
+Note: one Music test (`test_v1_app_storage.PathTests`) refuses data paths
+whose keystore socket exceeds 100 bytes; with this session's long scratchpad
+`TMPDIR` it errors before any CORE-005 code runs. Rerun with a short
+`TMPDIR` passes; it is environmental.
+
+**Not run:** Windows CI (nothing pushed); physical two-device network.
+
+| Component | Implemented | Tested | End-to-end verified | Remaining |
+|---|---|---|---|---|
+| Content permissions | **Yes: Rust verifier for Music `content-grant/v1` and `personal-licence/v1`** (policy level; unwrap stays in app) | 81 Python vectors, mutation sweep, Alice/Bob/Mallory, CLI tests, Music comparison (9) | Yes: Rust check on real-conductor content before Music unwrap/decrypt | PoP key binding; public/commercial policies; revocation; Windows CI |
+
+## CORE-004 baseline (earlier the same day)
+
 Fresh audit: **13 November 2026** (remote heads fetched in this session).
 Previous snapshot (8 November) is superseded.
 
