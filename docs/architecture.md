@@ -1,5 +1,8 @@
 # Architecture and ownership boundaries
 
+> **Integration status (17 November 2026):** The architecture described below is implemented **only on stacked development branches**. The `main` branch still has just the initial README at `0e0a629`; no CORE-001–005, S2 v2/v2.1, grant-anchor or async-delivery functionality is merged into `main`. Implementation/test descriptions below refer to the development stack, not approved release behavior. See [integration plan](INTEGRATION-PLAN-2026-11-17.md) for precise branches, PRs, CI gates and frozen Music commits. No Music user-data migration is authorised.
+
+
 Status: proposed for CORE-001. This document is an interface decision, not a security certification.
 
 ## System map
