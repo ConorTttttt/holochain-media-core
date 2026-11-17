@@ -2,7 +2,8 @@
 //! code. The Rust verifier never creates signatures to test itself.
 
 use crate::compat::{
-    verify_music_ciphertext, verify_music_manifest, verify_music_receipt, VerifyError,
+    canonical_json, verify_music_ciphertext, verify_music_manifest, verify_music_receipt,
+    VerifyError,
 };
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use serde_json::{json, Value};
@@ -27,7 +28,18 @@ fn key(b64: &str) -> [u8; 32] {
 }
 
 fn json_bytes(v: &Value) -> Vec<u8> {
-    serde_json::to_vec(v).unwrap()
+    canonical_json(v).unwrap()
+}
+
+#[test]
+fn canonical_s1_json_is_sorted_with_or_without_preserve_order() {
+    let unsorted =
+        serde_json::from_str::<Value>(r#"{"z":2,"a":{"y":[1,"text"],"b":0},"A":3}"#).unwrap();
+    assert_eq!(
+        canonical_json(&unsorted).unwrap(),
+        br#"{"A":3,"a":{"b":0,"y":[1,"text"]},"z":2}"#
+    );
+    assert!(canonical_json(&json!({"non_s1_float": 1.5})).is_none());
 }
 
 #[test]
