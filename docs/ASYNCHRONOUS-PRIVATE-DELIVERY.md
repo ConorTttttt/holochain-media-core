@@ -2,6 +2,8 @@
 
 **Status:** research / proposed future work, **not implemented**, **not an RC1 gate**, and **not approved for production**. Recorded 15 November 2026. Proposed planning identifier: **CORE-009** (not yet a scheduled commitment).
 
+Media Core's main branch began with the CORE-001 workspace. References below to Media Core storage, retrieval and entitlement verification describe their intended roles in later milestones. Music v1 currently supplies its own verified storage and pinned transport.
+
 ## Motivation and reference implementations
 
 Holochain Music currently sends private access requests and grants via Holochain `call_remote`, authenticated using the recipient conductor's verified call provenance, and stores them as private source-chain entries. A local retrying outbox handles transient failures, but sender and recipient must overlap online for delivery. Do not describe that existing behavior as offline delivery.
