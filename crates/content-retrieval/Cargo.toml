@@ -1,0 +1,25 @@
+[package]
+name = "holochain-content-retrieval"
+description = "Transport-agnostic, resumable retrieval of signed-manifest ciphertext into VerifiedCas (CORE-004)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+name = "holochain_content_retrieval"
+path = "src/lib.rs"
+
+[dependencies]
+holochain-content-core = { path = "../content-core" }
+serde_json = "1"
+
+[dev-dependencies]
+# Already in the workspace via content-core. Used only to sign *synthetic*
+# orchestration fixtures; the verifier itself is tested against Python
+# Music vectors in content-core.
+base64 = "0.22"
+ed25519-dalek = "2.1"
+sha2 = "0.10"
+tempfile = "3"

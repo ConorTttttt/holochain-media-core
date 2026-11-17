@@ -1,6 +1,6 @@
 # Contract compatibility baseline (CORE-001)
 
-This is a reference for CORE-002. **No signature, manifest or grant verifier is implemented in the current core crate.** Do not use these notes as an implementation of access control.
+Originally the CORE-001 reference for CORE-002. Since then the manifest/receipt verifier (CORE-002), VerifiedCas (CORE-003) and S2 identity bindings (CORE-004) are implemented; **grant verification is not** (CORE-005). Canonical JSON is now byte-for-byte tested against Python and no longer depends on serde_json map ordering. Do not use these notes as an implementation of access control.
 
 ## Existing Music S1 format
 
@@ -14,7 +14,7 @@ Source of truth: holochain-music/holochain_storage/package.py on the audited mai
 - Encrypted chunks: index, sha256 of ciphertext, cipher_bytes, plain_bytes, nonce.
 - Chunk authentication data: domain prefix "holochain-storage/chunk/v1", NUL byte, file_id bytes, 64-bit big-endian chunk index.
 - Manifest signing: Ed25519 signature over canonical JSON of the body, with a separately pinned and Holochain-authenticated signer.
-- Canonical JSON: Python json.dumps with sort_keys=True, separators=(',', ':'), ensure_ascii=False and allow_nan=False, encoded UTF-8. Cross-language byte-for-byte agreement is not yet tested.
+- Canonical JSON: Python json.dumps with sort_keys=True, separators=(',', ':'), ensure_ascii=False and allow_nan=False, encoded UTF-8. Cross-language byte-for-byte agreement is tested (CORE-002 vectors); keys are sorted explicitly in Rust (`compat::canonical_json`).
 - **Manifest digest:** SHA-256 over the canonical JSON of the complete signed package wrapper, not merely its body.
 - Existing prototype limits: 4 MiB maximum chunk bytes, 16,384 chunks, 64 GiB maximum source size, 8 MiB maximum manifest JSON; the later integrated app may impose additional restrictions.
 

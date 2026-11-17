@@ -120,6 +120,9 @@ def main() -> None:
             "plaintext_bytes": len(synthetic),
             "chunks": chunks,
             "receipt": receipt,
+            # Python `sha256(canonical(receipt))`: the value a Music S2
+            # replica claim commits to as `receipt_sha256` (CORE-004).
+            "receipt_sha256": music.sha256(music.canonical(receipt)),
             "empty_package": empty,
             "empty_manifest_sha256": music.manifest_digest(empty),
             "signed_invalid": invalid,

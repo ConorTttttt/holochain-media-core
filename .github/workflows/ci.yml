@@ -25,6 +25,10 @@ jobs:
         run: cargo clippy --workspace --all-targets -- -D warnings
       - name: Test
         run: cargo test --workspace --all-targets
+      - name: Test with serde_json preserve_order (feature-unification guard)
+        # Holochain's dependency tree enables serde_json/preserve_order. S1
+        # canonical JSON must not depend on serde_json map ordering.
+        run: cargo test --workspace --all-targets --features serde_json/preserve_order
 
   music-python-interop:
     runs-on: ubuntu-latest
@@ -55,7 +59,11 @@ jobs:
       - name: Rust cross-language signature, digest and negative tests
         env:
           MUSIC_VECTORS: target/music-golden-vectors.json
-        run: cargo test --workspace --features music-interop-tests --all-targets
+        run: cargo test --workspace --features holochain-content-core/music-interop-tests --all-targets
+      - name: Cross-language tests with serde_json preserve_order
+        env:
+          MUSIC_VECTORS: target/music-golden-vectors.json
+        run: cargo test -p holochain-content-core --features music-interop-tests,serde_json/preserve_order --all-targets
 
   windows:
     runs-on: windows-latest

@@ -1,0 +1,15 @@
+[package]
+name = "holochain-content-moq"
+description = "Certificate-pinned MoQ/QUIC client for the existing Holochain Music v1 ciphertext host protocol"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+anyhow = { workspace = true }
+holochain-content-core = { workspace = true }
+holochain-content-retrieval = { workspace = true }
+holochain-moq-realtime = { workspace = true }
+holochain-moq-protocol = { workspace = true }
+tokio = { workspace = true }
+url = { workspace = true }

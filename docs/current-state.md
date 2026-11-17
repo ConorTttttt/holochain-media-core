@@ -1,34 +1,53 @@
-# Audit baseline and external dependencies
+# Audit baseline and completion status
 
-Snapshot: 8 November 2026. GitHub state was inspected via the connected repository API. This is not a fresh build, CI execution or real-device test.
+Fresh audit: **13 November 2026** (remote heads fetched in this session).
+Previous snapshot (8 November) is superseded.
 
-| Repository | Audited main/head | Existing work | Open integration gate |
+## Repository heads
+
+| Repository | Default branch head | Relevant development head | Open PR dependencies |
 |---|---|---|---|
-| ConorTttttt/holochain-media-core | previously empty; bootstrap seed 0e0a629 | CORE-001 branch | first PR, CI and review |
-| ConorTttttt/holochain-moq | ccd9a8e | Holochain discovery, QUIC/MoQ, video/audio crates, app-web | PR #1 watch-scoped stop API is draft and client-breaking |
-| ConorTttttt/holochain-music | bd7aabc | encrypted package/receipts, Holochain bindings, private grants, streaming and offline library | PR #38 two-device artwork testing; PR #43 real-transfer pause/resume/retry acceptance |
-| ConorTttttt/Holochain_Video | 3556592 | main is minimal; Sprints 1–8 in draft branches | PRs #1–#8 stacked; PR #9 bridges MoQ with development workaround; real reviewed public release absent |
+| holochain-media-core | `main` 0e0a629 (README only) | `feat/core-003-verified-cas` 5420d57 (CI run 42531817223: Rust, Python interop, Windows all pass); CORE-004 on `ccr-53e220c1-45x2cc` | #1 → #2 → #3 stacked drafts; CORE-004 stacks on #3 |
+| holochain-music | `main` bd7aabc | CORE-004 adapter on `ccr-53e220c1-45x2cc` (5d37b76) | #38 artwork (two-device pending), #43 pause/resume (real MoQ acceptance pending): not adopted |
+| Holochain_Video | `main` 6e878c4 | unchanged | #30 → #32 → #33 stacked; #33: 53 pass / 1 fail (runtime capability revocation) |
+| holochain-moq | `main` fba4ccf (PR #1 watch ownership merged) | unchanged | `crates/realtime`, `crates/protocol` identical to ccd9a8e used by Music's host |
 
-## Dependency and merge notes
+## Environment used for evidence
 
-- MoQ PR #1 (feature/watch-ownership, base main) introduces watch_id and bearer-token stop. Video PR #9 (sprint-3/moq-dev-port, base sprint-3/moq-live-lab) predates the upstream protocol fix. Integrate and test as one coordinated change; no blind merge of incompatible APIs.
-- Video PRs #1 to #8 form a stacked dependency chain, with PR #9 branching off Sprint 3. Changes to Sprint 3 require careful downstream rebasing and regression tests.
-- Video PR #7 records independent reviewer findings but does not approve legal rights, create a release event or provide a public playable URL.
-- Music PRs #41 and #42 merged on 7 November 2026. PR #43 reported 455 Python tests (34 skipped) on Ubuntu but still needs a real browser/MoQ transfer test. PR #38 lacks required live two-device tests.
-- Music has many older open draft PRs that overlap code now on main; triage each by ancestry and test evidence rather than merging all.
-- A Windows WASAPI physical sound-quality issue and CAL-1.0 redistribution/licensing review remain app release gates; they are not solved by core scaffolding.
+Linux 6.18 container, 4 vCPU, no IPv6 in the kernel, no audio/camera
+hardware; Rust 1.97.0 + wasm32 target; Python 3.13 venv with
+cryptography 46.0.4; Holochain 0.7.0 (Sweettest, compiled from crates.io);
+`hc-dna` from holochain_cli_bundle 0.7.0; no installed `holochain`/`lair`
+binaries (not needed by Sweettest). Holochain websockets need the
+test-only IPv6 errno shim on this kernel.
 
-## Freeze points for CORE-002
+## Test commands that actually ran
 
-- Music v1 source file: holochain_storage/package.py at bd7aabc or an explicitly recorded adapter-compatible revision.
-- Signing and receipt key bindings: compare holochain_storage/holochain_identity.py, relevant Holochain DNA and catalogue integrity zomes.
-- MoQ adapter: select a documented, tested commit once PR #1 is integrated with Video #9.
-- Preserve byte-identical Python canonicalisation for Music fixtures, not only JSON structure.
+| Command | Result |
+|---|---|
+| CORE-003 `cargo fmt --check`, `clippy -D warnings`, `cargo test --workspace --all-targets` | pass (13 tests) before changes |
+| CORE-003 Python interop (`scripts/generate_music_vectors.py` + `--features music-interop-tests`) | pass (28) before changes |
+| Root workspace after CORE-004 (fmt, clippy, tests; plus `serde_json/preserve_order`) | pass: core 20, retrieval 10, cli 4, release 4 |
+| Python interop after CORE-004 (with and without `preserve_order`) | pass: core 41 |
+| `integration` `holochain-content-moq` unit tests | pass (2) |
+| `core004_acceptance` (5 conductors, real MoQ hosts) | **pass** twice: 240.8 s, and 246.7 s on final code |
+| `integration` workspace fmt + `clippy -D warnings` | pass |
+| Music `python -m unittest discover -s tests` on `main` | 444 OK, 34 skipped |
+| Same on Music CORE-004 branch with adapter enabled | 453 OK, 34 skipped |
 
-## Review links
+Windows CI for CORE-004 has **not** run (no push in this session).
 
-- https://github.com/ConorTttttt/holochain-moq/pull/1
-- https://github.com/ConorTttttt/Holochain_Video/pull/9
-- https://github.com/ConorTttttt/Holochain_Video/pull/7
-- https://github.com/ConorTttttt/holochain-music/pull/38
-- https://github.com/ConorTttttt/holochain-music/pull/43
+## Status matrix (evidence-based)
+
+| Component | Implemented | Tested | End-to-end verified | Remaining work |
+|---|---|---|---|---|
+| Core contracts | Yes: typed IDs, rights flags, S1/S2 types, retrieval traits | Unit + Python vectors | Yes (acceptance suite) | Grant/entitlement contract (CORE-005); release record format review |
+| Music S1 compatibility | Yes (CORE-002 + canonical-JSON fix) | 41 Python-vector tests, with/without `preserve_order` | Yes: Python-made packages verified and decrypted by Music after Rust retrieval | Windows run of new CI steps |
+| Verified ciphertext CAS | Yes (CORE-003 + `repair_chunk`) | Unit, mock-transport, Music adapter comparison | Yes: real interruption, resume, repair, duplicate, bounded files | Quotas/GC, no-follow fs ops, power-loss, 1 GiB, Windows hardware |
+| Holochain identity binding | Yes (Rust port of Music S2 checks + conductor resolver) | Unit + Python vectors + Music comparison | Yes: real conductors, forged writes refused, false ownership rejected | Proof-of-possession key binding, rotation/revocation, host-agent in receipt (findings 2–3) |
+| MoQ encrypted retrieval | Yes (Music v1 host protocol client, pinned TLS) | Unit + acceptance | Yes: real QUIC/MoQT, pin mismatch, tampered host, host kill, alternate host, outages | NAT/relay, reconnect/back-off, non-loopback deployment review |
+| Content permissions | Not in Media Core (Music's existing grants/licences used) | Music's suite + acceptance negative cases | Partially: Music boundaries exercised on a VerifiedCas replica | CORE-005 Rust evaluator; rentals/subscriptions/payments not started |
+| Music adapter | Yes: opt-in CLI + Python module, disabled by default | 9 Music tests (7 comparisons) + full regression | Library offline readiness and PCM playback from Core store | Windows CLI run; decision on any production switch |
+| Video adapter | Contract + test-only synthetic authority (`content-release`) | 4 unit tests | No (no production authority; no Video code changed) | Video #22/#23/#24, PR #33 revocation fix, packaging path, DNA migration plan |
+
+This is a technical milestone, not production readiness.

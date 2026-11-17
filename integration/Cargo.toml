@@ -1,0 +1,33 @@
+# Network/conductor integration workspace for CORE-004.
+#
+# Deliberately separate from the root workspace so the verified core
+# (`crates/*`) keeps a small, pure-Rust dependency set and its existing
+# Linux/Windows CI. Everything here talks to real MoQ/QUIC or a real
+# Holochain conductor. The lockfile was seeded from holochain-moq@fba4ccf so
+# that Holochain 0.7.0 / MoQ draft-14 resolve to the already-proven set.
+[workspace]
+resolver = "2"
+members = ["content-moq", "content-holochain", "core-e2e"]
+
+[workspace.package]
+edition = "2021"
+rust-version = "1.75"
+version = "0.1.0"
+repository = "https://github.com/ConorTttttt/holochain-media-core"
+publish = false
+
+[workspace.dependencies]
+holochain-content-core = { path = "../crates/content-core" }
+holochain-content-retrieval = { path = "../crates/content-retrieval" }
+# Same immutable MoQ revision as holochain-moq `main` after PR #1
+# (fba4ccf). `crates/realtime` and `crates/protocol` are byte-identical to
+# ccd9a8e, the revision holochain-music's v1 host binary is built from.
+holochain-moq-realtime = { git = "https://github.com/ConorTttttt/holochain-moq", rev = "fba4ccf0e11b9840d1f0fa6636d5450fe56fb1e5" }
+holochain-moq-protocol = { git = "https://github.com/ConorTttttt/holochain-moq", rev = "fba4ccf0e11b9840d1f0fa6636d5450fe56fb1e5" }
+holochain_client = "=0.9.0"
+holo_hash = "=0.7.0"
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+url = "2"

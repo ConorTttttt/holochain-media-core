@@ -1,0 +1,28 @@
+[package]
+name = "holochain-content-release"
+description = "Governed-release contract for applications such as Holochain Video (CORE-004 groundwork; no production authority)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+name = "holochain_content_release"
+path = "src/lib.rs"
+
+[features]
+default = []
+# Enables SyntheticTestAuthority outside this crate's own tests. Never enable
+# in an application build: it authorises synthetic fixtures without review.
+synthetic-release-fixture = []
+
+[dependencies]
+holochain-content-core = { path = "../content-core" }
+serde_json = "1"
+
+[dev-dependencies]
+base64 = "0.22"
+ed25519-dalek = "2.1"
+sha2 = "0.10"
+tempfile = "3"

@@ -1,0 +1,19 @@
+[package]
+name = "holochain-content-cli"
+description = "Opt-in local CLI adapter: Media Core verification and VerifiedCas for existing Music S1 packages"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish = false
+
+[[bin]]
+name = "holochain-media-core"
+path = "src/main.rs"
+
+[dependencies]
+holochain-content-core = { path = "../content-core" }
+serde_json = "1"
+
+[dev-dependencies]
+tempfile = "3"

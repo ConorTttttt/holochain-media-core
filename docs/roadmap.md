@@ -7,7 +7,7 @@ The full plan is maintained alongside project discussions. These tasks are the r
 | CORE-001 | Buildable workspace, boundaries, source map, CI and typed identifiers | GitHub CI passes formatting, lint and tests; architecture and threat assumptions reviewed |
 | CORE-002 | Python Music v1 package/receipt compatibility | Real Music-generated golden vectors (including invalid cases) verify byte-for-byte in a Rust reader; no Music change |
 | CORE-003 | Generic verified storage and interrupted download support | Arbitrary bytes survive corruption, restart and host-outage tests; no keys leak |
-| CORE-004 | Holochain/MoQ adapters | Two real agents discover an authenticated storage host and retrieve verified chunks with certificate pinning |
+| CORE-004 | Holochain/MoQ adapters | Two real agents discover an authenticated storage host and retrieve verified chunks with certificate pinning — **met locally 13 Nov 2026** (five-conductor acceptance; see docs/CORE-004-holochain-moq-integration.md); Windows CI and review pending |
 | CORE-005 | Free/private/perpetual entitlement evaluator | Signed grants require matching issuer, recipient, manifest and permissions; duplicate requests and denials have clear outcomes |
 | CORE-006 | Reviewed publication lifecycle | Quarantine, independent finding, authorised release/withdrawal are distinct and tamper-resistant |
 | CORE-007 | Music and Video adapters | Music regression suite passes unchanged, then Video uses shared contracts without granting unreviewed playback |
@@ -19,7 +19,11 @@ The full plan is maintained alongside project discussions. These tasks are the r
 - **v0.2 multi-app preview:** verified Video approved-release flow and media adapters; public access remains gated on reviewed authority.
 - **Production candidate:** audited security, clear pricing/settlement semantics, robust internet delivery, key recovery, platform/hardware testing, licensing and migration/rollback.
 
-## Next PR: CORE-002
+## Next PR: CORE-005 (proposed)
+
+Rust `check_content_access` for Music `content-grant/v1` and `personal-licence/v1` (verification only), Python-generated golden vectors, and a versioned S2 key-binding v2 with proof of possession. See docs/CORE-004-holochain-moq-integration.md.
+
+## Historical: CORE-002 plan
 
 1. Obtain disposable golden test fixtures by executing Music's existing S1 Python module at a frozen commit.
 2. Implement strict signed-envelope parsing and canonicalisation with matching limits.
