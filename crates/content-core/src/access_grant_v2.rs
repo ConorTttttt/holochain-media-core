@@ -53,8 +53,12 @@ impl V2Error {
     }
     pub const fn reason(self) -> &'static str {
         match self {
-            Self::Malformed(r) | Self::Unsupported(r) | Self::Denied(r) |
-            Self::Unauthenticated(r) | Self::Validity(r) | Self::Unavailable(r) => r,
+            Self::Malformed(r)
+            | Self::Unsupported(r)
+            | Self::Denied(r)
+            | Self::Unauthenticated(r)
+            | Self::Validity(r)
+            | Self::Unavailable(r) => r,
         }
     }
 }
@@ -106,7 +110,9 @@ struct EnvelopeV2 {
 }
 
 fn hex<const N: usize>(value: &str) -> Option<[u8; N]> {
-    if value.len() != 2 * N { return None; }
+    if value.len() != 2 * N {
+        return None;
+    }
     let nibble = |c: u8| match c {
         b'0'..=b'9' => Some(c - b'0'),
         b'a'..=b'f' => Some(c - b'a' + 10),
@@ -120,7 +126,9 @@ fn hex<const N: usize>(value: &str) -> Option<[u8; N]> {
 }
 fn b64<const N: usize>(value: &str) -> Option<[u8; N]> {
     let decoded = B64.decode(value).ok()?;
-    if B64.encode(&decoded) != value { return None; }
+    if B64.encode(&decoded) != value {
+        return None;
+    }
     decoded.try_into().ok()
 }
 fn identifier(value: &str) -> bool {
@@ -139,12 +147,16 @@ pub fn grant_message(body: &GrantBodyV2) -> Result<Vec<u8>, V2Error> {
 }
 /// Recipient's HKDF info AND AES-GCM AAD; no private or plaintext key here.
 pub fn grant_wrap_context(body: &GrantBodyV2) -> Result<Vec<u8>, V2Error> {
-    let mut scope = serde_json::to_value(body)
-        .map_err(|_| V2Error::Malformed("Structure"))?;
+    let mut scope = serde_json::to_value(body).map_err(|_| V2Error::Malformed("Structure"))?;
     let Value::Object(ref mut fields) = scope else {
         return Err(V2Error::Malformed("Structure"));
     };
-    for field in ["ephemeral_key_hex", "salt_b64", "nonce_b64", "wrapped_key_b64"] {
+    for field in [
+        "ephemeral_key_hex",
+        "salt_b64",
+        "nonce_b64",
+        "wrapped_key_b64",
+    ] {
         fields.remove(field);
     }
     let mut out = GRANT_KEY_WRAP_DOMAIN.to_vec();
@@ -158,14 +170,18 @@ fn time(value: &Value) -> Result<i64, V2Error> {
     }
 }
 fn clock(now: SystemTime) -> Result<i64, V2Error> {
-    let dur = now.duration_since(UNIX_EPOCH).map_err(|_| V2Error::Unavailable("Clock"))?;
+    let dur = now
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| V2Error::Unavailable("Clock"))?;
     i64::try_from(dur.as_secs()).map_err(|_| V2Error::Unavailable("Clock"))
 }
 fn rights(b: &GrantBodyV2, now: i64) -> Result<(Rights, Option<i64>), V2Error> {
     let options = ["export", "managed-offline", "stream"];
-    if b.rights.is_empty() || b.rights.len() > options.len() ||
-        b.rights.windows(2).any(|v| v[0] >= v[1]) ||
-        b.rights.iter().any(|v| !options.contains(&v.as_str())) {
+    if b.rights.is_empty()
+        || b.rights.len() > options.len()
+        || b.rights.windows(2).any(|v| v[0] >= v[1])
+        || b.rights.iter().any(|v| !options.contains(&v.as_str()))
+    {
         return Err(V2Error::Unsupported("Terms"));
     }
     let mut rights = Rights::NONE;
@@ -182,15 +198,23 @@ fn rights(b: &GrantBodyV2, now: i64) -> Result<(Rights, Option<i64>), V2Error> {
     let end = time(&b.expires_at)?;
     let expiry = match b.term.as_str() {
         "perpetual" => {
-            if end != 0 || start != issued ||
-                !(rights == Rights::STREAM || rights == Rights::STREAM.union(Rights::MANAGED_OFFLINE).union(Rights::EXPORT)) {
+            if end != 0
+                || start != issued
+                || !(rights == Rights::STREAM
+                    || rights
+                        == Rights::STREAM
+                            .union(Rights::MANAGED_OFFLINE)
+                            .union(Rights::EXPORT))
+            {
                 return Err(V2Error::Unsupported("Terms"));
             }
             None
         }
         "window" => {
-            if rights != Rights::STREAM || start >= end ||
-                i128::from(end) - i128::from(start) > 86_400 {
+            if rights != Rights::STREAM
+                || start >= end
+                || i128::from(end) - i128::from(start) > 86_400
+            {
                 return Err(V2Error::Unsupported("Terms"));
             }
             Some(end)
@@ -201,8 +225,12 @@ fn rights(b: &GrantBodyV2, now: i64) -> Result<(Rights, Option<i64>), V2Error> {
         return Err(V2Error::Validity("NotYetValid"));
     }
     if let Some(end) = expiry {
-        if now < start { return Err(V2Error::Validity("NotYetValid")); }
-        if now >= end { return Err(V2Error::Validity("Expired")); }
+        if now < start {
+            return Err(V2Error::Validity("NotYetValid"));
+        }
+        if now >= end {
+            return Err(V2Error::Validity("Expired"));
+        }
     }
     Ok((rights, expiry))
 }
@@ -212,8 +240,9 @@ fn anchor_failure(err: BindingError) -> V2Error {
         BindingError::KeyRotated => V2Error::Unauthenticated("KeyRotated"),
         BindingError::KeyRevoked => V2Error::Unauthenticated("KeyRevoked"),
         BindingError::RecoveredIssuerRefused => V2Error::Unauthenticated("RecoveredIssuerRefused"),
-        BindingError::GrantAnchorMismatch | BindingError::AuthorMismatch | BindingError::WrongDna =>
-            V2Error::Unauthenticated("AnchorMismatch"),
+        BindingError::GrantAnchorMismatch
+        | BindingError::AuthorMismatch
+        | BindingError::WrongDna => V2Error::Unauthenticated("AnchorMismatch"),
         BindingError::MissingRecord => V2Error::Unavailable("AnchorNotFound"),
         _ => V2Error::Unauthenticated("InvalidAnchor"),
     }
@@ -229,10 +258,18 @@ pub struct VerifiedAccessGrantV2 {
     grant_id: String,
 }
 impl VerifiedAccessGrantV2 {
-    pub fn entitlement(&self) -> &VerifiedEntitlement { &self.entitlement }
-    pub fn issuer(&self) -> &VerifiedKeyBinding { &self.issuer }
-    pub fn anchor(&self) -> &VerifiedGrantAnchor { &self.anchor }
-    pub fn grant_id(&self) -> &str { &self.grant_id }
+    pub fn entitlement(&self) -> &VerifiedEntitlement {
+        &self.entitlement
+    }
+    pub fn issuer(&self) -> &VerifiedKeyBinding {
+        &self.issuer
+    }
+    pub fn anchor(&self) -> &VerifiedGrantAnchor {
+        &self.anchor
+    }
+    pub fn grant_id(&self) -> &str {
+        &self.grant_id
+    }
     pub fn authorize(self, requested: Right) -> Result<AccessDecision, AccessError> {
         self.entitlement.authorize(requested)
     }
@@ -256,23 +293,27 @@ pub fn verify_access_grant_v2(
 ) -> Result<VerifiedAccessGrantV2, V2Error> {
     // Content authenticity uses its historical signer at the ORIGINAL
     // on-chain commitment. Grant authority is verified separately below.
-    let content = verify_owned_manifest_lifecycle(manifest_json, owner, commitment)
-        .map_err(|err| match err {
+    let content = verify_owned_manifest_lifecycle(manifest_json, owner, commitment).map_err(
+        |err| match err {
             BindingError::CommitmentMismatch => V2Error::Denied("ManifestMismatch"),
             BindingError::MissingRecord => V2Error::Unavailable("CommitmentNotFound"),
             _ => V2Error::Unauthenticated("InvalidHistoricalKey"),
-        })?;
+        },
+    )?;
     if grant_json.len() > MAX_GRANT_INPUT_BYTES {
         return Err(V2Error::Malformed("TooLarge"));
     }
     // A v1 grant/licence must not accidentally enter this protocol.
-    let top: Value = serde_json::from_slice(grant_json)
-        .map_err(|_| V2Error::Malformed("Json"))?;
+    let top: Value = serde_json::from_slice(grant_json).map_err(|_| V2Error::Malformed("Json"))?;
     if top.get("signer").is_some() || top.get("signature").is_some() {
         return Err(V2Error::Unsupported("WrongVersion"));
     }
     let e: EnvelopeV2 = serde_json::from_slice(grant_json).map_err(|err| {
-        if err.is_data() { V2Error::Malformed("Structure") } else { V2Error::Malformed("Json") }
+        if err.is_data() {
+            V2Error::Malformed("Structure")
+        } else {
+            V2Error::Malformed("Json")
+        }
     })?;
     if json_bytes(&e)?.len() > MAX_GRANT_BYTES {
         return Err(V2Error::Malformed("TooLarge"));
@@ -287,23 +328,38 @@ pub fn verify_access_grant_v2(
     hex::<32>(&b.file_id).ok_or(V2Error::Malformed("file_id"))?;
     hex::<32>(&b.manifest_sha256).ok_or(V2Error::Malformed("manifest_sha256"))?;
     hex::<32>(&b.manifest_key_hex).ok_or(V2Error::Malformed("manifest_key_hex"))?;
-    let recipient = hex::<32>(&b.recipient_key_hex).ok_or(V2Error::Malformed("recipient_key_hex"))?;
-    let ephemeral = hex::<32>(&b.ephemeral_key_hex).ok_or(V2Error::Malformed("ephemeral_key_hex"))?;
+    let recipient =
+        hex::<32>(&b.recipient_key_hex).ok_or(V2Error::Malformed("recipient_key_hex"))?;
+    let ephemeral =
+        hex::<32>(&b.ephemeral_key_hex).ok_or(V2Error::Malformed("ephemeral_key_hex"))?;
     if !b.entitlement_ref.is_empty() && hex::<32>(&b.entitlement_ref).is_none() {
         return Err(V2Error::Malformed("entitlement_ref"));
     }
-    if ![&b.dna_hash, &b.owner_agent, &b.issuer_agent, &b.issuer_key_action,
-         &b.listener_agent].iter().all(|v| identifier(v)) {
+    if ![
+        &b.dna_hash,
+        &b.owner_agent,
+        &b.issuer_agent,
+        &b.issuer_key_action,
+        &b.listener_agent,
+    ]
+    .iter()
+    .all(|v| identifier(v))
+    {
         return Err(V2Error::Malformed("Structure"));
     }
-    let gen_number = parse_generation(&b.issuer_key_generation)
-        .ok_or(V2Error::Malformed("IssuerGeneration"))?;
-    if b.issuer_purpose != KeyPurpose::OwnerManifest.as_str() ||
-       b.key_wrap != KEY_WRAP_V2 || b.basis != "owner-decision" {
+    let gen_number =
+        parse_generation(&b.issuer_key_generation).ok_or(V2Error::Malformed("IssuerGeneration"))?;
+    if b.issuer_purpose != KeyPurpose::OwnerManifest.as_str()
+        || b.key_wrap != KEY_WRAP_V2
+        || b.basis != "owner-decision"
+    {
         return Err(V2Error::Unsupported("Terms"));
     }
-    if owner.purpose() != KeyPurpose::OwnerManifest || owner.agent() != content.owner_agent() ||
-       owner.agent() != b.issuer_agent || owner.agent() != b.owner_agent {
+    if owner.purpose() != KeyPurpose::OwnerManifest
+        || owner.agent() != content.owner_agent()
+        || owner.agent() != b.issuer_agent
+        || owner.agent() != b.owner_agent
+    {
         return Err(V2Error::Denied("OwnerMismatch"));
     }
     if b.dna_hash != owner.dna_hash() {
@@ -312,8 +368,9 @@ pub fn verify_access_grant_v2(
     if b.file_id != content.manifest().package_id().to_string() {
         return Err(V2Error::Denied("FileMismatch"));
     }
-    if b.manifest_sha256 != content.manifest().digest().to_string() ||
-       b.manifest_key_hex != hex_string(content.manifest().signer()) {
+    if b.manifest_sha256 != content.manifest().digest().to_string()
+        || b.manifest_key_hex != hex_string(content.manifest().signer())
+    {
         return Err(V2Error::Denied("ManifestMismatch"));
     }
     if b.listener_agent != subject.listener_agent() {
@@ -322,7 +379,8 @@ pub fn verify_access_grant_v2(
     if recipient != *subject.recipient_key() {
         return Err(V2Error::Denied("RecipientKeyMismatch"));
     }
-    let generation = owner.generation_by_action(&b.issuer_key_action)
+    let generation = owner
+        .generation_by_action(&b.issuer_key_action)
         .ok_or(V2Error::Unauthenticated("IssuerNotInLifecycle"))?;
     if gen_number != generation.generation() || issuer_key != *generation.key() {
         return Err(V2Error::Unauthenticated("IssuerGenerationMismatch"));
@@ -332,17 +390,19 @@ pub fn verify_access_grant_v2(
         .map_err(|_| V2Error::Unauthenticated("InvalidSignature"))?
         .verify_strict(
             &msg,
-            &Signature::from_bytes(&hex::<64>(&e.signature_hex)
-                .ok_or(V2Error::Malformed("Signature"))?),
-        ).map_err(|_| V2Error::Unauthenticated("InvalidSignature"))?;
+            &Signature::from_bytes(
+                &hex::<64>(&e.signature_hex).ok_or(V2Error::Malformed("Signature"))?,
+            ),
+        )
+        .map_err(|_| V2Error::Unauthenticated("InvalidSignature"))?;
     let anchor = anchor.ok_or(V2Error::Unavailable("AnchorNotFound"))?;
     let claim = GrantAnchorClaim {
         grant_id: &b.grant_id,
         grant_message: &msg,
         issuer_key_action: &b.issuer_key_action,
     };
-    let verified = verify_grant_anchor_v2(anchor, owner, &claim, recovered_policy)
-        .map_err(anchor_failure)?;
+    let verified =
+        verify_grant_anchor_v2(anchor, owner, &claim, recovered_policy).map_err(anchor_failure)?;
     let issuer = verified.issuer().clone();
     let (granted_rights, expires_at) = rights(b, clock(now)?)?;
     let context = grant_wrap_context(b)?;
@@ -371,7 +431,12 @@ pub fn verify_access_grant_v2(
         // VerifiedAccessGrantV2::issuer() and must not overwrite this field.
         owner_assurance: content.owner_assurance(),
     };
-    Ok(VerifiedAccessGrantV2 { entitlement, issuer, anchor: verified, grant_id: b.grant_id.clone() })
+    Ok(VerifiedAccessGrantV2 {
+        entitlement,
+        issuer,
+        anchor: verified,
+        grant_id: b.grant_id.clone(),
+    })
 }
 
 fn hex_string(value: &[u8]) -> String {
@@ -390,9 +455,18 @@ pub fn check_content_access_v2(
     now: SystemTime,
     recovered_policy: RecoveredIssuerPolicy,
 ) -> Result<AccessDecision, V2Error> {
-    verify_access_grant_v2(manifest_json, commitment, subject, grant_json, owner, anchor, now, recovered_policy)?
-        .authorize(requested)
-        .map_err(|_| V2Error::Denied("RightNotGranted"))
+    verify_access_grant_v2(
+        manifest_json,
+        commitment,
+        subject,
+        grant_json,
+        owner,
+        anchor,
+        now,
+        recovered_policy,
+    )?
+    .authorize(requested)
+    .map_err(|_| V2Error::Denied("RightNotGranted"))
 }
 
 #[cfg(test)]
