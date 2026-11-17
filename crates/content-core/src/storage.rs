@@ -245,7 +245,7 @@ impl VerifiedCas {
         if let Some(marker) = std::env::var_os("HOLOCHAIN_CORE_TEST_PAUSE_PARTIAL_WRITE") {
             temp.write_all(&bytes[..bytes.len() / 2])?;
             temp.flush()?;
-            std::fs::write(marker, b"partial-temp-written")?;
+            std::fs::write(PathBuf::from(marker), b"partial-temp-written")?;
             loop {
                 std::thread::park();
             }
