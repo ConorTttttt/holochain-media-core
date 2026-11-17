@@ -2,6 +2,16 @@
 
 Status: **review plan**, not an approval to merge, publish crates, switch a Music DNA or migrate user data. This document is authoritative for the proposed PR order; the earlier dates/evidence in `current-state.md` remain historical snapshots.
 
+## Latest live-GitHub reconciliation — 17 November 2026, 15:05 UTC
+
+This addendum is a documentation-only delta to the earlier Agent 2 audit. GitHub remains the source of truth if any branch moves again.
+
+- **Unchanged integration root:** Media Core `main` remains `0e0a6290729debdb0d1e87c9201900a901adc102`. No foundational milestone, corrective PR or Agent 2 documentation PR is merged.
+- **#7 moved after #11 branched:** `docs/async-private-delivery-design` (PR #7) now points to `978441420948a7c4aa538b285a809b7ae245cb03`, a one-commit *append-only* advance over the `1c68bdd373287307013bb9eac5b3530796038429` snapshot cited in the original plan. The change adds 91 documentation lines to `docs/ASYNCHRONOUS-PRIVATE-DELIVERY.md`. Its new [hosted run 44074441650](https://github.com/ConorTttttt/holochain-media-core/actions/runs/44074441650) has four successful jobs (Rust, Windows, Music S1 and S2 interop). #11's recorded base SHA remains the *older* `1c68bdd...`, and #15 descends from #11, so **forward-integrate current #7 into #11 before finally retargeting/integrating #15**; do not represent #11/#15 as already containing the newer #7 addendum.
+- **Formal static review trail:** Non-approving `COMMENT` reviews were submitted on [CORE-001 #1](https://github.com/ConorTttttt/holochain-media-core/pull/1) (review ID `5940892538`), [portable clock #12](https://github.com/ConorTttttt/holochain-media-core/pull/12) (`5940893996`), and [canonical JSON #13](https://github.com/ConorTttttt/holochain-media-core/pull/13) (`5940893281`). These record source-review/CI findings but **are not approvals**; no correction or milestone integration was performed.
+- **Separate new child work, not part of this foundation merge:** #14 (`314b19dec9e506298c2f2ca38c5aebb32d4e3cec`, new grant v2 after #6), #16 (`2aad791a77332bf2786ca5013e1c46cf73be51e8`, child of #14), #17 (`5ce18668427651d43068cad67824c54004966727`, child of the updated #7), and #18 (`069cd59a5d73763336fd54ba22473ab51d4ad19a`, separate CAS test child of #6) need their own reviews and integration gates. Do **not** accidentally include any of these branches in sequential foundational PR integration.
+- **Local test status unchanged:** This audit did not execute Cargo, Python vector generation, Windows, Holochain or MoQ suites locally; only hosted checks were inspected. A successful CI run on a historical or documentation head is not a substitute for fresh exact-head integration and real-conductor acceptance.
+
 ## Agent 2 integration audit — 17 November 2026
 
 **Scope and safety:** Review-only integration preparation on a documentation branch based on the unchanged #11 head `929a8f7d1e0a726540a2764890662efcefa549a8`. No root implementation, signature, key, DNA, fixture, stored content or production behaviour is changed. No milestone PR has been merged. This section supersedes older *pending CI* descriptions for #12 and #13 below; their changes are **CI-verified but unintegrated**.
@@ -77,7 +87,7 @@ Verified GitHub Music commit references (exist, no repin): S1 `bd7aabc3e9ea1fef1
 
 - `main`: `0e0a6290729debdb0d1e87c9201900a901adc102` — initial README only; **none** of CORE-001 through grant-anchor is merged.
 - `feat/grant-anchor-v21`: `a74a8aec32da03962788ad92810c413103b2ffd3`, **45 commits ahead of main**; contains S1, CAS, Holochain/MoQ, entitlement, S2 and grant-anchor work as *development-only*.
-- `docs/async-private-delivery-design`: `1c68bdd373287307013bb9eac5b3530796038429` (two further documentation commits).
+- `docs/async-private-delivery-design`: current `978441420948a7c4aa538b285a809b7ae245cb03` (three documentation commits after grant-anchor; prior recorded head `1c68bdd373287307013bb9eac5b3530796038429`).
 - No rebase or squash of existing protocol branches is authorised. The history already contains merge commits `09d8e8c` and `a74a8ae` preserving original reviewed branch commits; preserve both parent relationships.
 
 ## Exact staged review points
@@ -95,8 +105,8 @@ Every SHA below is the observed branch head on 17 November 2026. Each branch is 
 | S2 key lifecycle v2.1 | #4 | `feat/s2-v21-key-lifecycle` | `6c1a452306c38818315c1f974a6eb6fe9f33dae8` | 5 | #10 |
 | access-grant/v2 specification | #5 | `feat/access-grant-v2-spec` | `09d8e8c80f780e7a83b974d2df7a9c2a485e3013` | 3 | #4 |
 | grant-anchor/v2 | #6 | `feat/grant-anchor-v21` | `a74a8aec32da03962788ad92810c413103b2ffd3` | 4 | #5; Music #47 companion |
-| async private delivery **design only** | #7 | `docs/async-private-delivery-design` | `1c68bdd373287307013bb9eac5b3530796038429` | 2 | #6 |
-| integration status documentation | **subsequent draft** | `docs/agent5-integration-gates-20261117` | new documentation-only commits | — | #7 |
+| async private delivery **design only** | #7 | `docs/async-private-delivery-design` | `978441420948a7c4aa538b285a809b7ae245cb03` | 3 | #6; #11 uses earlier snapshot |
+| integration status documentation | #11 | `docs/agent5-integration-gates-20261117` | `929a8f7d1e0a726540a2764890662efcefa549a8` | 2 | earlier #7 head `1c68bdd` (forward-integration pending) |
 
 Links: [PRs #1–#10](https://github.com/ConorTttttt/holochain-media-core/pulls), [Music PR #44](https://github.com/ConorTttttt/holochain-music/pull/44), [Music PR #47](https://github.com/ConorTttttt/holochain-music/pull/47).
 
@@ -113,7 +123,7 @@ Links: [PRs #1–#10](https://github.com/ConorTttttt/holochain-media-core/pulls)
 | S2 v2.1 `6c1a452` | [43577300233](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43577300233) | Rust (incl. preserve_order), Windows, S1 and S2 Music interoperability: four green jobs |
 | grant specification `09d8e8c` | [43577313135](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43577313135) | Four green jobs |
 | grant anchor `a74a8ae` | [43577314159](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43577314159) | Four green jobs |
-| async design `1c68bdd` | [43736181347](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43736181347) | Four green jobs |
+| async design previous `1c68bdd` | [43736181347](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43736181347) | Four green jobs at historical head |\n| async design current `9784414` | [44074441650](https://github.com/ConorTttttt/holochain-media-core/actions/runs/44074441650) | Four green jobs at current #7 head; #11/#15 ancestry still based on older snapshot |
 
 The old assertion that hosted Actions are blocked by billing is superseded by successful runs on 14–15 November. However GitHub Actions does **not** run the slow, multi-conductor real-MoQ suites in the hosted workflow; those remain local test evidence and need per-stage repeatable logs/artifacts.
 
