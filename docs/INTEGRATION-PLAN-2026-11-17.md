@@ -123,7 +123,8 @@ Links: [PRs #1–#10](https://github.com/ConorTttttt/holochain-media-core/pulls)
 | S2 v2.1 `6c1a452` | [43577300233](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43577300233) | Rust (incl. preserve_order), Windows, S1 and S2 Music interoperability: four green jobs |
 | grant specification `09d8e8c` | [43577313135](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43577313135) | Four green jobs |
 | grant anchor `a74a8ae` | [43577314159](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43577314159) | Four green jobs |
-| async design previous `1c68bdd` | [43736181347](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43736181347) | Four green jobs at historical head |\n| async design current `9784414` | [44074441650](https://github.com/ConorTttttt/holochain-media-core/actions/runs/44074441650) | Four green jobs at current #7 head; #11/#15 ancestry still based on older snapshot |
+| async design previous `1c68bdd` | [43736181347](https://github.com/ConorTttttt/holochain-media-core/actions/runs/43736181347) | Four green jobs at historical head |
+| async design current `9784414` | [44074441650](https://github.com/ConorTttttt/holochain-media-core/actions/runs/44074441650) | Four green jobs at current #7 head; #11/#15 ancestry still based on older snapshot |
 
 The old assertion that hosted Actions are blocked by billing is superseded by successful runs on 14–15 November. However GitHub Actions does **not** run the slow, multi-conductor real-MoQ suites in the hosted workflow; those remain local test evidence and need per-stage repeatable logs/artifacts.
 
