@@ -14,6 +14,7 @@ path = "src/lib.rs"
 [features]
 default = []
 music-interop-tests = []
+preserve-order-tests = ["serde_json/preserve_order"]
 
 [dependencies]
 base64 = "0.22"
