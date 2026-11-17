@@ -7,7 +7,7 @@
 | Development stage | Draft PR | On development branch | In `main` |
 | --- | --- | --- | --- |
 | CORE-001 / CORE-002 / CORE-003 | #1 / #2 / #3 | Implemented, stage-specific CI green | No |
-| CORE-004 / CORE-005 / S2 PoP v2 | #8 / #9 / #10 | Implemented; stage-specific new PR CI must be verified | No |
+| CORE-004 / CORE-005 / S2 PoP v2 | #8 / #9 / #10 | #8 green (Rust, Music interop, Windows); #9 and #10 **Windows red** on inherited test clock overflow; follow-up fix draft #12 | No |
 | S2 lifecycle v2.1 | #4 | Implemented, four hosted jobs green 14 Nov | No |
 | access-grant/v2 specification | #5 | Specification-only; four hosted jobs green 14 Nov | No |
 | grant-anchor/v2 verifier | #6 | Implemented, four hosted jobs green 14 Nov | No |
