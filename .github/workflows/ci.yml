@@ -25,6 +25,8 @@ jobs:
         run: cargo clippy --workspace --all-targets -- -D warnings
       - name: Test
         run: cargo test --workspace --all-targets
+      - name: Test with serde_json preserve_order
+        run: cargo test --workspace --all-targets --features serde_json/preserve_order
 
   music-python-interop:
     runs-on: ubuntu-latest
@@ -56,6 +58,10 @@ jobs:
         env:
           MUSIC_VECTORS: target/music-golden-vectors.json
         run: cargo test --workspace --features music-interop-tests --all-targets
+      - name: Music interoperability under serde_json preserve_order
+        env:
+          MUSIC_VECTORS: target/music-golden-vectors.json
+        run: cargo test -p holochain-content-core --features music-interop-tests,serde_json/preserve_order --all-targets
 
   windows:
     runs-on: windows-latest

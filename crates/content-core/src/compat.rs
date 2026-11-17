@@ -173,11 +173,53 @@ fn hex32(input: &str, error: VerifyError) -> Result<[u8; 32], VerifyError> {
     Ok(bytes)
 }
 
+/// Canonical Python S1 JSON is key-sorted regardless of serde_json feature
+/// unification. Holochain can enable serde_json/preserve_order downstream.
+fn write_canonical(value: &Value, out: &mut Vec<u8>) -> Result<(), ()> {
+    match value {
+        Value::Object(map) => {
+            let mut entries: Vec<(&String, &Value)> = map.iter().collect();
+            entries.sort_unstable_by(|a, b| a.0.cmp(b.0));
+            out.push(b'{');
+            for (n, (key, item)) in entries.into_iter().enumerate() {
+                if n > 0 {
+                    out.push(b',');
+                }
+                serde_json::to_writer(&mut *out, key).map_err(|_| ())?;
+                out.push(b':');
+                write_canonical(item, out)?;
+            }
+            out.push(b'}');
+        }
+        Value::Array(items) => {
+            out.push(b'[');
+            for (n, item) in items.iter().enumerate() {
+                if n > 0 {
+                    out.push(b',');
+                }
+                write_canonical(item, out)?;
+            }
+            out.push(b']');
+        }
+        Value::Number(number) if number.is_f64() => return Err(()),
+        scalar => serde_json::to_writer(&mut *out, scalar).map_err(|_| ())?,
+    }
+    Ok(())
+}
+
+/// Python Music S1 compact, sorted JSON for strings, integers, arrays and
+/// objects. The S1 format does not sign floating-point values.
+pub fn canonical_json(value: &Value) -> Option<Vec<u8>> {
+    let mut out = Vec::new();
+    write_canonical(value, &mut out).ok()?;
+    Some(out)
+}
+
 fn canonical<T: Serialize>(input: &T, error: VerifyError) -> Result<Vec<u8>, VerifyError> {
-    // serde_json Value sorts object keys, matching Python sort_keys=True
-    // for the exact S1 schema containing only integral numbers and strings.
     let value: Value = serde_json::to_value(input).map_err(|_| error)?;
-    serde_json::to_vec(&value).map_err(|_| error)
+    let mut out = Vec::new();
+    write_canonical(&value, &mut out).map_err(|_| error)?;
+    Ok(out)
 }
 
 fn signed_body<T: Serialize>(
