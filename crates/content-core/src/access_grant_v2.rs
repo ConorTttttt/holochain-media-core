@@ -365,9 +365,11 @@ pub fn verify_access_grant_v2(
         expires_at,
         licence_id: Some(b.grant_id.clone()),
         key: wrapped,
-        // Assurance describes the CURRENT signed issuer, not the historical
-        // manifest signer. Content authenticity was verified separately.
-        owner_assurance: issuer.assurance(),
+        // Entitlement owner assurance describes the HISTORICAL authenticated
+        // content owner (OwnedManifest), as in CORE-005 and the v2 spec.
+        // Current grant issuer assurance remains separately available from
+        // VerifiedAccessGrantV2::issuer() and must not overwrite this field.
+        owner_assurance: content.owner_assurance(),
     };
     Ok(VerifiedAccessGrantV2 { entitlement, issuer, anchor: verified, grant_id: b.grant_id.clone() })
 }
