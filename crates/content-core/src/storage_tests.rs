@@ -186,7 +186,7 @@ fn test_child_pauses_midwrite() {
         return;
     };
     let (manifest, objects) = synthetic();
-    let store = VerifiedCas::new(root).unwrap();
+    let store = VerifiedCas::new(std::path::PathBuf::from(root)).unwrap();
     store.put_chunk(&manifest, 0, &objects[0]).unwrap();
 }
 
